@@ -2,582 +2,842 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SehatTrack Banyubiru — Program 30 Hari Hidup Sehat</title>
-  <meta name="description" content="Platform member resmi Program 30 Hari Hidup Sehat SMP Negeri 1 Banyubiru. Bangun kebiasaan sehat, kumpulkan poin, jaga streak." />
-  <link rel="icon" href="logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>VITAQU — SehatTrack Banyubiru | Program 30 Hari Hidup Sehat</title>
+  <meta name="description" content="Platform member resmi Program 30 Hari Hidup Sehat SMP Negeri 1 Banyubiru. Bangun kebiasaan sehat, kumpulkan poin, jaga streak. Bisa di-install sebagai aplikasi." />
+  <link rel="icon" href="favicon.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VITAQU" />
+  <link rel="manifest" href="manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --emerald: #2ECC71;
-      --emerald-bright: #4EF08F;
-      --emerald-deep: #0E5C33;
       --gold: #F5C542;
-      --bg-0: #04120B;
-      --bg-1: #071C11;
-      --glass: rgba(255, 255, 255, 0.055);
-      --glass-strong: rgba(255, 255, 255, 0.09);
-      --stroke: rgba(255, 255, 255, 0.13);
-      --text: #EAF6EE;
-      --muted: #9DB8A7;
-      --radius: 26px;
-      --shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+      --gold-bright: #FFD86B;
+      --gold-deep: #B8860B;
+      --blue: #2E86DE;
+      --blue-bright: #4EA3F5;
+      --bg: #050505;
+      --glass: rgba(255, 255, 255, 0.06);
+      --glass-strong: rgba(255, 255, 255, 0.10);
+      --stroke: rgba(255, 255, 255, 0.14);
+      --gold-stroke: rgba(245, 197, 66, 0.4);
+      --text: #F4F1E8;
+      --muted: #A8A396;
+      --radius: 24px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { scroll-behavior: smooth; }
+    html, body { height: 100%; overflow: hidden; }
 
     body {
       font-family: "Poppins", sans-serif;
-      background: var(--bg-0);
+      background: var(--bg);
       color: var(--text);
-      overflow-x: hidden;
-      line-height: 1.6;
+      line-height: 1.5;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
-    ::selection { background: rgba(46, 204, 113, 0.35); }
+    ::selection { background: rgba(245, 197, 66, .3); }
 
-    ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: var(--bg-0); }
-    ::-webkit-scrollbar-thumb { background: #1C4D30; border-radius: 99px; }
-    ::-webkit-scrollbar-thumb:hover { background: #2ECC71; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(245,197,66,.35); border-radius: 99px; }
 
-    /* ── NAVBAR ─────────────────────────────────────────────── */
-    .nav {
-      position: fixed;
-      inset: 0 0 auto 0;
-      z-index: 100;
+    /* ═══ VIDEO HERO (BACKGROUND) ══════════════════════════════ */
+    .bg-video { position: fixed; inset: 0; z-index: 0; background: #000; }
+    .bg-video video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+    }
+    .bg-video video.ready { opacity: 1; }
+    .bg-video::before {
+      content: "";
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        radial-gradient(130% 100% at 50% 115%, rgba(5,5,5,.95) 0%, rgba(5,5,5,.30) 55%, transparent 100%),
+        linear-gradient(180deg, rgba(5,5,5,.80) 0%, rgba(5,5,5,.42) 40%, rgba(5,5,5,.88) 100%);
+    }
+    .bg-video::after {
+      content: "";
+      position: absolute; inset: 0; z-index: 1;
+      background: radial-gradient(58% 52% at 50% 38%, rgba(245,197,66,.13), transparent 72%);
+      mix-blend-mode: screen;
+    }
+
+    /* ═══ APP SHELL (TANPA SCROLL) ═════════════════════════════ */
+    .shell {
+      position: relative;
+      z-index: 2;
+      height: 100svh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+    }
+
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px clamp(20px, 6vw, 72px);
-      transition: background .35s ease, backdrop-filter .35s ease, border-color .35s ease, padding .35s ease;
-      border-bottom: 1px solid transparent;
+      gap: 12px;
+      padding: 14px clamp(16px, 4vw, 40px) 10px;
+      flex-shrink: 0;
     }
-    .nav.scrolled {
-      background: rgba(4, 18, 11, 0.78);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-bottom-color: var(--stroke);
-      padding-top: 12px;
-      padding-bottom: 12px;
-    }
-    .nav-brand { display: flex; align-items: center; gap: 13px; text-decoration: none; color: var(--text); }
-    .nav-brand img {
-      width: 46px; height: 46px;
-      border-radius: 14px;
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand img {
+      width: 44px; height: 44px;
+      border-radius: 13px;
       object-fit: cover;
       border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.9);
-      padding: 3px;
+      background: #000;
+      flex-shrink: 0;
     }
-    .nav-brand b { font-size: 17px; font-weight: 800; letter-spacing: .3px; display: block; line-height: 1.25; }
-    .nav-brand small { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: 2.4px; text-transform: uppercase; }
-    .nav-links { display: flex; align-items: center; gap: 34px; }
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: color .2s;
-      position: relative;
-    }
-    .nav-links a::after {
-      content: "";
-      position: absolute;
-      left: 0; bottom: -6px;
-      width: 0; height: 2px;
-      border-radius: 2px;
-      background: var(--emerald);
-      transition: width .25s ease;
-    }
-    .nav-links a:hover { color: var(--text); }
-    .nav-links a:hover::after { width: 100%; }
+    .brand b { font-size: 15.5px; font-weight: 800; display: block; line-height: 1.2; letter-spacing: .4px; }
+    .brand small { color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: 2.6px; text-transform: uppercase; white-space: nowrap; }
 
-    .btn-glow {
-      display: inline-flex;
+    .top-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+
+    .btn-install {
+      display: none;
       align-items: center;
-      gap: 9px;
-      background: linear-gradient(135deg, #2ECC71, #17A44C);
-      color: #04120B;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+      color: #141005;
       font-family: inherit;
       font-weight: 800;
-      font-size: 14px;
-      padding: 13px 26px;
+      font-size: 13px;
+      padding: 11px 20px;
       border-radius: 99px;
       border: none;
       cursor: pointer;
-      text-decoration: none;
-      letter-spacing: .3px;
-      box-shadow: 0 12px 34px rgba(46, 204, 113, 0.35), inset 0 1px 0 rgba(255,255,255,.4);
-      transition: transform .2s ease, box-shadow .2s ease;
+      box-shadow: 0 10px 30px rgba(245, 197, 66, .35);
+      transition: transform .2s;
     }
-    .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(46, 204, 113, 0.5), inset 0 1px 0 rgba(255,255,255,.4); }
-    .btn-glow:active { transform: translateY(0); }
+    .btn-install.show { display: inline-flex; }
+    .btn-install:hover { transform: translateY(-2px); }
+    .btn-install.standalone-hidden { display: none !important; }
 
-    /* ── HERO ───────────────────────────────────────────────── */
+    /* ═══ HERO CONTENT ═════════════════════════════════════════ */
     .hero {
-      position: relative;
-      min-height: 100svh;
+      flex: 1;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       text-align: center;
-      overflow: hidden;
+      padding: clamp(6px, 2vh, 26px) 20px 0;
+      min-height: 0;
     }
-    .hero-media { position: absolute; inset: 0; }
-    .hero-media video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: saturate(1.05) contrast(1.02);
-    }
-    .hero-media::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(120% 90% at 50% 110%, rgba(4,18,11,.92) 0%, rgba(4,18,11,.25) 55%, transparent 100%),
-        linear-gradient(180deg, rgba(4,18,11,.72) 0%, rgba(4,18,11,.38) 42%, rgba(4,18,11,.86) 100%);
-      z-index: 1;
-    }
-    .hero-media::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(60% 55% at 50% 42%, rgba(46,204,113,.16), transparent 70%);
-      z-index: 1;
-      mix-blend-mode: screen;
-    }
-    .hero-content { position: relative; z-index: 2; padding: 130px 24px 90px; max-width: 960px; }
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      background: rgba(46, 204, 113, 0.12);
-      border: 1px solid rgba(46, 204, 113, 0.4);
-      color: var(--emerald-bright);
-      font-size: 12px;
-      font-weight: 600;
+      gap: 9px;
+      background: rgba(245, 197, 66, 0.10);
+      border: 1px solid var(--gold-stroke);
+      color: var(--gold-bright);
+      font-size: 10.5px;
+      font-weight: 700;
       letter-spacing: 2.6px;
       text-transform: uppercase;
-      padding: 10px 22px;
+      padding: 8px 18px;
       border-radius: 99px;
-      margin-bottom: 30px;
+      margin-bottom: clamp(10px, 2.2vh, 22px);
       backdrop-filter: blur(8px);
-      animation: fadeUp .9s ease both;
     }
     .hero-badge .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--emerald-bright);
-      box-shadow: 0 0 0 0 rgba(78, 240, 143, .7);
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--gold-bright);
       animation: pulse 2s infinite;
     }
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(78,240,143,.7); }
-      70% { box-shadow: 0 0 0 10px rgba(78,240,143,0); }
-      100% { box-shadow: 0 0 0 0 rgba(78,240,143,0); }
+      0% { box-shadow: 0 0 0 0 rgba(255,216,107,.7); }
+      70% { box-shadow: 0 0 0 9px rgba(255,216,107,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,216,107,0); }
     }
     .hero h1 {
-      font-size: clamp(38px, 7.2vw, 84px);
+      font-size: clamp(26px, 5.4vw, 58px);
       font-weight: 900;
-      line-height: 1.06;
-      letter-spacing: -1.5px;
-      margin-bottom: 26px;
-      animation: fadeUp .9s .12s ease both;
+      line-height: 1.08;
+      letter-spacing: -1px;
+      margin-bottom: clamp(8px, 1.6vh, 16px);
+      animation: fadeUp .8s ease both;
     }
     .hero h1 .grad {
-      background: linear-gradient(100deg, #4EF08F 10%, #2ECC71 45%, #F5C542 95%);
+      background: linear-gradient(100deg, var(--gold-bright) 15%, var(--gold) 50%, var(--blue-bright) 95%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
     .hero p.lead {
-      color: #C4DCCB;
-      font-size: clamp(15px, 2vw, 19px);
+      color: #CBC7BA;
+      font-size: clamp(12.5px, 1.7vw, 16px);
       font-weight: 300;
-      max-width: 640px;
-      margin: 0 auto 40px;
-      animation: fadeUp .9s .24s ease both;
+      max-width: 620px;
+      margin: 0 auto;
+      animation: fadeUp .8s .12s ease both;
     }
-    .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeUp .9s .36s ease both; }
-    .btn-ghost {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 13px 26px;
-      border-radius: 99px;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: .3px;
-      text-decoration: none;
-      color: var(--text);
-      background: rgba(255,255,255,.07);
-      border: 1px solid var(--stroke);
-      backdrop-filter: blur(10px);
-      transition: background .2s, transform .2s;
-    }
-    .btn-ghost:hover { background: rgba(255,255,255,.13); transform: translateY(-2px); }
-    .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: clamp(14px, 3vw, 34px);
-      margin-top: 58px;
-      flex-wrap: wrap;
-      animation: fadeUp .9s .5s ease both;
-    }
-    .stat-chip {
-      background: var(--glass);
-      border: 1px solid var(--stroke);
-      border-radius: 20px;
-      padding: 16px 26px;
-      backdrop-filter: blur(14px);
-      min-width: 128px;
-    }
-    .stat-chip b { display: block; font-size: 24px; font-weight: 800; color: var(--emerald-bright); line-height: 1.2; }
-    .stat-chip span { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: .4px; }
 
-    .scroll-hint {
-      position: absolute;
-      bottom: 26px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      animation: bounce 2.2s infinite;
-    }
-    @keyframes bounce { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
-
-    /* ── SECTIONS ───────────────────────────────────────────── */
-    section.block { padding: 110px clamp(20px, 6vw, 72px); max-width: 1240px; margin: 0 auto; }
-    .sec-head { text-align: center; max-width: 660px; margin: 0 auto 64px; }
-    .sec-tag {
-      color: var(--emerald-bright);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 3.4px;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-    .sec-head h2 { font-size: clamp(28px, 4.4vw, 46px); font-weight: 800; letter-spacing: -1px; line-height: 1.15; margin-bottom: 16px; }
-    .sec-head p { color: var(--muted); font-weight: 300; font-size: 16px; }
-
-    .grid-features {
+    /* ═══ FOLDER GRID ══════════════════════════════════════════ */
+    .folders {
+      width: min(100%, 880px);
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 1.6vw, 16px);
+      padding: clamp(12px, 2.6vh, 26px) clamp(16px, 4vw, 40px) clamp(12px, 2.4vh, 22px);
+      animation: fadeUp .8s .22s ease both;
     }
-    .f-card {
+    .folder {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 7px;
       background: var(--glass);
       border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      padding: 34px 30px;
-      backdrop-filter: blur(16px);
-      transition: transform .3s ease, border-color .3s ease, background .3s ease;
-      position: relative;
+      border-radius: 22px;
+      padding: clamp(14px, 2.4vh, 24px) 10px clamp(12px, 2vh, 18px);
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text);
+      text-decoration: none;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: transform .22s ease, border-color .22s ease, background .22s ease;
+      min-height: clamp(112px, 16.5vh, 152px);
       overflow: hidden;
     }
-    .f-card::before {
+    .folder::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(420px 200px at 20% -10%, rgba(46,204,113,.14), transparent 70%);
+      background: radial-gradient(300px 140px at 50% -20%, rgba(245,197,66,.16), transparent 70%);
       opacity: 0;
-      transition: opacity .3s;
+      transition: opacity .25s;
     }
-    .f-card:hover { transform: translateY(-6px); border-color: rgba(46,204,113,.45); background: var(--glass-strong); }
-    .f-card:hover::before { opacity: 1; }
-    .f-icon {
-      width: 58px; height: 58px;
-      border-radius: 18px;
+    .folder:hover, .folder:active { transform: translateY(-4px); border-color: var(--gold-stroke); background: var(--glass-strong); }
+    .folder:hover::before, .folder:active::before { opacity: 1; }
+    .folder .f-ico {
+      font-size: clamp(30px, 5.4vh, 44px);
+      line-height: 1;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.5));
+    }
+    .folder .f-name { font-size: clamp(12px, 1.5vw, 14.5px); font-weight: 800; letter-spacing: .2px; }
+    .folder .f-sub { font-size: 10px; color: var(--muted); font-weight: 400; line-height: 1.35; text-align: center; }
+    .folder.cta {
+      background: linear-gradient(150deg, rgba(245,197,66,.24), rgba(46,134,222,.14));
+      border-color: var(--gold-stroke);
+      box-shadow: 0 14px 40px rgba(245, 197, 66, .18);
+    }
+    .folder.cta .f-name { color: var(--gold-bright); }
+
+    @media (max-width: 640px) {
+      .folders { grid-template-columns: repeat(2, 1fr); }
+      .folder { min-height: clamp(104px, 14.5vh, 140px); }
+    }
+
+    .foot-strip {
+      flex-shrink: 0;
+      text-align: center;
+      font-size: 10px;
+      color: #6E6A5E;
+      padding: 0 16px clamp(8px, 1.4vh, 14px);
+      line-height: 1.6;
+    }
+    .foot-strip a { color: var(--muted); text-decoration: none; }
+    .foot-strip a:hover { color: var(--gold-bright); }
+
+    /* ═══ SOUND CONTROLS ═══════════════════════════════════════ */
+    .sound-fab {
+      position: fixed;
+      right: 16px;
+      bottom: calc(14px + var(--safe-bottom));
+      z-index: 40;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 1px solid var(--gold-stroke);
+      background: rgba(5,5,5,.65);
+      backdrop-filter: blur(10px);
+      color: var(--gold-bright);
+      font-size: 21px;
+      cursor: pointer;
       display: grid;
       place-items: center;
-      font-size: 27px;
-      background: linear-gradient(135deg, rgba(46,204,113,.22), rgba(46,204,113,.06));
-      border: 1px solid rgba(46,204,113,.35);
-      margin-bottom: 22px;
+      transition: transform .2s, border-color .2s;
     }
-    .f-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; letter-spacing: -.2px; }
-    .f-card p { color: var(--muted); font-size: 14px; font-weight: 300; }
+    .sound-fab:hover { transform: scale(1.08); }
+    .sound-fab .ico { pointer-events: none; }
 
-    /* Steps */
-    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; counter-reset: step; }
-    .step {
+    .sound-prompt {
+      position: fixed;
+      left: 50%;
+      bottom: calc(20px + var(--safe-bottom));
+      transform: translateX(-50%);
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(5,5,5,.78);
+      border: 1px solid var(--gold-stroke);
+      color: var(--gold-bright);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 22px;
+      border-radius: 99px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      animation: floatUp 2.4s ease-in-out infinite;
+      box-shadow: 0 12px 34px rgba(0,0,0,.5);
+    }
+    .sound-prompt.hidden { display: none; }
+    @keyframes floatUp {
+      0%, 100% { transform: translate(-50%, 0); }
+      50% { transform: translate(-50%, -7px); }
+    }
+
+    /* ═══ FOLDER WINDOW (FULL-SCREEN) ══════════════════════════ */
+    .folder-win {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(12px, 3vw, 36px);
+      padding-top: calc(clamp(12px, 3vw, 36px) + var(--safe-top));
+      padding-bottom: calc(clamp(12px, 3vw, 36px) + var(--safe-bottom));
+      background: rgba(0, 0, 0, .62);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .folder-win.open { display: flex; }
+    .win-card {
+      width: min(100%, 880px);
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(165deg, rgba(28,26,20,.96), rgba(10,10,10,.97));
+      border: 1px solid var(--gold-stroke);
+      border-radius: 28px;
+      box-shadow: 0 40px 100px rgba(0,0,0,.7);
+      overflow: hidden;
+      animation: winIn .32s cubic-bezier(.2,.9,.3,1.2) both;
+    }
+    @keyframes winIn {
+      from { opacity: 0; transform: translateY(26px) scale(.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .win-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+      flex-shrink: 0;
+    }
+    .win-head .w-ico { font-size: 24px; }
+    .win-head h2 { font-size: 16px; font-weight: 800; letter-spacing: .3px; flex: 1; min-width: 0; }
+    .win-close {
+      width: 40px; height: 40px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: var(--glass);
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .win-close:hover { background: rgba(231,76,60,.25); transform: rotate(90deg); }
+    .win-body {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: clamp(18px, 3vw, 30px);
+      min-height: 0;
+    }
+    .win-body h3 {
+      color: var(--gold-bright);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .4px;
+      margin: 22px 0 10px;
+      text-transform: uppercase;
+    }
+    .win-body h3:first-child { margin-top: 0; }
+    .win-body p { color: #C9C5B8; font-size: 14px; font-weight: 300; line-height: 1.75; margin-bottom: 12px; }
+    .win-body ul { padding-left: 20px; margin-bottom: 12px; }
+    .win-body li { color: #C9C5B8; font-size: 14px; font-weight: 300; line-height: 1.9; }
+    .win-body li strong, .win-body p strong { color: var(--text); font-weight: 700; }
+
+    .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 6px 0 4px; }
+    .stat-chip {
+      flex: 1;
+      min-width: 108px;
       background: var(--glass);
       border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      padding: 36px 30px;
-      backdrop-filter: blur(16px);
-      position: relative;
-      transition: transform .3s ease, border-color .3s ease;
+      border-radius: 18px;
+      padding: 14px 16px;
+      text-align: center;
     }
-    .step:hover { transform: translateY(-6px); border-color: rgba(46,204,113,.45); }
-    .step .num {
-      counter-increment: step;
-      width: 54px; height: 54px;
+    .stat-chip b { display: block; font-size: 22px; font-weight: 800; color: var(--gold-bright); }
+    .stat-chip span { font-size: 11px; color: var(--muted); }
+
+    .mini-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .mini-card {
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .mini-card .m-ico { font-size: 24px; margin-bottom: 8px; }
+    .mini-card b { display: block; font-size: 13.5px; font-weight: 700; margin-bottom: 5px; }
+    .mini-card span { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.55; display: block; }
+
+    .step-list { display: flex; flex-direction: column; gap: 12px; }
+    .step-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      padding: 15px 16px;
+    }
+    .step-item .s-num {
+      width: 36px; height: 36px;
+      flex-shrink: 0;
       border-radius: 50%;
       display: grid;
       place-items: center;
-      font-size: 20px;
       font-weight: 800;
-      color: #04120B;
-      background: linear-gradient(135deg, #4EF08F, #2ECC71);
-      box-shadow: 0 10px 30px rgba(46,204,113,.4);
-      margin-bottom: 22px;
+      color: #141005;
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      box-shadow: 0 8px 20px rgba(245,197,66,.35);
     }
-    .step .num::before { content: counter(step); }
-    .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
-    .step p { color: var(--muted); font-size: 14px; font-weight: 300; }
+    .step-item div b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+    .step-item div span { font-size: 12.5px; color: var(--muted); font-weight: 300; line-height: 1.6; }
 
-    /* CTA band */
-    .cta-band {
-      max-width: 1240px;
-      margin: 0 auto 110px;
-      padding: 0 clamp(20px, 6vw, 72px);
-    }
-    .cta-inner {
-      position: relative;
-      border-radius: 34px;
-      padding: clamp(44px, 7vw, 84px) clamp(28px, 6vw, 80px);
+    .install-zone {
+      background: rgba(245,197,66,.08);
+      border: 1px solid var(--gold-stroke);
+      border-radius: 20px;
+      padding: 18px;
       text-align: center;
-      overflow: hidden;
-      background:
-        radial-gradient(90% 140% at 50% -30%, rgba(46,204,113,.32), transparent 60%),
-        linear-gradient(160deg, #0B2E1C, #071C11);
-      border: 1px solid rgba(46,204,113,.35);
-      box-shadow: var(--shadow);
+      margin-bottom: 14px;
     }
-    .cta-inner h2 { font-size: clamp(26px, 4.4vw, 44px); font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; }
-    .cta-inner h2 .grad {
-      background: linear-gradient(100deg, #4EF08F, #F5C542);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    .install-zone .big-btn {
+      display: none;
+      width: 100%;
+      margin-top: 12px;
+      padding: 15px;
+      border: none;
+      border-radius: 99px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+      color: #141005;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 12px 34px rgba(245,197,66,.4);
+      transition: transform .2s;
     }
-    .cta-inner p { color: var(--muted); font-weight: 300; margin-bottom: 34px; }
+    .install-zone .big-btn.show { display: block; }
+    .install-zone .big-btn:disabled { opacity: .55; cursor: default; transform: none; }
+    .ios-steps {
+      display: none;
+      text-align: left;
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .ios-steps.show { display: block; }
+    .badge-note {
+      display: inline-block;
+      background: rgba(46,134,222,.16);
+      border: 1px solid rgba(46,134,222,.45);
+      color: var(--blue-bright);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 99px;
+      padding: 5px 12px;
+      margin-top: 10px;
+    }
 
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--stroke);
-      padding: 46px clamp(20px, 6vw, 72px);
-      background: rgba(255,255,255,.02);
-    }
-    .foot {
-      max-width: 1240px;
-      margin: 0 auto;
+    .admin-link {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 24px;
-      flex-wrap: wrap;
+      gap: 12px;
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      border-radius: 18px;
+      padding: 15px 18px;
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color .2s, background .2s;
+      margin-bottom: 12px;
     }
-    .foot-brand { display: flex; align-items: center; gap: 12px; }
-    .foot-brand img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; background: rgba(255,255,255,.9); padding: 3px; }
-    .foot-brand div b { display: block; font-size: 14px; font-weight: 700; }
-    .foot-brand div span { font-size: 11px; color: var(--muted); }
-    .foot-links { display: flex; gap: 22px; flex-wrap: wrap; }
-    .foot-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color .2s; }
-    .foot-links a:hover { color: var(--emerald-bright); }
-    .foot small { display: block; width: 100%; text-align: center; color: #6E8A78; font-size: 11px; margin-top: 22px; line-height: 1.8; }
+    .admin-link:hover { border-color: var(--gold-stroke); background: var(--glass-strong); }
+    .admin-link .a-ico { font-size: 22px; }
+    .admin-link b { display: block; font-size: 13.5px; }
+    .admin-link span { font-size: 11.5px; color: var(--muted); }
+    .admin-link .arrow { margin-left: auto; color: var(--gold-bright); }
 
-    /* Reveal on scroll */
-    .reveal { opacity: 0; transform: translateY(34px); transition: opacity .8s ease, transform .8s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(26px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 780px) {
-      .nav-links a:not(.btn-glow) { display: none; }
-      section.block { padding-top: 80px; padding-bottom: 80px; }
-    }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
-      .reveal { opacity: 1; transform: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
-  <nav class="nav" id="nav">
-    <a class="nav-brand" href="#">
-      <img src="logo.png" alt="Logo Sekolah" />
-      <div>
-        <b>SehatTrack</b>
-        <small>Banyubiru</small>
+  <!-- VIDEO HERO (VIDEO ASLI + SUARA) -->
+  <div class="bg-video">
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto">
+      <source src="assets/hero.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <!-- APP SHELL — TANPA SCROLL -->
+  <div class="shell">
+
+    <div class="topbar">
+      <div class="brand">
+        <img src="logo.png" alt="VITAQU" />
+        <div>
+          <b>VITAQU</b>
+          <small>SehatTrack • Banyubiru</small>
+        </div>
       </div>
-    </a>
-    <div class="nav-links">
-      <a href="#fitur">Fitur</a>
-      <a href="#cara">Cara Kerja</a>
-      <a href="login.html" class="btn-glow">🔐 Masuk Member</a>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <header class="hero" id="beranda">
-    <div class="hero-media">
-      <video autoplay muted loop playsinline preload="metadata">
-        <source src="assets/hero.mp4" type="video/mp4" />
-      </video>
+      <div class="top-actions">
+        <button class="btn-install" id="installBtnTop" onclick="installApp()">📲 Install App</button>
+      </div>
     </div>
 
-    <div class="hero-content">
+    <div class="hero">
       <div class="hero-badge"><span class="dot"></span> Program Resmi • SMP Negeri 1 Banyubiru</div>
-      <h1>30 Hari. 9 Kebiasaan.<br /><span class="grad">1 Versi Terbaik</span> Dari Dirimu.</h1>
-      <p class="lead">
-        SehatTrack adalah platform member untuk Program 30 Hari Hidup Sehat —
-        centang kebiasaan baikmu setiap hari, kumpulkan poin, jaga streak,
-        dan pantau perkembanganmu lewat grafik yang jujur.
-      </p>
-      <div class="hero-cta">
-        <a href="login.html" class="btn-glow">🚀 Masuk sebagai Member</a>
-        <a href="#fitur" class="btn-ghost">Pelajari Programnya ↓</a>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-chip"><b>9</b><span>Kebiasaan Harian</span></div>
-        <div class="stat-chip"><b>30</b><span>Hari Program</span></div>
-        <div class="stat-chip"><b>100</b><span>Poin Maksimal</span></div>
-        <div class="stat-chip"><b>🔥</b><span>Streak Konsistensi</span></div>
-      </div>
+      <h1>Ubah Kebiasaan, Jadi <span class="grad">Versi Terbaik</span> Diri Mu</h1>
+      <p class="lead">30 hari, 9 kebiasaan sehat, 1 aplikasi. Pilih folder untuk menjelajah — masuk sebagai member untuk mulai.</p>
     </div>
 
-    <div class="scroll-hint">Scroll</div>
-  </header>
+    <!-- SISTEM FOLDER -->
+    <div class="folders">
+      <a class="folder cta" href="login.html">
+        <span class="f-ico">🚀</span>
+        <span class="f-name">Masuk Member</span>
+        <span class="f-sub">Login &amp; isi checklist hari ini</span>
+      </a>
 
-  <!-- FITUR -->
-  <section class="block" id="fitur">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Fitur Member</div>
-      <h2>Semua yang Kamu Butuhkan untuk Konsisten</h2>
-      <p>Bukan sekadar checklist. SehatTrack dirancang agar proses perubahan kebiasaanmu terlihat, terukur, dan terasa.</p>
-    </div>
-    <div class="grid-features">
-      <div class="f-card reveal">
-        <div class="f-icon">✅</div>
-        <h3>Checklist 9 Kebiasaan Harian</h3>
-        <p>Minum air, olahraga, tidur cukup, kurangi gula — centang yang sudah kamu lakukan, lengkap dengan catatan jujur untuk dirimu sendiri.</p>
-      </div>
-      <div class="f-card reveal">
-        <div class="f-icon">⭐</div>
-        <h3>Skor Otomatis Setiap Hari</h3>
-        <p>Setiap kebiasaan punya bobot poin. Skor dihitung real-time saat kamu mencentang, dengan kategori dari Perlu Bimbingan sampai Luar Biasa Sehat.</p>
-      </div>
-      <div class="f-card reveal">
-        <div class="f-icon">🔥</div>
-        <h3>Streak &amp; Target Mingguan</h3>
-        <p>Lihat berapa hari berturut-turut kamu konsisten, lalu pilih satu target mingguan kecil yang benar-benar bisa kamu jalankan.</p>
-      </div>
-      <div class="f-card reveal">
-        <div class="f-icon">📈</div>
-        <h3>Grafik Perkembangan 7 Hari</h3>
-        <p>Progresmu digambarkan dalam grafik interaktif. Naik atau turun, semua data jadi bahan refleksi — bukan alat menghakimi.</p>
-      </div>
-      <div class="f-card reveal">
-        <div class="f-icon">📝</div>
-        <h3>Jurnal Refleksi &amp; Mood</h3>
-        <p>Tulis pengalamanmu hari ini dan pilih mood. Program ini memantau proses, bukan mencari kesalahan.</p>
-      </div>
-      <div class="f-card reveal">
-        <div class="f-icon">🏫</div>
-        <h3>Terintegrasi dengan Sekolah</h3>
-        <p>Data kegiatanmu membantu guru memantau keterlaksanaan program hidup sehat di SMP Negeri 1 Banyubiru melalui panel admin terpisah.</p>
-      </div>
-    </div>
-  </section>
+      <button class="folder" onclick="openFolder('tentang')">
+        <span class="f-ico">📖</span>
+        <span class="f-name">Tentang Program</span>
+        <span class="f-sub">Apa itu VITAQU SehatTrack</span>
+      </button>
 
-  <!-- CARA KERJA -->
-  <section class="block" id="cara" style="padding-top:0;">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Cara Kerja</div>
-      <h2>Tiga Langkah. Setiap Hari.</h2>
-      <p>Sederhana didesain supaya konsisten itu gampang, bukan beban.</p>
-    </div>
-    <div class="steps">
-      <div class="step reveal">
-        <div class="num"></div>
-        <h3>Masuk sebagai Member</h3>
-        <p>Gunakan nama lengkapmu dan pilih kelas. Satu centang persetujuan — data kamu hanya dipakai untuk program sekolah.</p>
-      </div>
-      <div class="step reveal">
-        <div class="num"></div>
-        <h3>Centang Kebiasaan Hari Ini</h3>
-        <p>Isi checklist dengan jujur, tulis refleksi singkat, pilih mood. Butuh waktu kurang dari dua menit.</p>
-      </div>
-      <div class="step reveal">
-        <div class="num"></div>
-        <h3>Pantau Progres &amp; Jaga Streak</h3>
-        <p>Lihat skor, grafik, dan streak-mu. Konsisten itu lebih berharga daripada sempurna — dan kamu akan melihatnya sendiri.</p>
-      </div>
-    </div>
-  </section>
+      <button class="folder" onclick="openFolder('fitur')">
+        <span class="f-ico">⚡</span>
+        <span class="f-name">Fitur Unggulan</span>
+        <span class="f-sub">6 fitur utama member</span>
+      </button>
 
-  <!-- CTA BAND -->
-  <div class="cta-band reveal">
-    <div class="cta-inner">
-      <h2>Siap Jadi <span class="grad">Versi Terbaik</span> Dirimu?</h2>
-      <p>Hari ke-1 dimulai dari keputusan hari ini. Sehat hari ini, hebat esok hari.</p>
-      <a href="login.html" class="btn-glow">🔐 Masuk Member Sekarang</a>
+      <button class="folder" onclick="openFolder('cara')">
+        <span class="f-ico">🛠️</span>
+        <span class="f-name">Cara Kerja</span>
+        <span class="f-sub">3 langkah setiap hari</span>
+      </button>
+
+      <button class="folder" onclick="openFolder('install')">
+        <span class="f-ico">📲</span>
+        <span class="f-name">Instalasi App</span>
+        <span class="f-sub">Android &amp; iOS, 1 klik</span>
+      </button>
+
+      <button class="folder" onclick="openFolder('kontak')">
+        <span class="f-ico">🏫</span>
+        <span class="f-name">Panel &amp; Kontak</span>
+        <span class="f-sub">Admin guru + kredit</span>
+      </button>
+    </div>
+
+    <div class="foot-strip">
+      Provide apps by <strong>Fendi Akhmad, S.Pd.</strong> — © 2026 SMP NEGERI 1 BANYUBIRU
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="foot">
-      <div class="foot-brand">
-        <img src="logo.png" alt="Logo" />
-        <div>
-          <b>SehatTrack Banyubiru</b>
-          <span>Program 30 Hari Hidup Sehat</span>
+  <!-- KONTROL SUARA -->
+  <button class="sound-prompt" id="soundPrompt" onclick="enableSound()">🔊 Ketuk untuk menyalakan suara video</button>
+  <button class="sound-fab" id="soundFab" onclick="toggleSound()" title="Suara"><span class="ico" id="soundIcon">🔇</span></button>
+
+  <!-- ═══════════ FOLDER: TENTANG ═══════════ -->
+  <div class="folder-win" id="win-tentang">
+    <div class="win-card">
+      <div class="win-head">
+        <span class="w-ico">📖</span>
+        <h2>Tentang Program</h2>
+        <button class="win-close" onclick="closeFolder('tentang')">✕</button>
+      </div>
+      <div class="win-body">
+        <h3>Apa ini?</h3>
+        <p><strong>VITAQU — SehatTrack Banyubiru</strong> adalah platform member resmi <strong>Program 30 Hari Hidup Sehat</strong> SMP Negeri 1 Banyubiru. Setiap member mencatat kebiasaan baiknya setiap hari dengan jujur — program ini memantau proses, bukan mencari kesalahan.</p>
+        <p>Member bisa terhubung dari Android, iOS, atau komputer. Data check-in tersimpan di perangkat masing-masing dan hanya digunakan untuk monitoring program hidup sehat sekolah.</p>
+        <h3>Angka Penting</h3>
+        <div class="stat-row">
+          <div class="stat-chip"><b>9</b><span>Kebiasaan Harian</span></div>
+          <div class="stat-chip"><b>30</b><span>Hari Program</span></div>
+          <div class="stat-chip"><b>100</b><span>Poin Maksimal</span></div>
+          <div class="stat-chip"><b>🔥</b><span>Streak Konsistensi</span></div>
+        </div>
+        <h3>Prinsip Program</h3>
+        <ul>
+          <li><strong>Jujur</strong> — centang hanya yang benar-benar kamu lakukan.</li>
+          <li><strong>Konsisten</strong> — konsisten lebih berharga daripada sempurna.</li>
+          <li><strong>Bertumbuh</strong> — skor adalah cermin proses, bukan nilai hukuman.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ FOLDER: FITUR ═══════════ -->
+  <div class="folder-win" id="win-fitur">
+    <div class="win-card">
+      <div class="win-head">
+        <span class="w-ico">⚡</span>
+        <h2>Fitur Unggulan</h2>
+        <button class="win-close" onclick="closeFolder('fitur')">✕</button>
+      </div>
+      <div class="win-body">
+        <div class="mini-grid">
+          <div class="mini-card"><div class="m-ico">✅</div><b>Checklist 9 Kebiasaan</b><span>Minum air, olahraga, tidur cukup, kurangi gula — centang harian plus catatan jujur.</span></div>
+          <div class="mini-card"><div class="m-ico">⭐</div><b>Skor Otomatis</b><span>Poin real-time saat mencentang, dengan kategori dari Perlu Bimbingan sampai Luar Biasa Sehat.</span></div>
+          <div class="mini-card"><div class="m-ico">🔥</div><b>Streak &amp; Target Mingguan</b><span>Lihat hari berturut-turut konsisten, pilih satu target mingguan yang realistis.</span></div>
+          <div class="mini-card"><div class="m-ico">📈</div><b>Grafik 7 Hari</b><span>Progres digambarkan interaktif — naik atau turun, semua jadi bahan refleksi.</span></div>
+          <div class="mini-card"><div class="m-ico">📝</div><b>Jurnal &amp; Mood</b><span>Tulis refleksi singkat dan pilih mood hari ini. Cepat, jujur, bermanfaat.</span></div>
+          <div class="mini-card"><div class="m-ico">📲</div><b>Install sebagai App</b><span>PWA — sekali klik, VITAQU terpasang di layar utama Android/iOS seperti aplikasi native.</span></div>
         </div>
       </div>
-      <div class="foot-links">
-        <a href="#fitur">Fitur</a>
-        <a href="#cara">Cara Kerja</a>
-        <a href="login.html">Masuk Member</a>
-        <a href="https://health-track-admin.pages.dev" target="_blank" rel="noopener">Panel Admin ↗</a>
-      </div>
-      <small>
-        Provide apps by <strong>Fendi Akhmad, S.Pd.</strong> — © 2026 SMP NEGERI 1 BANYUBIRU<br />
-        Data pengguna tersimpan lokal pada perangkat dan hanya digunakan untuk monitoring program hidup sehat sekolah.
-      </small>
     </div>
-  </footer>
+  </div>
+
+  <!-- ═══════════ FOLDER: CARA KERJA ═══════════ -->
+  <div class="folder-win" id="win-cara">
+    <div class="win-card">
+      <div class="win-head">
+        <span class="w-ico">🛠️</span>
+        <h2>Cara Kerja</h2>
+        <button class="win-close" onclick="closeFolder('cara')">✕</button>
+      </div>
+      <div class="win-body">
+        <div class="step-list">
+          <div class="step-item">
+            <div class="s-num">1</div>
+            <div><b>Masuk sebagai Member</b><span>Buka folder "Masuk Member", isi nama lengkap, pilih kelas, centang persetujuan. Kurang dari 30 detik.</span></div>
+          </div>
+          <div class="step-item">
+            <div class="s-num">2</div>
+            <div><b>Centang Kebiasaan Hari Ini</b><span>Isi checklist dengan jujur, tulis refleksi singkat, pilih mood. Butuh waktu kurang dari 2 menit.</span></div>
+          </div>
+          <div class="step-item">
+            <div class="s-num">3</div>
+            <div><b>Pantau Progres &amp; Jaga Streak</b><span>Lihat skor, grafik, dan streak-mu berkembang. Ulangi besok — hari ke-1 dimulai hari ini.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ FOLDER: INSTALASI ═══════════ -->
+  <div class="folder-win" id="win-install">
+    <div class="win-card">
+      <div class="win-head">
+        <span class="w-ico">📲</span>
+        <h2>Instalasi Aplikasi</h2>
+        <button class="win-close" onclick="closeFolder('install')">✕</button>
+      </div>
+      <div class="win-body">
+        <div class="install-zone">
+          <p style="color:#C9C5B8; font-size:14px;">Pasang <strong style="color:var(--gold-bright)">VITAQU</strong> di layar utama HP — tanpa Play Store / App Store, langsung dari browser.</p>
+          <button class="big-btn" id="installBtnBig" onclick="installApp()">📲 Install Sekarang (1 Klik)</button>
+          <span class="badge-note" id="installStatus">Mendeteksi perangkat…</span>
+        </div>
+
+        <h3>Panduan iOS (iPhone / iPad)</h3>
+        <div class="ios-steps" id="iosSteps">
+          <ul>
+            <li>Buka situs ini di <strong>Safari</strong>.</li>
+            <li>Ketuk ikon <strong>Bagikan ⬆️</strong> di bawah layar.</li>
+            <li>Pilih <strong>"Tambah ke Layar Utama"</strong>.</li>
+            <li>Ketuk <strong>"Tambah"</strong> — VITAQU terpasang ✅</li>
+          </ul>
+        </div>
+
+        <h3>Panduan Android</h3>
+        <div class="ios-steps" id="androidSteps" style="display:block;">
+          <ul>
+            <li>Ketuk tombol <strong>"Install Sekarang"</strong> di atas, atau</li>
+            <li>Menu browser (⋮) → <strong>"Install app" / "Tambahkan ke layar utama"</strong>.</li>
+          </ul>
+        </div>
+
+        <p style="font-size:12px; color:var(--muted);">Setelah terinstall, VITAQU berjalan layar penuh seperti aplikasi native, dengan ikon VITAQU di layar utama.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ FOLDER: PANEL & KONTAK ═══════════ -->
+  <div class="folder-win" id="win-kontak">
+    <div class="win-card">
+      <div class="win-head">
+        <span class="w-ico">🏫</span>
+        <h2>Panel &amp; Kontak</h2>
+        <button class="win-close" onclick="closeFolder('kontak')">✕</button>
+      </div>
+      <div class="win-body">
+        <a class="admin-link" href="https://health-track-admin.pages.dev" target="_blank" rel="noopener">
+          <span class="a-ico">🔐</span>
+          <div><b>Panel Admin (Khusus Guru)</b><span>Dashboard monitoring, laporan NPET, export CSV — dilindungi kode admin.</span></div>
+          <span class="arrow">→</span>
+        </a>
+        <h3>Kredit</h3>
+        <p>Provide apps by <strong>Fendi Akhmad, S.Pd.</strong><br>© 2026 SMP NEGERI 1 BANYUBIRU — Program 30 Hari Hidup Sehat.</p>
+        <h3>Catatan Privasi</h3>
+        <p>Data pengguna tersimpan lokal pada perangkat dan hanya digunakan untuk monitoring program hidup sehat sekolah, bukan untuk menghukum atau mempermalukan siswa.</p>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // ─── NAVBAR: blur on scroll ───────────────────────────────
-    const nav = document.getElementById("nav");
-    const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
+    // ═══ VIDEO + SUARA ═══════════════════════════════════════════
+    const vid = document.getElementById("heroVideo");
+    const soundFab = document.getElementById("soundFab");
+    const soundIcon = document.getElementById("soundIcon");
+    const soundPrompt = document.getElementById("soundPrompt");
+    let userMuted = false; // preferensi manual user
 
-    // ─── VIDEO: fallback poster jika autoplay ditolak browser ─
-    const heroVideo = document.querySelector(".hero-media video");
-    if (heroVideo) {
-      heroVideo.addEventListener("canplay", () => { heroVideo.style.opacity = 1; });
-      heroVideo.style.opacity = 0;
-      heroVideo.style.transition = "opacity 1.2s ease";
-      const tryPlay = heroVideo.play();
-      if (tryPlay !== undefined) tryPlay.catch(() => { heroVideo.style.opacity = 0; });
+    vid.addEventListener("canplay", () => vid.classList.add("ready"));
+
+    function updateSoundUI() {
+      soundIcon.textContent = vid.muted ? "🔇" : "🔊";
+      soundPrompt.classList.toggle("hidden", !vid.muted);
     }
 
-    // ─── REVEAL on scroll ─────────────────────────────────────
-    const io = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); } }),
-      { threshold: 0.12 }
-    );
-    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+    function enableSound() {
+      vid.muted = false;
+      userMuted = false;
+      vid.volume = 1;
+      vid.play().catch(() => {});
+      updateSoundUI();
+    }
+
+    function toggleSound() {
+      userMuted = !vid.muted ? true : false;
+      vid.muted = !vid.muted;
+      if (!vid.muted) vid.play().catch(() => {});
+      updateSoundUI();
+    }
+
+    // Autoplay dengan suara langsung dicoba (beberapa browser mengizinkan)
+    (function tryAutoplaySound() {
+      vid.muted = false;
+      const p = vid.play();
+      if (p) p.catch(() => { vid.muted = true; vid.play().catch(() => {}); updateSoundUI(); });
+    })();
+
+    // Interaksi pertama di mana pun = suara langsung nyala
+    const firstTouch = (e) => {
+      if (!e.target.closest(".sound-fab") && !userMuted) enableSound();
+      document.removeEventListener("pointerdown", firstTouch);
+      document.removeEventListener("keydown", firstTouch);
+    };
+    document.addEventListener("pointerdown", firstTouch);
+    document.addEventListener("keydown", firstTouch);
+    updateSoundUI();
+
+    // ═══ SISTEM FOLDER (TANPA SCROLL HALAMAN) ════════════════════
+    function openFolder(name) {
+      document.getElementById("win-" + name).classList.add("open");
+    }
+    function closeFolder(name) {
+      document.getElementById("win-" + name).classList.remove("open");
+    }
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") document.querySelectorAll(".folder-win.open").forEach(w => w.classList.remove("open"));
+    });
+    document.querySelectorAll(".folder-win").forEach(w => {
+      w.addEventListener("click", e => { if (e.target === w) w.classList.remove("open"); });
+    });
+
+    // ═══ PWA INSTALL (ANDROID/DESKTOP 1 KLIK + iOS PANDUAN) ══════
+    let deferredPrompt = null;
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+
+    const btnTop = document.getElementById("installBtnTop");
+    const btnBig = document.getElementById("installBtnBig");
+    const statusEl = document.getElementById("installStatus");
+    const iosSteps = document.getElementById("iosSteps");
+
+    window.addEventListener("beforeinstallprompt", e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      btnTop.classList.add("show");
+      btnBig.classList.add("show");
+      statusEl.textContent = "Perangkat siap install — ketuk tombol di atas 👆";
+    });
+
+    async function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === "accepted") {
+          statusEl.textContent = "✅ VITAQU terinstall! Cek layar utama HP mu.";
+          btnTop.classList.remove("show");
+          btnBig.classList.remove("show");
+        }
+        deferredPrompt = null;
+      } else if (isIOS && !isStandalone) {
+        openFolder("install");
+        iosSteps.classList.add("show");
+        statusEl.textContent = "iOS: ikuti 4 langkah di bawah 👇";
+      } else if (!isStandalone) {
+        openFolder("install");
+        statusEl.textContent = "Gunakan menu browser → \"Install app\" / \"Tambah ke layar utama\".";
+      }
+    }
+
+    if (isStandalone) {
+      statusEl.textContent = "✅ Kamu sedang menjalankan VITAQU sebagai aplikasi terinstall.";
+    } else if (isIOS) {
+      statusEl.textContent = "iOS terdeteksi — ketuk Install, lalu ikuti langkah Share → Add to Home Screen.";
+      iosSteps.classList.add("show");
+    }
+
+    window.addEventListener("appinstalled", () => {
+      btnTop.classList.remove("show");
+      btnBig.classList.remove("show");
+      statusEl.textContent = "✅ VITAQU terinstall! Cek layar utama HP mu.";
+    });
+
+    // ═══ SERVICE WORKER ══════════════════════════════════════════
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+    }
   </script>
 </body>
 </html>
