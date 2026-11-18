@@ -15,7 +15,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --gold: #F5C542;
@@ -30,7 +30,6 @@
       --gold-stroke: rgba(245, 197, 66, 0.45);
       --text: #F7F3E8;
       --muted: #B3AE9F;
-      --radius: 26px;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --wa: #25D366;
@@ -64,13 +63,12 @@
       transition: opacity 1.4s ease;
     }
     .bg-video video.ready { opacity: 1; }
-    /* Overlay lebih tipis & transparan — video terlihat jelas */
     .bg-video::before {
       content: "";
       position: absolute; inset: 0; z-index: 1;
       background:
-        radial-gradient(125% 95% at 50% 118%, rgba(5,5,5,.90) 0%, rgba(5,5,5,.22) 52%, transparent 100%),
-        linear-gradient(180deg, rgba(5,5,5,.55) 0%, rgba(5,5,5,.18) 42%, rgba(5,5,5,.68) 100%);
+        radial-gradient(125% 95% at 50% 118%, rgba(5,5,5,.88) 0%, rgba(5,5,5,.20) 52%, transparent 100%),
+        linear-gradient(180deg, rgba(5,5,5,.52) 0%, rgba(5,5,5,.14) 42%, rgba(5,5,5,.62) 100%);
     }
     .bg-video::after {
       content: "";
@@ -93,12 +91,13 @@
       padding-bottom: var(--safe-bottom);
     }
 
+    /* ── TOPBAR ── */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: clamp(10px, 1.6vh, 16px) clamp(16px, 4vw, 40px) 8px;
+      padding: clamp(10px, 1.6vh, 16px) clamp(16px, 4vw, 44px) 6px;
       flex-shrink: 0;
     }
     .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -141,19 +140,75 @@
       box-shadow: 0 10px 30px rgba(245, 197, 66, .35), inset 0 1px 0 rgba(255,255,255,.45);
       transition: transform .2s;
       white-space: nowrap;
+      flex-shrink: 0;
     }
     .btn-install.show { display: inline-flex; }
     .btn-install:active { transform: scale(.97); }
 
-    /* ═══ HERO ═════════════════════════════════════════════════ */
+    /* ── MENU DOCK (DERET RAPI DI ATAS) ── */
+    .menu-row {
+      display: flex;
+      gap: clamp(8px, 1.2vw, 14px);
+      justify-content: safe center;
+      align-items: center;
+      padding: 6px clamp(16px, 4vw, 44px) 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      flex-shrink: 0;
+    }
+    .menu-row::-webkit-scrollbar { display: none; }
+    .menu-pill {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px 20px;
+      border-radius: 99px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .2px;
+      color: var(--text);
+      text-decoration: none;
+      white-space: nowrap;
+      background:
+        linear-gradient(165deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.04) 100%) padding-box,
+        linear-gradient(160deg, rgba(245,197,66,.5) 0%, rgba(255,255,255,.16) 45%, rgba(46,134,222,.4) 100%) border-box;
+      backdrop-filter: blur(16px) saturate(1.25);
+      -webkit-backdrop-filter: blur(16px) saturate(1.25);
+      box-shadow: 0 10px 28px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.13);
+      transition: transform .22s cubic-bezier(.2,.8,.3,1.2), box-shadow .22s ease;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .menu-pill::after {
+      content: "";
+      position: absolute;
+      top: -60%; left: -80%;
+      width: 50%; height: 220%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,.18), transparent);
+      transform: rotate(18deg);
+      transition: left .7s ease;
+      pointer-events: none;
+    }
+    .menu-pill:hover, .menu-pill:active { transform: translateY(-3px); box-shadow: 0 16px 38px rgba(0,0,0,.5), 0 0 0 1px rgba(245,197,66,.3), inset 0 1px 0 rgba(255,255,255,.18); }
+    .menu-pill:hover::after, .menu-pill:active::after { left: 130%; }
+    .menu-pill .m-ico { font-size: 17px; line-height: 1; }
+    .menu-pill.wa { color: #CFF6DF; }
+    .menu-pill.wa .m-ico { color: var(--wa); }
+
+    /* ── HERO — PANGGUNG PENUH, BERSIH ── */
     .hero {
-      flex-shrink: 1;
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       text-align: center;
-      padding: clamp(4px, 1.6vh, 22px) 20px 0;
+      padding: 8px clamp(20px, 5vw, 60px) 4px;
       min-height: 0;
     }
     .hero-badge {
@@ -163,13 +218,13 @@
       background: rgba(245, 197, 66, 0.10);
       border: 1px solid var(--gold-stroke);
       color: var(--gold-bright);
-      font-size: 10px;
+      font-size: clamp(9.5px, 1.1vw, 11px);
       font-weight: 700;
-      letter-spacing: 2.4px;
+      letter-spacing: 2.6px;
       text-transform: uppercase;
-      padding: 7px 17px;
+      padding: 8px 19px;
       border-radius: 99px;
-      margin-bottom: clamp(8px, 1.8vh, 18px);
+      margin-bottom: clamp(12px, 2.4vh, 26px);
       backdrop-filter: blur(8px);
     }
     .hero-badge .dot {
@@ -183,12 +238,12 @@
       100% { box-shadow: 0 0 0 0 rgba(255,216,107,0); }
     }
     .hero h1 {
-      font-size: clamp(24px, 5vw, 54px);
+      font-size: clamp(27px, 5.8vw, 68px);
       font-weight: 900;
-      line-height: 1.08;
-      letter-spacing: -0.8px;
-      margin-bottom: clamp(6px, 1.3vh, 14px);
-      text-shadow: 0 8px 40px rgba(0,0,0,.65);
+      line-height: 1.07;
+      letter-spacing: -1px;
+      margin-bottom: clamp(10px, 2vh, 20px);
+      text-shadow: 0 10px 46px rgba(0,0,0,.7);
       animation: fadeUp .8s ease both;
     }
     .hero h1 .grad {
@@ -199,100 +254,46 @@
       filter: drop-shadow(0 4px 18px rgba(245,197,66,.28));
     }
     .hero p.lead {
-      color: #D6D2C4;
-      font-size: clamp(12px, 1.6vw, 15px);
+      color: #D8D4C6;
+      font-size: clamp(12.5px, 1.7vw, 16.5px);
       font-weight: 300;
-      max-width: 600px;
-      margin: 0 auto;
+      max-width: 640px;
+      margin: 0 auto clamp(18px, 3.4vh, 34px);
       text-shadow: 0 4px 20px rgba(0,0,0,.7);
       animation: fadeUp .8s .12s ease both;
     }
-
-    /* ═══ FOLDER GRID — KACA TRANSPARAN PREMIUM ════════════════ */
-    .folders {
-      width: min(100%, 900px);
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: clamp(10px, 1.5vw, 16px);
-      padding: clamp(12px, 2.4vh, 24px) clamp(16px, 4vw, 40px) clamp(10px, 2vh, 18px);
-      animation: fadeUp .8s .22s ease both;
-    }
-    .folder {
-      position: relative;
-      display: flex;
-      flex-direction: column;
+    .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; animation: fadeUp .8s .22s ease both; }
+    .btn-hero {
+      display: inline-flex;
       align-items: center;
-      justify-content: flex-start;
-      gap: 6px;
-      /* Kaca sangat transparan + border gradient emas */
-      border: 1px solid transparent;
-      border-radius: 24px;
-      background:
-        linear-gradient(165deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.045) 45%, rgba(255,255,255,.02) 100%) padding-box,
-        linear-gradient(160deg, rgba(245,197,66,.55) 0%, rgba(255,255,255,.18) 40%, rgba(46,134,222,.35) 100%) border-box;
-      padding: clamp(13px, 2.3vh, 24px) 10px clamp(11px, 1.8vh, 17px);
-      cursor: pointer;
+      gap: 10px;
+      padding: 15px 30px;
+      border-radius: 99px;
       font-family: inherit;
-      color: var(--text);
-      text-decoration: none;
-      backdrop-filter: blur(18px) saturate(1.25);
-      -webkit-backdrop-filter: blur(18px) saturate(1.25);
-      box-shadow: 0 18px 46px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.14);
-      transition: transform .25s cubic-bezier(.2,.8,.3,1.2), box-shadow .25s ease, background .25s ease;
-      min-height: clamp(108px, 15.5vh, 150px);
-      overflow: hidden;
-    }
-    .folder::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(320px 150px at 50% -25%, rgba(245,197,66,.20), transparent 72%);
-      opacity: 0;
-      transition: opacity .3s;
-    }
-    /* Kilau sweep premium */
-    .folder::after {
-      content: "";
-      position: absolute;
-      top: -60%;
-      left: -80%;
-      width: 55%;
-      height: 220%;
-      background: linear-gradient(100deg, transparent, rgba(255,255,255,.16), transparent);
-      transform: rotate(18deg);
-      transition: left .7s ease;
-      pointer-events: none;
-    }
-    .folder:hover, .folder:active { transform: translateY(-5px); box-shadow: 0 26px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(245,197,66,.25), inset 0 1px 0 rgba(255,255,255,.18); }
-    .folder:hover::before, .folder:active::before { opacity: 1; }
-    .folder:hover::after, .folder:active::after { left: 130%; }
-    .folder .f-ico {
-      font-size: clamp(30px, 5.6vh, 46px);
-      line-height: 1;
-      filter: drop-shadow(0 8px 20px rgba(0,0,0,.55));
-    }
-    .folder .f-name {
-      font-size: clamp(12.5px, 1.5vw, 15px);
+      font-size: 14.5px;
       font-weight: 800;
       letter-spacing: .3px;
-      text-shadow: 0 3px 14px rgba(0,0,0,.6);
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s cubic-bezier(.2,.8,.3,1.2), box-shadow .2s ease;
     }
-    .folder .f-sub { font-size: 10px; color: var(--muted); font-weight: 400; line-height: 1.35; text-align: center; }
-    .folder.cta {
-      background:
-        linear-gradient(165deg, rgba(245,197,66,.26) 0%, rgba(245,197,66,.10) 50%, rgba(46,134,222,.14) 100%) padding-box,
-        linear-gradient(160deg, var(--gold-bright) 0%, rgba(255,255,255,.35) 45%, var(--blue-bright) 100%) border-box;
-      box-shadow: 0 18px 50px rgba(245, 197, 66, .25), inset 0 1px 0 rgba(255,255,255,.3);
+    .btn-hero.primary {
+      background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+      color: #141005;
+      border: none;
+      box-shadow: 0 14px 40px rgba(245,197,66,.4), inset 0 1px 0 rgba(255,255,255,.5);
     }
-    .folder.cta .f-name {
-      background: linear-gradient(100deg, var(--gold-bright), var(--gold));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    .btn-hero.primary:hover { transform: translateY(-3px); box-shadow: 0 20px 52px rgba(245,197,66,.55), inset 0 1px 0 rgba(255,255,255,.5); }
+    .btn-hero.wa {
+      color: #E9FFF2;
+      border: 1px solid rgba(37,211,102,.55);
+      background: rgba(37,211,102,.12);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-    .folder.wa .f-name { color: var(--wa); }
+    .btn-hero.wa:hover { transform: translateY(-3px); background: rgba(37,211,102,.2); box-shadow: 0 16px 42px rgba(37,211,102,.28); }
+    .btn-hero:active { transform: scale(.97); }
 
-    /* ═══ FOOT STRIP ═══════════════════════════════════════════ */
     .foot-strip {
       flex-shrink: 0;
       text-align: center;
@@ -321,7 +322,7 @@
       display: grid;
       place-items: center;
       box-shadow: 0 10px 30px rgba(0,0,0,.5);
-      transition: transform .2s, border-color .2s;
+      transition: transform .2s;
     }
     .sound-fab:active { transform: scale(.92); }
     .sound-fab .ico { pointer-events: none; }
@@ -489,7 +490,6 @@
     .step-item div b { display: block; font-size: 13.5px; margin-bottom: 3px; }
     .step-item div span { font-size: 12.5px; color: var(--muted); font-weight: 300; line-height: 1.6; }
 
-    /* WA card premium */
     .wa-card {
       display: flex;
       align-items: center;
@@ -569,31 +569,20 @@
       margin-top: 10px;
     }
 
-    /* ═══ RESPONSIF — PAS DI LAYAR PONSEL ══════════════════════ */
+    /* ═══ RESPONSIF ════════════════════════════════════════════ */
     @media (max-width: 640px) {
-      .folders { grid-template-columns: repeat(2, 1fr); }
-      /* CTA full-width di baris pertama, tile kontak penutup full-width */
-      .folder.cta { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; gap: 14px; text-align: left; padding: 16px 20px; min-height: 0; }
-      .folder.cta .f-ico { font-size: 34px; }
-      .folder.cta .f-sub { text-align: left; }
-      .folder.wa { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; gap: 14px; text-align: left; padding: 14px 20px; min-height: 0; }
-      .folder.wa .f-ico { font-size: 30px; }
-      .folder.wa .f-sub { text-align: left; }
-      .folder { min-height: clamp(96px, 13.5vh, 130px); }
+      .menu-pill { padding: 9px 15px; font-size: 12px; }
+      .menu-pill .m-ico { font-size: 15px; }
+      .hero h1 { font-size: clamp(24px, 7vw, 40px); }
       .hero p.lead { display: none; }
-      .hero-badge { letter-spacing: 1.6px; font-size: 9px; }
+      .btn-hero { padding: 13px 24px; font-size: 13.5px; }
+      .brand small { letter-spacing: 1.8px; }
     }
-    @media (max-width: 400px) {
-      .folders { gap: 9px; }
-      .folder .f-sub { font-size: 9px; }
-    }
-    @media (max-height: 700px) {
+    @media (max-height: 640px) {
       .hero p.lead { display: none; }
-      .hero-badge { margin-bottom: 6px; }
-      .folders { padding-top: 10px; }
-      .folder { min-height: clamp(88px, 12.5vh, 120px); }
+      .hero-badge { margin-bottom: 8px; }
     }
-    @media (max-height: 580px) {
+    @media (max-height: 540px) {
       .hero-badge { display: none; }
       .brand small { display: none; }
     }
@@ -615,6 +604,7 @@
   <!-- APP SHELL — TANPA SCROLL -->
   <div class="shell">
 
+    <!-- TOPBAR -->
     <div class="topbar">
       <div class="brand">
         <img src="logo.png" alt="VITAQU" />
@@ -628,53 +618,24 @@
       </div>
     </div>
 
+    <!-- MENU DOCK — DERET RAPI DI ATAS, TIDAK MENUTUPI LANDING -->
+    <nav class="menu-row" id="menuRow">
+      <button class="menu-pill" onclick="openFolder('tentang')"><span class="m-ico">📖</span> Tentang Program</button>
+      <button class="menu-pill" onclick="openFolder('fitur')"><span class="m-ico">⚡</span> Fitur Unggulan</button>
+      <button class="menu-pill" onclick="openFolder('cara')"><span class="m-ico">🛠️</span> Cara Kerja</button>
+      <button class="menu-pill" onclick="openFolder('install')"><span class="m-ico">📲</span> Instalasi App</button>
+      <button class="menu-pill wa" onclick="openFolder('kontak')"><span class="m-ico">💬</span> Kontak Admin</button>
+    </nav>
+
+    <!-- HERO BERSIH — VIDEO + HEADLINE TANPA HALANGAN -->
     <div class="hero">
       <div class="hero-badge"><span class="dot"></span> Program Resmi • SMP Negeri 1 Banyubiru</div>
-      <h1>Ubah Kebiasaan, Jadi <span class="grad">Versi Terbaik</span> Diri Mu</h1>
-      <p class="lead">30 hari, 9 kebiasaan sehat, 1 aplikasi mewah. Pilih folder untuk menjelajah — masuk sebagai member untuk mulai.</p>
-    </div>
-
-    <!-- SISTEM FOLDER -->
-    <div class="folders">
-      <a class="folder cta" href="login.html">
-        <span class="f-ico">🚀</span>
-        <span>
-          <span class="f-name" style="display:block;">Masuk Member</span>
-          <span class="f-sub" style="display:block;">Login &amp; isi checklist hari ini</span>
-        </span>
-      </a>
-
-      <button class="folder" onclick="openFolder('tentang')">
-        <span class="f-ico">📖</span>
-        <span class="f-name">Tentang Program</span>
-        <span class="f-sub">Apa itu VITAQU SehatTrack</span>
-      </button>
-
-      <button class="folder" onclick="openFolder('fitur')">
-        <span class="f-ico">⚡</span>
-        <span class="f-name">Fitur Unggulan</span>
-        <span class="f-sub">6 fitur utama member</span>
-      </button>
-
-      <button class="folder" onclick="openFolder('cara')">
-        <span class="f-ico">🛠️</span>
-        <span class="f-name">Cara Kerja</span>
-        <span class="f-sub">3 langkah setiap hari</span>
-      </button>
-
-      <button class="folder" onclick="openFolder('install')">
-        <span class="f-ico">📲</span>
-        <span class="f-name">Instalasi App</span>
-        <span class="f-sub">Android &amp; iOS, 1 klik</span>
-      </button>
-
-      <a class="folder wa" href="https://wa.me/6285973791620?text=Halo%20Admin%20VITAQU%20%F0%9F%91%8B%2C%20saya%20ingin%20bertanya%20tentang%20Program%2030%20Hari%20Hidup%20Sehat%20SMPN%201%20Banyubiru." target="_blank" rel="noopener">
-        <span class="f-ico">💬</span>
-        <span>
-          <span class="f-name" style="display:block;">Kontak Admin</span>
-          <span class="f-sub" style="display:block;">WhatsApp langsung • fast respon</span>
-        </span>
-      </a>
+      <h1>Ubah Kebiasaan,<br />Jadi <span class="grad">Versi Terbaik</span> Diri Mu</h1>
+      <p class="lead">30 hari, 9 kebiasaan sehat, 1 aplikasi mewah. Masuk sebagai member untuk mulai checklist hari ini — atau jelajahi lewat menu di atas.</p>
+      <div class="hero-cta">
+        <a class="btn-hero primary" href="login.html">🚀 Masuk Member</a>
+        <a class="btn-hero wa" href="https://wa.me/6285973791620?text=Halo%20Admin%20VITAQU%20%F0%9F%91%8B%2C%20saya%20ingin%20bertanya%20tentang%20Program%2030%20Hari%20Hidup%20Sehat%20SMPN%201%20Banyubiru." target="_blank" rel="noopener">💬 WhatsApp Admin</a>
+      </div>
     </div>
 
     <div class="foot-strip">
@@ -838,13 +799,10 @@
 
     vid.addEventListener("canplay", () => vid.classList.add("ready"));
 
-    // Anti-berhenti: paksa loop di level JS
     vid.addEventListener("ended", () => { try { vid.currentTime = 0; vid.play().catch(() => {}); } catch (e) {} });
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && vid.paused && !userMuted) { vid.play().catch(() => {}); }
-      else if (!document.hidden && vid.paused) { vid.play().catch(() => {}); }
+      if (!document.hidden && vid.paused) { vid.play().catch(() => {}); }
     });
-    // Kalau macet (stall), tarik lagi
     vid.addEventListener("stalled", () => { setTimeout(() => { if (vid.paused) vid.play().catch(() => {}); }, 400); });
 
     function updateSoundUI() {
@@ -867,14 +825,12 @@
       updateSoundUI();
     }
 
-    // Autoplay bersuara dicoba langsung; kalau diblok → mute autoplay + prompt
     (function tryAutoplaySound() {
       vid.muted = false;
       const p = vid.play();
       if (p) p.catch(() => { vid.muted = true; vid.play().catch(() => {}); updateSoundUI(); });
     })();
 
-    // Interaksi pertama di mana pun = suara nyala
     const firstTouch = (e) => {
       if (!e.target.closest(".sound-fab") && !userMuted) enableSound();
       document.removeEventListener("pointerdown", firstTouch);
