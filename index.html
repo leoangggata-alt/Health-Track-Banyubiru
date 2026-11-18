@@ -162,13 +162,13 @@
       position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 9px;
-      padding: 11px 20px;
+      gap: 7px;
+      padding: 8px 15px;
       border-radius: 99px;
       border: 1px solid transparent;
       cursor: pointer;
       font-family: inherit;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
       letter-spacing: .2px;
       color: var(--text);
@@ -196,7 +196,7 @@
     }
     .menu-pill:hover, .menu-pill:active { transform: translateY(-3px); box-shadow: 0 16px 38px rgba(0,0,0,.5), 0 0 0 1px rgba(245,197,66,.3), inset 0 1px 0 rgba(255,255,255,.18); }
     .menu-pill:hover::after, .menu-pill:active::after { left: 130%; }
-    .menu-pill .m-ico { font-size: 17px; line-height: 1; }
+    .menu-pill .m-ico { font-size: 15px; line-height: 1; }
     .menu-pill.wa { color: #CFF6DF; }
     .menu-pill.wa .m-ico { color: var(--wa); }
 
@@ -571,8 +571,10 @@
 
     /* ═══ RESPONSIF ════════════════════════════════════════════ */
     @media (max-width: 640px) {
-      .menu-pill { padding: 9px 15px; font-size: 12px; }
-      .menu-pill .m-ico { font-size: 15px; }
+      /* Icon-only di ponsel: muat tanpa scroll */
+      .menu-lbl { display: none; }
+      .menu-pill { padding: 9px 12px; }
+      .menu-pill .m-ico { font-size: 16px; }
       .hero h1 { font-size: clamp(24px, 7vw, 40px); }
       .hero p.lead { display: none; }
       .btn-hero { padding: 13px 24px; font-size: 13.5px; }
@@ -616,13 +618,13 @@
       </div>
     </div>
 
-    <!-- MENU DOCK — DERET RAPI DI ATAS, TIDAK MENUTUPI LANDING -->
+    <!-- MENU DOCK — KECIL, RAPI, TANPA SCROLL -->
     <nav class="menu-row" id="menuRow">
-      <button class="menu-pill" onclick="openFolder('tentang')"><span class="m-ico">📖</span> Tentang Program</button>
-      <button class="menu-pill" onclick="openFolder('fitur')"><span class="m-ico">⚡</span> Fitur Unggulan</button>
-      <button class="menu-pill" onclick="openFolder('cara')"><span class="m-ico">🛠️</span> Cara Kerja</button>
-      <button class="menu-pill" onclick="openFolder('install')"><span class="m-ico">📲</span> Instalasi App</button>
-      <button class="menu-pill wa" onclick="openFolder('kontak')"><span class="m-ico">💬</span> Kontak Admin</button>
+      <button class="menu-pill" onclick="openFolder('tentang')"><span class="m-ico">📖</span><span class="m-lbl">Tentang</span></button>
+      <button class="menu-pill" onclick="openFolder('fitur')"><span class="m-ico">⚡</span><span class="m-lbl">Fitur</span></button>
+      <button class="menu-pill" onclick="openFolder('cara')"><span class="m-ico">🛠️</span><span class="m-lbl">Cara Kerja</span></button>
+      <button class="menu-pill" onclick="openFolder('install')"><span class="m-ico">📲</span><span class="m-lbl">Instalasi</span></button>
+      <button class="menu-pill wa" onclick="openFolder('kontak')"><span class="m-ico">💬</span><span class="m-lbl">Kontak</span></button>
     </nav>
 
     <!-- HERO BERSIH — VIDEO + HEADLINE TANPA HALANGAN -->
@@ -732,8 +734,7 @@
       </div>
       <div class="win-body">
         <div class="install-zone">
-          <p style="color:#CBC7B9; font-size:14px;">Pasang <strong style="color:var(--gold-bright)">VITAQU</strong> di layar utama HP — tanpa Play Store / App Store, langsung dari browser.</p>
-          <button class="big-btn" id="installBtnBig" onclick="installApp()">📲 Install Sekarang (1 Klik)</button>
+          <p style="color:#CBC7B9; font-size:14px;">Pasang <strong style="color:var(--gold-bright)">VITAQU</strong> di layar utama HP — tanpa Play Store / App Store, langsung dari browser.<br /><strong style="color:var(--gold-bright)">Ketuk tombol "📲 Install App" di pojok kanan atas</strong> 🔝</p>
           <span class="badge-note" id="installStatus">Mendeteksi perangkat…</span>
         </div>
 
@@ -875,7 +876,6 @@
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 
     const btnTop = document.getElementById("installBtnTop");
-    const btnBig = document.getElementById("installBtnBig");
     const statusEl = document.getElementById("installStatus");
     const iosSteps = document.getElementById("iosSteps");
 
@@ -883,8 +883,7 @@
       e.preventDefault();
       deferredPrompt = e;
       btnTop.classList.add("show");
-      btnBig.classList.add("show");
-      statusEl.textContent = "Perangkat siap install — ketuk tombol di atas 👆";
+      statusEl.textContent = "Perangkat siap install — ketuk tombol 📲 di pojok kanan atas 🔝";
     });
 
     async function installApp() {
@@ -894,7 +893,6 @@
         if (outcome === "accepted") {
           statusEl.textContent = "✅ VITAQU terinstall! Cek layar utama HP mu.";
           btnTop.classList.remove("show");
-          btnBig.classList.remove("show");
         }
         deferredPrompt = null;
       } else if (isIOS && !isStandalone) {
@@ -916,7 +914,6 @@
 
     window.addEventListener("appinstalled", () => {
       btnTop.classList.remove("show");
-      btnBig.classList.remove("show");
       statusEl.textContent = "✅ VITAQU terinstall! Cek layar utama HP mu.";
     });
 
