@@ -2,11 +2,11 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Masuk Member — VITAQU SehatTrack Banyubiru</title>
   <link rel="icon" href="favicon.png" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <meta name="theme-color" content="#04120B" />
+  <meta name="theme-color" content="#050505" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="manifest.json" />
@@ -21,17 +21,22 @@
   <meta name="twitter:image" content="https://health-track-banyubiru.pages.dev/og-banner.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --emerald: #2ECC71;
-      --emerald-bright: #4EF08F;
-      --bg-0: #04120B;
-      --bg-1: #071C11;
-      --glass: rgba(255, 255, 255, 0.06);
-      --stroke: rgba(255, 255, 255, 0.13);
-      --text: #EAF6EE;
-      --muted: #9DB8A7;
+      --gold: #F5C542;
+      --gold-bright: #FFD86B;
+      --gold-deep: #C99B1F;
+      --blue: #2E86DE;
+      --blue-bright: #5DABF7;
+      --wa: #25D366;
+      --bg: #050505;
+      --glass: rgba(255, 255, 255, 0.055);
+      --glass-strong: rgba(255, 255, 255, 0.10);
+      --stroke: rgba(255, 255, 255, 0.14);
+      --gold-stroke: rgba(245, 197, 66, 0.45);
+      --text: #F7F3E8;
+      --muted: #A8A396;
       --radius: 26px;
     }
 
@@ -39,7 +44,7 @@
 
     body {
       font-family: "Poppins", sans-serif;
-      background: var(--bg-0);
+      background: var(--bg);
       color: var(--text);
       min-height: 100svh;
       display: flex;
@@ -51,17 +56,17 @@
       position: relative;
     }
 
-    /* Animated background blobs */
+    /* Animated background blobs — emas & biru VITAQU */
     .blob {
       position: fixed;
       border-radius: 50%;
       filter: blur(90px);
-      opacity: .5;
+      opacity: .45;
       z-index: 0;
       animation: drift 16s ease-in-out infinite alternate;
     }
-    .blob-1 { width: 460px; height: 460px; background: rgba(46,204,113,.34); top: -120px; left: -120px; }
-    .blob-2 { width: 380px; height: 380px; background: rgba(52,152,219,.22); bottom: -100px; right: -80px; animation-delay: -8s; }
+    .blob-1 { width: 460px; height: 460px; background: rgba(245,197,66,.30); top: -120px; left: -120px; }
+    .blob-2 { width: 380px; height: 380px; background: rgba(46,134,222,.24); bottom: -100px; right: -80px; animation-delay: -8s; }
     .blob-3 { width: 300px; height: 300px; background: rgba(245,197,66,.12); bottom: 20%; left: 12%; animation-delay: -4s; }
     @keyframes drift {
       from { transform: translate(0, 0) scale(1); }
@@ -81,8 +86,17 @@
       display: flex; align-items: center; gap: 12px;
       text-decoration: none; color: var(--text);
     }
-    .top-nav img { width: 42px; height: 42px; border-radius: 13px; object-fit: cover; background: rgba(255,255,255,.92); padding: 3px; }
-    .top-nav .brand b { font-size: 15px; font-weight: 800; display: block; line-height: 1.2; }
+    .top-nav img {
+      width: 42px; height: 42px; border-radius: 13px; object-fit: cover;
+      background: #000; padding: 0;
+      border: 1px solid rgba(245,197,66,.5);
+      box-shadow: 0 6px 20px rgba(245,197,66,.22);
+    }
+    .top-nav .brand b {
+      font-size: 15px; font-weight: 800; display: block; line-height: 1.2; letter-spacing: 1.2px;
+      background: linear-gradient(100deg, var(--gold-bright), var(--gold));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
     .top-nav .brand small { color: var(--muted); font-size: 10px; letter-spacing: 2.4px; text-transform: uppercase; }
     .top-nav .back {
       color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500;
@@ -90,20 +104,22 @@
       padding: 10px 18px; border-radius: 99px;
       transition: background .2s, color .2s;
     }
-    .top-nav .back:hover { background: rgba(255,255,255,.12); color: var(--text); }
+    .top-nav .back:hover { background: var(--glass-strong); color: var(--gold-bright); }
 
     .card {
       position: relative;
       z-index: 1;
       width: 100%;
       max-width: 460px;
-      background: var(--glass);
-      border: 1px solid var(--stroke);
+      background:
+        linear-gradient(165deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.035) 100%) padding-box,
+        linear-gradient(160deg, rgba(245,197,66,.55) 0%, rgba(255,255,255,.18) 48%, rgba(46,134,222,.42) 100%) border-box;
+      border: 1px solid transparent;
       border-radius: var(--radius);
       padding: 44px 38px;
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      box-shadow: 0 40px 90px rgba(0,0,0,.55);
+      backdrop-filter: blur(22px) saturate(1.2);
+      -webkit-backdrop-filter: blur(22px) saturate(1.2);
+      box-shadow: 0 40px 90px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.13);
       animation: rise .7s ease both;
     }
     @keyframes rise {
@@ -118,14 +134,18 @@
       display: grid;
       place-items: center;
       font-size: 30px;
-      background: linear-gradient(135deg, rgba(46,204,113,.25), rgba(46,204,113,.07));
-      border: 1px solid rgba(46,204,113,.4);
-      box-shadow: 0 14px 34px rgba(46,204,113,.22);
+      background: linear-gradient(135deg, rgba(245,197,66,.25), rgba(46,134,222,.12));
+      border: 1px solid rgba(245,197,66,.45);
+      box-shadow: 0 14px 34px rgba(245,197,66,.22);
     }
-    h1 { text-align: center; font-size: 25px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 8px; }
+    h1 {
+      text-align: center; font-size: 25px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 8px;
+      background: linear-gradient(100deg, var(--gold-bright), var(--gold));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
     .subtitle { text-align: center; color: var(--muted); font-size: 13px; font-weight: 300; margin-bottom: 32px; }
 
-    label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
+    label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--gold-bright); margin: 18px 0 8px; }
     input, select {
       width: 100%;
       padding: 14px 18px;
@@ -139,26 +159,26 @@
       transition: border-color .2s, box-shadow .2s, background .2s;
       appearance: none;
     }
-    select option { background: #0B2E1C; color: var(--text); }
+    select option { background: #16140F; color: var(--text); }
     input:focus, select:focus {
-      border-color: var(--emerald);
-      box-shadow: 0 0 0 4px rgba(46,204,113,.15);
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(245,197,66,.15);
       background: rgba(255,255,255,.08);
     }
-    input::placeholder { color: #5F7A69; }
+    input::placeholder { color: #6E6A5E; }
 
     .notice {
       margin-top: 20px;
-      background: rgba(46,204,113,.07);
-      border: 1px solid rgba(46,204,113,.22);
+      background: rgba(245,197,66,.07);
+      border: 1px solid var(--gold-stroke);
       border-radius: 15px;
       padding: 14px 16px;
       font-size: 12px;
-      color: #B9D8C4;
+      color: var(--gold-bright);
       line-height: 1.7;
       font-weight: 300;
     }
-    .notice strong { color: var(--emerald-bright); font-weight: 600; }
+    .notice strong { color: var(--text); font-weight: 600; }
 
     .check-row {
       display: flex;
@@ -167,22 +187,18 @@
       margin-top: 16px;
       cursor: pointer;
       font-size: 13px;
-      color: #C4DCCB;
+      color: var(--muted);
       font-weight: 300;
       line-height: 1.5;
     }
     .check-row input[type="checkbox"] {
-      /* FIX: global input rule memakai appearance:none — checkbox harus
-         kembali ke tampilan native agar centang terlihat jelas */
       appearance: auto;
       -webkit-appearance: checkbox;
       width: 19px; height: 19px;
-      padding: 0;
-      background: #fff;
-      border: none;
+      padding: 0; background: #fff; border: none;
       flex-shrink: 0;
       margin-top: 2px;
-      accent-color: var(--emerald);
+      accent-color: var(--gold);
       cursor: pointer;
     }
 
@@ -192,17 +208,17 @@
       padding: 16px;
       border: none;
       border-radius: 99px;
-      background: linear-gradient(135deg, #2ECC71, #17A44C);
-      color: #04120B;
+      background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+      color: #141005;
       font-family: inherit;
       font-size: 15px;
       font-weight: 800;
       letter-spacing: .3px;
       cursor: pointer;
-      box-shadow: 0 14px 38px rgba(46,204,113,.35), inset 0 1px 0 rgba(255,255,255,.4);
+      box-shadow: 0 14px 38px rgba(245,197,66,.35), inset 0 1px 0 rgba(255,255,255,.45);
       transition: transform .2s, box-shadow .2s, opacity .2s;
     }
-    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 20px 48px rgba(46,204,113,.5), inset 0 1px 0 rgba(255,255,255,.4); }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 20px 48px rgba(245,197,66,.5), inset 0 1px 0 rgba(255,255,255,.45); }
     .btn-login:active { transform: translateY(0); }
     .btn-login:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
@@ -215,7 +231,7 @@
       animation: shake .35s ease;
     }
     .msg-box.error { background: rgba(231,76,60,.12); border: 1px solid rgba(231,76,60,.4); color: #FFB0A8; }
-    .msg-box.success { background: rgba(46,204,113,.1); border: 1px solid rgba(46,204,113,.4); color: var(--emerald-bright); }
+    .msg-box.success { background: rgba(46,204,113,.10); border: 1px solid rgba(46,204,113,.4); color: #7DF0A8; }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-5px); }
@@ -237,24 +253,24 @@
       border-top: 1px solid var(--stroke);
       text-align: center;
       font-size: 11px;
-      color: #6E8A78;
+      color: #6E6A5E;
       line-height: 1.9;
     }
-    .foot-note a { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--stroke); }
-    .foot-note a:hover { color: var(--emerald-bright); }
+    .foot-note a { color: var(--gold-bright); text-decoration: none; border-bottom: 1px dotted var(--gold-stroke); }
+    .foot-note a:hover { color: var(--gold); }
 
     /* Loader saat redirect */
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(4,18,11,.85);
+      background: rgba(5,5,5,.85);
       backdrop-filter: blur(8px);
       display: none;
       place-items: center;
       z-index: 50;
       flex-direction: column;
       gap: 18px;
-      color: var(--emerald-bright);
+      color: var(--gold-bright);
       font-weight: 600;
       letter-spacing: 1px;
     }
@@ -262,8 +278,8 @@
     .spinner {
       width: 46px; height: 46px;
       border-radius: 50%;
-      border: 4px solid rgba(46,204,113,.2);
-      border-top-color: var(--emerald-bright);
+      border: 4px solid rgba(245,197,66,.2);
+      border-top-color: var(--gold-bright);
       animation: spin .8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -282,8 +298,8 @@
 
   <div class="top-nav">
     <a class="brand" href="index.html">
-      <img src="logo.png" alt="Logo" />
-      <div><b>SehatTrack</b><small>Banyubiru</small></div>
+      <img src="logo.png" alt="VITAQU" />
+      <div><b>VITAQU</b><small>SehatTrack • Banyubiru</small></div>
     </a>
     <a class="back" href="index.html">← Beranda</a>
   </div>

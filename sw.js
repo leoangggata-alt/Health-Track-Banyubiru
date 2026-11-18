@@ -4,7 +4,7 @@
    - Aset statis (CSS/JS lokal, gambar, font): stale-while-revalidate
    - Video besar: cache-first setelah pertama kali termuat, range request dilewatan langsung
 */
-const VERSION = "vitaqu-v10";
+const VERSION = "vitaqu-v11";
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
