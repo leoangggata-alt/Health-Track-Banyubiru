@@ -594,11 +594,9 @@
 </head>
 <body>
 
-  <!-- VIDEO HERO (VIDEO ASLI + SUARA + LOOP ANTI-STOP) -->
+  <!-- VIDEO HERO: 16:9 di desktop, 9:16 di ponsel (JS memilih otomatis) -->
   <div class="bg-video">
-    <video id="heroVideo" autoplay muted loop playsinline preload="auto" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%23050505'/%3E%3C/svg%3E">
-      <source src="assets/hero.mp4" type="video/mp4" />
-    </video>
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%23050505'/%3E%3C/svg%3E"></video>
   </div>
 
   <!-- APP SHELL — TANPA SCROLL -->
@@ -796,6 +794,23 @@
     const soundIcon = document.getElementById("soundIcon");
     const soundPrompt = document.getElementById("soundPrompt");
     let userMuted = false;
+
+    // Video cerdas: file 9:16 untuk ponsel (portrait), 16:9 untuk desktop — gaya sama
+    const SRC_LANDSCAPE = "assets/hero.mp4";
+    const SRC_PORTRAIT = "assets/hero-portrait.mp4";
+    let currentVideoSrc = "";
+    function pickVideo() {
+      const wantPortrait = window.matchMedia("(orientation: portrait)").matches;
+      const target = wantPortrait ? SRC_PORTRAIT : SRC_LANDSCAPE;
+      if (target === currentVideoSrc) return;
+      currentVideoSrc = target;
+      vid.src = target;
+      vid.load();
+      vid.play().catch(() => {});
+    }
+    window.matchMedia("(orientation: portrait)").addEventListener("change", pickVideo);
+    window.addEventListener("orientationchange", pickVideo);
+    pickVideo();
 
     vid.addEventListener("canplay", () => vid.classList.add("ready"));
 

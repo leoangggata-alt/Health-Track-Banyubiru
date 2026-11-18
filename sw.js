@@ -4,7 +4,7 @@
    - Aset statis (CSS/JS lokal, gambar, font): stale-while-revalidate
    - Video besar: cache-first setelah pertama kali termuat, range request dilewatan langsung
 */
-const VERSION = "vitaqu-v5";
+const VERSION = "vitaqu-v6";
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -89,8 +89,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2) Video hero: cache-first (di-cache penuh setelah fetch pertama)
-  if (!isExternal && url.pathname.endsWith("hero.mp4")) {
+  // 2) Video hero (landscape + portrait): cache-first (di-cache penuh setelah fetch pertama)
+  if (!isExternal && /hero(-portrait)?\.mp4$/.test(url.pathname)) {
     event.respondWith(
       caches.open(RUNTIME_CACHE).then(async (cache) => {
         const hit = await cache.match(url.href);
