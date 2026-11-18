@@ -13,6 +13,20 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="VITAQU" />
   <link rel="manifest" href="manifest.json" />
+  <!-- Open Graph: banner 16:9 untuk share WA / Telegram -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="VITAQU — SehatTrack Banyubiru" />
+  <meta property="og:title" content="VITAQU — Program 30 Hari Hidup Sehat SMPN 1 Banyubiru" />
+  <meta property="og:description" content="Checklist kebiasaan harian, skor otomatis, streak, dan grafik perkembangan. Masuk sebagai member dan mulai hari ke-1 mu — bisa di-install sebagai aplikasi." />
+  <meta property="og:image" content="https://health-track-banyubiru.pages.dev/og-banner.png" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:url" content="https://health-track-banyubiru.pages.dev/" />
+  <meta property="og:locale" content="id_ID" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="VITAQU — Program 30 Hari Hidup Sehat" />
+  <meta name="twitter:description" content="30 hari, 9 kebiasaan sehat, 1 aplikasi. Masuk member sekarang." />
+  <meta name="twitter:image" content="https://health-track-banyubiru.pages.dev/og-banner.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -305,57 +319,6 @@
     .foot-strip a { color: var(--muted); text-decoration: none; }
     .foot-strip a:hover { color: var(--gold-bright); }
 
-    /* ═══ SOUND CONTROLS ═══════════════════════════════════════ */
-    .sound-fab {
-      position: fixed;
-      right: 14px;
-      bottom: calc(13px + var(--safe-bottom));
-      z-index: 40;
-      width: 50px; height: 50px;
-      border-radius: 50%;
-      border: 1px solid rgba(245,197,66,.5);
-      background: rgba(5,5,5,.6);
-      backdrop-filter: blur(12px);
-      color: var(--gold-bright);
-      font-size: 20px;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,.5);
-      transition: transform .2s;
-    }
-    .sound-fab:active { transform: scale(.92); }
-    .sound-fab .ico { pointer-events: none; }
-
-    .sound-prompt {
-      position: fixed;
-      left: 50%;
-      bottom: calc(18px + var(--safe-bottom));
-      transform: translateX(-50%);
-      z-index: 40;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(5,5,5,.72);
-      border: 1px solid var(--gold-stroke);
-      color: var(--gold-bright);
-      font-family: inherit;
-      font-size: 12.5px;
-      font-weight: 700;
-      padding: 11px 20px;
-      border-radius: 99px;
-      cursor: pointer;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 12px 34px rgba(0,0,0,.5);
-      animation: floatUp 2.4s ease-in-out infinite;
-      white-space: nowrap;
-    }
-    .sound-prompt.hidden { display: none; }
-    @keyframes floatUp {
-      0%, 100% { transform: translate(-50%, 0); }
-      50% { transform: translate(-50%, -7px); }
-    }
-
     /* ═══ FOLDER WINDOW ════════════════════════════════════════ */
     .folder-win {
       position: fixed;
@@ -647,10 +610,6 @@
     </div>
   </div>
 
-  <!-- KONTROL SUARA -->
-  <button class="sound-prompt" id="soundPrompt" onclick="enableSound()">🔊 Ketuk untuk menyalakan suara video</button>
-  <button class="sound-fab" id="soundFab" onclick="toggleSound()" title="Suara"><span class="ico" id="soundIcon">🔇</span></button>
-
   <!-- ═══════════ FOLDER: TENTANG ═══════════ -->
   <div class="folder-win" id="win-tentang">
     <div class="win-card">
@@ -793,12 +752,8 @@
   </div>
 
   <script>
-    // ═══ VIDEO + SUARA + LOOP ANTI-STOP ══════════════════════════
+    // ═══ VIDEO + MUSIK AUTO (TANPA TOMBOL SUARA) ═════════════════
     const vid = document.getElementById("heroVideo");
-    const soundFab = document.getElementById("soundFab");
-    const soundIcon = document.getElementById("soundIcon");
-    const soundPrompt = document.getElementById("soundPrompt");
-    let userMuted = false;
 
     // Video cerdas: file 9:16 untuk ponsel (portrait), 16:9 untuk desktop — gaya sama
     const SRC_LANDSCAPE = "assets/hero.mp4";
@@ -818,47 +773,44 @@
     pickVideo();
 
     vid.addEventListener("canplay", () => vid.classList.add("ready"));
-
     vid.addEventListener("ended", () => { try { vid.currentTime = 0; vid.play().catch(() => {}); } catch (e) {} });
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && vid.paused) { vid.play().catch(() => {}); }
-    });
-    vid.addEventListener("stalled", () => { setTimeout(() => { if (vid.paused) vid.play().catch(() => {}); }, 400); });
+    vid.addEventListener("stalled", () => { setTimeout(() => { if (vid.paused && !document.hidden && !musicStopped) vid.play().catch(() => {}); }, 400); });
 
-    function updateSoundUI() {
-      soundIcon.textContent = vid.muted ? "🔇" : "🔊";
-      soundPrompt.classList.toggle("hidden", !vid.muted);
-    }
-
-    function enableSound() {
-      vid.muted = false;
-      userMuted = false;
-      vid.volume = 1;
-      vid.play().catch(() => {});
-      updateSoundUI();
-    }
-
-    function toggleSound() {
-      userMuted = !vid.muted;
-      vid.muted = !vid.muted;
-      if (!vid.muted) vid.play().catch(() => {});
-      updateSoundUI();
-    }
-
+    // Musik langsung hidup: coba autoplay bersuara sejak detik pertama.
+    // Kalau browser blokir (kebijakan autoplay), ketukan pertama di mana pun
+    // langsung menyalakan suara — tanpa tombol, tanpa prompt.
     (function tryAutoplaySound() {
       vid.muted = false;
       const p = vid.play();
-      if (p) p.catch(() => { vid.muted = true; vid.play().catch(() => {}); updateSoundUI(); });
+      if (p) p.catch(() => { vid.muted = true; vid.play().catch(() => {}); });
     })();
-
-    const firstTouch = (e) => {
-      if (!e.target.closest(".sound-fab") && !userMuted) enableSound();
-      document.removeEventListener("pointerdown", firstTouch);
-      document.removeEventListener("keydown", firstTouch);
+    const unmuteOnTouch = () => {
+      vid.muted = false;
+      vid.volume = 1;
+      vid.play().catch(() => {});
+      document.removeEventListener("pointerdown", unmuteOnTouch);
+      document.removeEventListener("keydown", unmuteOnTouch);
+      document.removeEventListener("touchstart", unmuteOnTouch);
     };
-    document.addEventListener("pointerdown", firstTouch);
-    document.addEventListener("keydown", firstTouch);
-    updateSoundUI();
+    document.addEventListener("pointerdown", unmuteOnTouch);
+    document.addEventListener("keydown", unmuteOnTouch);
+    document.addEventListener("touchstart", unmuteOnTouch);
+
+    // Watchdog anti-berhenti: video/musik harus terus jalan
+    let musicStopped = false;
+    setInterval(() => {
+      if (vid.paused && !document.hidden && !musicStopped) vid.play().catch(() => {});
+    }, 2000);
+
+    // Musik berhenti saat landing disembunyikan (user pindah tab / buka aplikasi)
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { vid.pause(); }
+      else { musicStopped = false; vid.play().catch(() => {}); }
+    });
+    // Sinyal dari login/app: musik dimatikan saat member masuk aplikasi
+    window.addEventListener("storage", e => {
+      if (e.key === "vitaqu_music_stop") { musicStopped = true; vid.pause(); }
+    });
 
     // ═══ SISTEM FOLDER ═══════════════════════════════════════════
     function openFolder(name) {

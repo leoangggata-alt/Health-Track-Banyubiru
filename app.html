@@ -652,6 +652,9 @@ function logout() {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 if (currentUser) showStudentPage();
 
+// Sinyal ke tab landing: member sudah masuk — musik/video landing dimatikan
+try { localStorage.setItem("vitaqu_music_stop", String(Date.now())); } catch (e) {}
+
 // PWA: service worker + safe-area saat mode standalone (Android/iOS)
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
