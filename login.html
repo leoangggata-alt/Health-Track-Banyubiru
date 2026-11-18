@@ -56,21 +56,12 @@
       position: relative;
     }
 
-    /* Animated background blobs — emas & biru VITAQU */
-    .blob {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(90px);
-      opacity: .45;
-      z-index: 0;
-      animation: drift 16s ease-in-out infinite alternate;
-    }
-    .blob-1 { width: 460px; height: 460px; background: rgba(245,197,66,.30); top: -120px; left: -120px; }
-    .blob-2 { width: 380px; height: 380px; background: rgba(46,134,222,.24); bottom: -100px; right: -80px; animation-delay: -8s; }
-    .blob-3 { width: 300px; height: 300px; background: rgba(245,197,66,.12); bottom: 20%; left: 12%; animation-delay: -4s; }
-    @keyframes drift {
-      from { transform: translate(0, 0) scale(1); }
-      to { transform: translate(40px, 30px) scale(1.12); }
+    /* Video landing sebagai latar belakang */
+    .bg-video { position: fixed; inset: 0; z-index: 0; background: #000; }
+    .bg-video video { width: 100%; height: 100%; object-fit: cover; }
+    .bg-shade {
+      position: fixed; inset: 0; z-index: 1;
+      background: linear-gradient(180deg, rgba(5,5,5,.68) 0%, rgba(5,5,5,.52) 45%, rgba(5,5,5,.82) 100%);
     }
 
     .top-nav {
@@ -112,7 +103,7 @@
       width: 100%;
       max-width: 460px;
       background:
-        linear-gradient(165deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.035) 100%) padding-box,
+        linear-gradient(165deg, rgba(22,20,15,.80) 0%, rgba(12,11,9,.74) 100%) padding-box,
         linear-gradient(160deg, rgba(245,197,66,.55) 0%, rgba(255,255,255,.18) 48%, rgba(46,134,222,.42) 100%) border-box;
       border: 1px solid transparent;
       border-radius: var(--radius);
@@ -292,9 +283,9 @@
 </head>
 <body>
 
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
+  <!-- Video landing sebagai latar -->
+  <div class="bg-video"><video id="bgVid" autoplay muted loop playsinline preload="auto"></video></div>
+  <div class="bg-shade"></div>
 
   <div class="top-nav">
     <a class="brand" href="index.html">
@@ -430,6 +421,24 @@
 
     // Sinyal ke tab landing: member sudah masuk — musik/video landing dimatikan
     try { localStorage.setItem("vitaqu_music_stop", String(Date.now())); } catch (e) {}
+
+    // Video landing jadi latar (muted): 9:16 di ponsel, 16:9 di desktop
+    const bgVid = document.getElementById("bgVid");
+    const SRC_LANDSCAPE = "assets/hero.mp4";
+    const SRC_PORTRAIT = "assets/hero-portrait.mp4";
+    let curBg = "";
+    function pickBg() {
+      const t = window.matchMedia("(orientation: portrait)").matches ? SRC_PORTRAIT : SRC_LANDSCAPE;
+      if (t === curBg) return;
+      curBg = t;
+      bgVid.src = t;
+      bgVid.load();
+      bgVid.play().catch(() => {});
+    }
+    window.matchMedia("(orientation: portrait)").addEventListener("change", pickBg);
+    window.addEventListener("orientationchange", pickBg);
+    pickBg();
+    setInterval(() => { if (bgVid.paused) bgVid.play().catch(() => {}); }, 2000);
   </script>
 </body>
 </html>
