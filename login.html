@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Masuk Member — SehatTrack Banyubiru</title>
+  <link rel="icon" href="logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --emerald: #2ECC71;
+      --emerald-bright: #4EF08F;
+      --bg-0: #04120B;
+      --bg-1: #071C11;
+      --glass: rgba(255, 255, 255, 0.06);
+      --stroke: rgba(255, 255, 255, 0.13);
+      --text: #EAF6EE;
+      --muted: #9DB8A7;
+      --radius: 26px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--bg-0);
+      color: var(--text);
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated background blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: .5;
+      z-index: 0;
+      animation: drift 16s ease-in-out infinite alternate;
+    }
+    .blob-1 { width: 460px; height: 460px; background: rgba(46,204,113,.34); top: -120px; left: -120px; }
+    .blob-2 { width: 380px; height: 380px; background: rgba(52,152,219,.22); bottom: -100px; right: -80px; animation-delay: -8s; }
+    .blob-3 { width: 300px; height: 300px; background: rgba(245,197,66,.12); bottom: 20%; left: 12%; animation-delay: -4s; }
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to { transform: translate(40px, 30px) scale(1.12); }
+    }
+
+    .top-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 28px;
+      z-index: 10;
+    }
+    .top-nav a.brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: var(--text);
+    }
+    .top-nav img { width: 42px; height: 42px; border-radius: 13px; object-fit: cover; background: rgba(255,255,255,.92); padding: 3px; }
+    .top-nav .brand b { font-size: 15px; font-weight: 800; display: block; line-height: 1.2; }
+    .top-nav .brand small { color: var(--muted); font-size: 10px; letter-spacing: 2.4px; text-transform: uppercase; }
+    .top-nav .back {
+      color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500;
+      background: var(--glass); border: 1px solid var(--stroke);
+      padding: 10px 18px; border-radius: 99px;
+      transition: background .2s, color .2s;
+    }
+    .top-nav .back:hover { background: rgba(255,255,255,.12); color: var(--text); }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px;
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      padding: 44px 38px;
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      box-shadow: 0 40px 90px rgba(0,0,0,.55);
+      animation: rise .7s ease both;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(30px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .lock-icon {
+      width: 64px; height: 64px;
+      margin: 0 auto 22px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      background: linear-gradient(135deg, rgba(46,204,113,.25), rgba(46,204,113,.07));
+      border: 1px solid rgba(46,204,113,.4);
+      box-shadow: 0 14px 34px rgba(46,204,113,.22);
+    }
+    h1 { text-align: center; font-size: 25px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 8px; }
+    .subtitle { text-align: center; color: var(--muted); font-size: 13px; font-weight: 300; margin-bottom: 32px; }
+
+    label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); margin: 18px 0 8px; }
+    input, select {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--stroke);
+      border-radius: 15px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      appearance: none;
+    }
+    select option { background: #0B2E1C; color: var(--text); }
+    input:focus, select:focus {
+      border-color: var(--emerald);
+      box-shadow: 0 0 0 4px rgba(46,204,113,.15);
+      background: rgba(255,255,255,.08);
+    }
+    input::placeholder { color: #5F7A69; }
+
+    .notice {
+      margin-top: 20px;
+      background: rgba(46,204,113,.07);
+      border: 1px solid rgba(46,204,113,.22);
+      border-radius: 15px;
+      padding: 14px 16px;
+      font-size: 12px;
+      color: #B9D8C4;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+    .notice strong { color: var(--emerald-bright); font-weight: 600; }
+
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin-top: 16px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #C4DCCB;
+      font-weight: 300;
+      line-height: 1.5;
+    }
+    .check-row input[type="checkbox"] {
+      width: 19px; height: 19px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--emerald);
+      cursor: pointer;
+    }
+
+    .btn-login {
+      width: 100%;
+      margin-top: 26px;
+      padding: 16px;
+      border: none;
+      border-radius: 99px;
+      background: linear-gradient(135deg, #2ECC71, #17A44C);
+      color: #04120B;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .3px;
+      cursor: pointer;
+      box-shadow: 0 14px 38px rgba(46,204,113,.35), inset 0 1px 0 rgba(255,255,255,.4);
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+    }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 20px 48px rgba(46,204,113,.5), inset 0 1px 0 rgba(255,255,255,.4); }
+    .btn-login:active { transform: translateY(0); }
+    .btn-login:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    #msg { margin-top: 16px; }
+    .msg-box {
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-size: 13px;
+      font-weight: 400;
+      animation: shake .35s ease;
+    }
+    .msg-box.error { background: rgba(231,76,60,.12); border: 1px solid rgba(231,76,60,.4); color: #FFB0A8; }
+    .msg-box.success { background: rgba(46,204,113,.1); border: 1px solid rgba(46,204,113,.4); color: var(--emerald-bright); }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .quote {
+      margin-top: 26px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    .foot-note {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid var(--stroke);
+      text-align: center;
+      font-size: 11px;
+      color: #6E8A78;
+      line-height: 1.9;
+    }
+    .foot-note a { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--stroke); }
+    .foot-note a:hover { color: var(--emerald-bright); }
+
+    /* Loader saat redirect */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4,18,11,.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      place-items: center;
+      z-index: 50;
+      flex-direction: column;
+      gap: 18px;
+      color: var(--emerald-bright);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .overlay.show { display: grid; }
+    .spinner {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 4px solid rgba(46,204,113,.2);
+      border-top-color: var(--emerald-bright);
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 520px) {
+      .card { padding: 34px 26px; }
+      h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="top-nav">
+    <a class="brand" href="index.html">
+      <img src="logo.png" alt="Logo" />
+      <div><b>SehatTrack</b><small>Banyubiru</small></div>
+    </a>
+    <a class="back" href="index.html">← Beranda</a>
+  </div>
+
+  <div class="card">
+    <div class="lock-icon">🔐</div>
+    <h1>Masuk Member</h1>
+    <p class="subtitle">Area khusus member Program 30 Hari Hidup Sehat — SMP Negeri 1 Banyubiru</p>
+
+    <label for="studentId">Nama User</label>
+    <input id="studentId" placeholder="Masukkan nama lengkap kamu" autocomplete="off" />
+
+    <label for="classCode">Kelas</label>
+    <select id="classCode">
+      <option value="">-- Pilih Kelas --</option>
+      <option>7A</option><option>7B</option><option>7C</option><option>7D</option>
+      <option>7E</option><option>7F</option><option>7G</option>
+      <option>8A</option><option>8B</option><option>8C</option><option>8D</option>
+      <option>8E</option><option>8F</option><option>8G</option>
+      <option>9A</option><option>9B</option><option>9C</option><option>9D</option>
+      <option>9E</option><option>9F</option>
+      <option>GURU</option>
+    </select>
+
+    <div class="notice">
+      <strong>Persetujuan data:</strong><br>
+      Data yang saya isi digunakan untuk monitoring program hidup sehat sekolah, bukan untuk menghukum atau mempermalukan siswa.
+    </div>
+
+    <label class="check-row" for="consentCheck">
+      <input type="checkbox" id="consentCheck" />
+      <span>Saya memahami dan setuju mengisi data dengan jujur.</span>
+    </label>
+
+    <button class="btn-login" id="loginBtn" onclick="memberLogin()">🚀 Login &amp; Mulai Hari Ini</button>
+
+    <div id="msg"></div>
+
+    <div class="quote">💬 <em>Sehat hari ini, hebat esok hari.</em></div>
+
+    <div class="foot-note">
+      Provide apps by <strong>Fendi Akhmad, S.Pd.</strong> — © 2026 SMP NEGERI 1 BANYUBIRU<br />
+      <a href="https://health-track-admin.pages.dev" target="_blank" rel="noopener">Panel Admin (khusus guru) ↗</a>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="spinner"></div>
+    <div>Menyiapkan dashboard kamu…</div>
+  </div>
+
+  <script>
+    // ─── DATA (localStorage — kompatibel dengan app.html & panel admin) ──
+    function getData() {
+      return JSON.parse(localStorage.getItem("sehattrack_data") || "{}");
+    }
+    function saveData(d) {
+      localStorage.setItem("sehattrack_data", JSON.stringify(d));
+    }
+
+    function showMsg(text, type) {
+      document.getElementById("msg").innerHTML = `<div class="msg-box ${type}">${text}</div>`;
+    }
+    function clearMsg() {
+      document.getElementById("msg").innerHTML = "";
+    }
+
+    // ─── LOGIN FLOW ──────────────────────────────────────────
+    function memberLogin() {
+      clearMsg();
+      const id = document.getElementById("studentId").value.trim().toUpperCase();
+      const cls = document.getElementById("classCode").value.trim().toUpperCase();
+      const consent = document.getElementById("consentCheck").checked;
+
+      if (!id) return showMsg("⚠️ Nama User tidak boleh kosong.", "error");
+      if (id.length < 3) return showMsg("⚠️ Nama User minimal 3 karakter.", "error");
+      if (!cls) return showMsg("⚠️ Pilih kelas terlebih dahulu.", "error");
+      if (!consent) return showMsg("⚠️ Centang persetujuan data terlebih dahulu.", "error");
+
+      const btn = document.getElementById("loginBtn");
+      btn.disabled = true;
+      btn.textContent = "Memproses…";
+
+      // Registrasi otomatis / validasi kelas (logika asli SehatTrack)
+      setTimeout(() => {
+        const data = getData();
+        if (!data[id]) {
+          data[id] = { classCode: cls, submissions: {}, target: "" };
+          saveData(data);
+        } else if (data[id].classCode !== cls) {
+          btn.disabled = false;
+          btn.textContent = "🚀 Login & Mulai Hari Ini";
+          return showMsg("❌ Nama User ini sudah terdaftar dengan kelas berbeda. Cek kelas yang kamu pilih.", "error");
+        }
+
+        // Session untuk gate app.html
+        localStorage.setItem("sehattrack_session", JSON.stringify({
+          id, cls, role: "member", ts: Date.now()
+        }));
+
+        document.getElementById("overlay").classList.add("show");
+        setTimeout(() => { window.location.replace("app.html"); }, 650);
+      }, 350);
+    }
+
+    // Enter key untuk submit
+    ["studentId", "classCode"].forEach(idk => {
+      document.getElementById(idk).addEventListener("keydown", e => {
+        if (e.key === "Enter") memberLogin();
+      });
+    });
+
+    // Sudah login? Langsung terbang ke dashboard.
+    (function() {
+      try {
+        const s = JSON.parse(localStorage.getItem("sehattrack_session") || "null");
+        if (s && s.id) {
+          document.getElementById("overlay").classList.add("show");
+          setTimeout(() => { window.location.replace("app.html"); }, 400);
+        }
+      } catch (e) { localStorage.removeItem("sehattrack_session"); }
+    })();
+  </script>
+</body>
+</html>
