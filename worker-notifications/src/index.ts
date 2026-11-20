@@ -102,6 +102,8 @@ function isSafePushEndpoint(value: string): boolean {
       host === "web.push.apple.com" ||
       host === "push.services.mozilla.com" ||
       host.endsWith(".push.services.mozilla.com") ||
+      host === "updates.push.services.mozilla.com" ||
+      host.endsWith(".updates.push.services.mozilla.com") ||
       host === "notify.windows.com" ||
       host.endsWith(".notify.windows.com") ||
       host === "push.microsoft.com" ||
