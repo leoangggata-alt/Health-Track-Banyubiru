@@ -208,8 +208,8 @@ function notificationFor(slot: Slot, row: SubscriptionRow, isTest = false) {
     body: isTest
       ? `Notifikasi aktif. Jadwal pilihanmu akan dikirim pada waktunya. ${selected.body}`
       : selected.body,
-    icon: "/icons/icon-192.png",
-    badge: "/icons/icon-192.png",
+    icon: "/icons/notif-icon.png",
+    badge: "/icons/notif-badge.png",
     tag: isTest ? "vitaqu-test" : `vitaqu-${slot}-${date}`,
     renotify: false,
     requireInteraction: false,

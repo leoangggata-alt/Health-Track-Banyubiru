@@ -4,7 +4,7 @@
    - Aset statis (CSS/JS lokal, gambar, font): stale-while-revalidate
    - Video besar: cache-first setelah pertama kali termuat, range request dilewatan langsung
 */
-const VERSION = "vitaqu-v13";
+const VERSION = "vitaqu-v14";
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -18,6 +18,8 @@ const PRECACHE = [
   "./logo.png",
   "./nutrifood.png",
   "./icons/icon-192.png",
+  "./icons/notif-icon.png",
+  "./icons/notif-badge.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
 ];
@@ -55,8 +57,8 @@ self.addEventListener("push", (event) => {
   let payload = {
     title: "VITAQU • Pengingat Sehat",
     body: "Saatnya mencatat kebiasaan sehatmu hari ini.",
-    icon: "/icons/icon-192.png",
-    badge: "/icons/icon-192.png",
+    icon: "/icons/notif-icon.png",
+    badge: "/icons/notif-badge.png",
     tag: "vitaqu-reminder",
     data: { url: "/app.html?from=notification" },
   };
@@ -73,8 +75,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(title, {
       ...options,
-      icon: options.icon || "/icons/icon-192.png",
-      badge: options.badge || "/icons/icon-192.png",
+      icon: options.icon || "/icons/notif-icon.png",
+      badge: options.badge || "/icons/notif-badge.png",
       data: { url: "/app.html?from=notification", ...(options.data || {}) },
       actions: [{ action: "open-checklist", title: "Buka Checklist" }],
     }),
