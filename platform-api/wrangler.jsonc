@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vitaqu-platform-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-20",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGINS": "https://vitaqu-superadmin.pages.dev,https://health-track-admin.pages.dev,http://localhost:8931,http://127.0.0.1:8931,http://localhost:8787,http://localhost:3000,http://localhost:5173",
+    "PROXY_SECRET": "vitaqu-proxy-secret-super-safe-2026"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vitaqu-platform",
+      "database_id": "6dbb42f5-58ac-472f-8dd9-754e86f1372b",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

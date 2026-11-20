@@ -3,363 +3,331 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Admin — SehatTrack Banyubiru</title>
+  <title>Panel Admin — VITAQU SehatTrack</title>
   <link rel="icon" href="logo.png" />
-  <meta name="robots" content="noindex, nofollow" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
   <style>
     :root {
-      --green: #2ECC71;
-      --green-dark: #1EAD5A;
-      --blue: #3498DB;
-      --orange: #F39C12;
-      --yellow: #F1C40F;
-      --red: #E74C3C;
-      --purple: #9B59B6;
-      --bg: #F6FFF8;
-      --text: #2C3E50;
-      --muted: #7F8C8D;
-      --border: #E8F5E9;
-      --shadow: 0 14px 40px rgba(44,62,80,0.12);
-      --radius: 24px;
+      --green: #2ECC71; --green-dark: #168A48; --blue: #3498DB; --orange: #F39C12;
+      --yellow: #F1C40F; --red: #E74C3C; --purple: #9B59B6; --bg: #F6FFF8;
+      --text: #243447; --muted: #6F7F80; --border: #DFF0E5;
+      --shadow: 0 16px 42px rgba(30, 70, 50, .12); --radius: 24px;
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0;
+      margin: 0; min-height: 100vh; overflow-x: hidden; color: var(--text);
       font-family: "Poppins", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(46,204,113,0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(52,152,219,0.16), transparent 30%),
-        linear-gradient(180deg, #F6FFF8 0%, #EEFDF4 100%);
-      min-height: 100vh;
-      overflow-x: hidden;
+      background: radial-gradient(circle at top left, rgba(46,204,113,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(52,152,219,.16), transparent 30%),
+        linear-gradient(180deg, #F7FFF9 0%, #ECFAF2 100%);
     }
-    .app { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 18px; }
+    button, input, select, textarea { font: inherit; }
+    .app { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 18px; }
     .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .school-logo { width: 52px; height: 52px; object-fit: contain; }
-    .brand h1 { margin: 0; font-size: 22px; line-height: 1.1; }
-    .brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .school-logo { width: 52px; height: 52px; object-fit: contain; flex: 0 0 auto; }
+    .brand h1 { margin: 0; font-size: 21px; line-height: 1.15; }
+    .brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+    .header-badges { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
     .card {
-      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
-      border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px;
-      animation: fadeIn 0.45s ease both;
+      background: rgba(255,255,255,.94); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 20px; animation: fadeIn .35s ease both;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
     .grid { display: grid; gap: 16px; }
     .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .login-layout { min-height: calc(100vh - 120px); display: grid; place-items: center; }
-    .login-card { width: min(100%, 480px); text-align: center; }
-    .hero-emoji { font-size: 64px; margin-bottom: 8px; animation: bounce 2s ease-in-out infinite; }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
+    .login-card { width: min(100%, 500px); text-align: center; }
+    .hero-emoji { font-size: 60px; margin-bottom: 8px; }
     .login-card h2 { margin: 0; font-size: 28px; }
-    .login-card .subtitle { color: var(--muted); margin: 8px 0 18px; }
+    .subtitle { color: var(--muted); margin: 8px 0 18px; font-size: 13px; }
     label { display: block; text-align: left; font-weight: 700; font-size: 13px; margin: 12px 0 6px; }
     input, select, textarea {
-      width: 100%; border: 1px solid #DCEFE2; border-radius: 16px;
-      padding: 13px 14px; font-family: inherit; font-size: 14px; outline: none; background: #fff;
+      width: 100%; border: 1px solid #D4E9DC; border-radius: 15px; padding: 12px 14px;
+      color: var(--text); outline: none; background: #fff;
     }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--green); box-shadow: 0 0 0 4px rgba(46,204,113,0.12);
-    }
+    textarea { min-height: 90px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--green); box-shadow: 0 0 0 4px rgba(46,204,113,.12); }
+    input:disabled, select:disabled { background: #F3F7F4; color: var(--muted); }
     .btn {
-      border: none; border-radius: 18px; padding: 13px 16px;
-      font-family: inherit; font-weight: 800; cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease; font-size: 14px;
+      border: 0; border-radius: 16px; padding: 12px 15px; font-weight: 800; cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease; font-size: 13px;
     }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(44,62,80,0.14); }
-    .btn.primary { background: linear-gradient(135deg, var(--green), var(--blue)); color: white; }
-    .btn.warning { background: linear-gradient(135deg, var(--orange), var(--yellow)); color: white; }
-    .btn.danger { background: var(--red); color: white; }
-    .btn.light { background: #F1FFF5; color: var(--green-dark); }
-    .btn.purple { background: linear-gradient(135deg, var(--purple), #7D3C98); color: white; }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(44,62,80,.14); }
+    .btn:disabled { opacity: .55; cursor: wait; }
+    .btn.primary { background: linear-gradient(135deg, var(--green), var(--blue)); color: #fff; }
+    .btn.warning { background: linear-gradient(135deg, var(--orange), var(--yellow)); color: #fff; }
+    .btn.danger { background: var(--red); color: #fff; }
+    .btn.light { background: #EDFBF2; color: var(--green-dark); border: 1px solid #CFEED9; }
+    .btn.purple { background: linear-gradient(135deg, var(--purple), #7040A0); color: #fff; }
+    .btn.small-btn { padding: 8px 10px; border-radius: 12px; font-size: 11px; }
     .full { width: 100%; }
     .hidden { display: none !important; }
     .small { font-size: 12px; color: var(--muted); }
-    .notice {
-      background: #F1FFF5; border: 1px solid #CFF3DA; border-radius: 18px;
-      padding: 12px; font-size: 13px; color: #236B3B; text-align: left; margin: 12px 0;
-    }
+    .notice { background: #F1FFF5; border: 1px solid #CFF3DA; border-radius: 16px; padding: 12px; font-size: 13px; color: #236B3B; text-align: left; margin: 12px 0; overflow-wrap: anywhere; }
     .notice.error { background: #FFF1F0; border-color: #FFD1CD; color: #A93226; }
     .notice.success { background: #ECFFF3; border-color: #BFF2CF; color: #1E8449; }
+    .notice.warning { background: #FFF8E8; border-color: #F7D894; color: #8C5B00; }
     .dashboard-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
     .dashboard-header h2 { margin: 0; font-size: 24px; }
-    .stat {
-      padding: 18px; border-radius: 22px; background: white;
-      border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(44,62,80,0.08);
-    }
-    .stat .num { font-size: 28px; font-weight: 800; margin: 4px 0; }
-    .stat .label { color: var(--muted); font-size: 13px; font-weight: 600; }
-    .progress-wrap { background: #EAF8EF; border-radius: 999px; overflow: hidden; height: 16px; }
-    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--blue)); border-radius: 999px; transition: width 0.4s ease; }
-    .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      border-radius: 999px; padding: 8px 12px;
-      background: #F1FFF5; color: #1E8449; font-weight: 800; font-size: 12px; margin: 4px 2px;
-    }
-    .badge.orange { background: #FFF6E8; color: #B66D00; }
-    .badge.red { background: #FFF1F0; color: #A93226; }
-    .badge.blue { background: #EEF7FF; color: #2874A6; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .nav-tabs .btn.active { background: linear-gradient(135deg, var(--green), var(--blue)); color: #fff; border-color: transparent; }
+    .stat { padding: 18px; border-radius: 21px; background: #fff; border: 1px solid var(--border); box-shadow: 0 8px 22px rgba(44,62,80,.07); }
+    .stat .num { font-size: 27px; font-weight: 800; margin: 4px 0; overflow-wrap: anywhere; }
+    .stat .label { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .progress-wrap { background: #EAF8EF; border-radius: 999px; overflow: hidden; height: 14px; }
+    .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--green), var(--blue)); border-radius: 999px; transition: width .35s ease; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 7px 11px; background: #F1FFF5; color: #1E8449; font-weight: 800; font-size: 11px; margin: 2px; border: 1px solid #D4F2DE; }
+    .badge.orange { background: #FFF6E8; color: #A45F00; border-color: #F7D7A4; }
+    .badge.red { background: #FFF1F0; color: #A93226; border-color: #FFD1CD; }
+    .badge.blue { background: #EEF7FF; color: #2874A6; border-color: #CDE5F8; }
     .section-title { margin: 0 0 12px; font-size: 18px; }
-    .table-wrap { overflow-x: auto; border-radius: 18px; border: 1px solid var(--border); background: white; }
-    table { width: 100%; border-collapse: collapse; min-width: 700px; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #EEF6F0; font-size: 13px; vertical-align: top; }
+    .table-wrap { overflow-x: auto; border-radius: 17px; border: 1px solid var(--border); background: #fff; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { padding: 11px; text-align: left; border-bottom: 1px solid #EEF6F0; font-size: 12px; vertical-align: top; overflow-wrap: anywhere; }
     th { background: #F1FFF5; font-weight: 800; }
-    .modal { position: fixed; inset: 0; background: rgba(44,62,80,0.42); z-index: 50; display: none; align-items: center; justify-content: center; padding: 18px; }
-    .modal.show { display: flex; }
-    .modal-card { width: min(100%, 520px); background: white; border-radius: 28px; padding: 24px; box-shadow: var(--shadow); text-align: center; animation: fadeIn 0.3s ease both; max-height: 85vh; overflow-y: auto; }
-    .modal-card .big { font-size: 58px; }
-    .modal-card h3 { margin: 8px 0 12px; font-size: 20px; }
-    .modal-card p { font-size: 14px; text-align: left; color: var(--muted); line-height: 1.7; }
-    .modal-card ul { text-align: left; color: var(--text); font-size: 14px; line-height: 2; }
-    .quote { background: #F6FFF8; border-left: 6px solid var(--green); padding: 14px; border-radius: 16px; font-weight: 600; text-align: left; }
-    .lb-row { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 16px; background: #F8FFFA; margin-bottom: 8px; }
-    .lb-rank { font-size: 22px; font-weight: 800; min-width: 36px; text-align: center; }
-    .lb-name { font-weight: 700; flex: 1; }
+    tr:last-child td { border-bottom: 0; }
+    .lb-row { display: flex; align-items: center; gap: 11px; padding: 10px; border-radius: 15px; background: #F7FFF9; margin-bottom: 8px; }
+    .lb-rank { font-size: 20px; font-weight: 800; min-width: 34px; text-align: center; }
+    .lb-name { font-weight: 700; flex: 1; min-width: 0; overflow-wrap: anywhere; }
     .lb-score { font-weight: 800; color: var(--green-dark); }
-    .insight-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 14px; background: #F8FFFA; margin-bottom: 8px; font-size: 13px; }
-    .insight-icon { font-size: 20px; }
-    .report-header { background: linear-gradient(135deg, var(--green), var(--blue)); color: white; border-radius: 22px; padding: 24px; margin-bottom: 16px; }
+    .insight-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 14px; background: #F7FFF9; margin-bottom: 8px; font-size: 12px; }
+    .insight-icon { font-size: 19px; }
+    .report-header { background: linear-gradient(135deg, var(--green), var(--blue)); color: #fff; border-radius: 22px; padding: 24px; margin-bottom: 16px; }
     .report-header h2 { margin: 0 0 4px; font-size: 22px; }
-    .report-header p { margin: 0; opacity: 0.85; font-size: 13px; }
+    .report-header p { margin: 0; opacity: .88; font-size: 13px; }
+    .modal { position: fixed; inset: 0; background: rgba(32,48,42,.56); z-index: 50; display: none; align-items: center; justify-content: center; padding: 18px; backdrop-filter: blur(6px); }
+    .modal.show { display: flex; }
+    .modal-card { width: min(100%, 540px); max-height: 88vh; overflow-y: auto; background: #fff; border-radius: 26px; padding: 24px; box-shadow: var(--shadow); text-align: center; }
+    .modal-card .big { font-size: 54px; }
+    .modal-card h3 { margin: 7px 0 10px; }
+    .modal-card p, .modal-card li { font-size: 13px; line-height: 1.7; text-align: left; }
+    .modal-card ul { padding-left: 22px; }
+    .danger-zone { border-color: #FFD1CD; background: linear-gradient(180deg, #FFF, #FFF8F7); }
+    .loading { min-height: 60vh; display: grid; place-items: center; text-align: center; }
+    .spinner { width: 44px; height: 44px; margin: 0 auto 12px; border: 4px solid #DDF4E5; border-top-color: var(--green); border-radius: 50%; animation: spin .75s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .print-watermark { display: none; }
     @media print {
-      body { background: white; }
+      body { background: #fff; }
       .no-print, .topbar, .btn { display: none !important; }
       .app { max-width: none; padding: 0; }
-      .card { box-shadow: none; border: none; }
-      .print-watermark {
-        display: block !important;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 300px;
-        opacity: 0.15;
-        z-index: -1;
-        pointer-events: none;
-      }
+      .card { box-shadow: none; border: 0; break-inside: avoid; }
+      .print-watermark { display: block !important; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 300px; opacity: .10; z-index: -1; pointer-events: none; }
     }
-    @media (max-width: 820px) {
-      .grid.two, .grid.three { grid-template-columns: 1fr; }
-      .dashboard-header { flex-direction: column; }
-      .topbar { align-items: flex-start; }
-      .brand h1 { font-size: 18px; }
-      .login-card h2 { font-size: 23px; }
+    @media (max-width: 900px) { .grid.three, .grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 680px) {
+      .grid.two, .grid.three, .grid.four { grid-template-columns: 1fr; }
+      .dashboard-header, .topbar { flex-direction: column; align-items: flex-start; }
+      .header-badges { justify-content: flex-start; }
+      .brand h1 { font-size: 17px; }
+      .login-card { padding: 20px; }
     }
   </style>
 </head>
 <body>
-
-<img src="nutrifood.png" class="print-watermark" alt="Watermark" />
-
+<img src="nutrifood.png" class="print-watermark" alt="" />
 <div class="app">
-  <div class="topbar no-print">
+  <header class="topbar no-print">
     <div class="brand">
-      <img src="logo.png" alt="Logo Sekolah" class="school-logo" />
-      <div>
-        <h1>Panel Admin — SehatTrack</h1>
-        <p>• SMP NEGERI 1 BANYUBIRU •</p>
-      </div>
+      <img src="logo.png" alt="VITAQU" class="school-logo" />
+      <div><h1>Panel Admin — VITAQU SehatTrack</h1><p id="schoolHeader">Portal administrasi sekolah</p></div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;">
+    <div class="header-badges">
+      <span id="licenseStatus" class="badge hidden"></span>
+      <span id="licenseExpiry" class="badge blue hidden"></span>
       <span id="dayCounter" class="badge blue hidden"></span>
     </div>
-  </div>
+  </header>
 
-  <!-- ═══════════════════════════ ADMIN LOGIN ═══════════════════════════ -->
-  <section id="adminLoginPage" class="login-layout">
+  <section id="bootPage" class="loading">
+    <div><div class="spinner"></div><strong>Memeriksa sesi aman…</strong><p class="small">Menghubungkan portal ke server VITAQU.</p></div>
+  </section>
+
+  <section id="adminLoginPage" class="login-layout hidden">
     <div class="card login-card">
       <div class="hero-emoji">🔐</div>
-      <h2>Panel Admin</h2>
-      <p class="subtitle">Dashboard monitoring khusus guru — Program 30 Hari Hidup Sehat</p>
-
-      <label for="teacherCode">Kode Admin</label>
-      <input id="teacherCode" type="password" placeholder="Masukkan kode admin" onkeydown="if(event.key==='Enter') adminLogin()" />
-
-      <button class="btn primary full" style="margin-top:14px;" onclick="adminLogin()">🔓 Login as ADMIN</button>
-
-      <div id="loginMessage"></div>
-
-      <div class="notice" style="margin-top:16px;">
-        <strong>Perhatian:</strong> Panel ini terpisah dari aplikasi member. Data pengisian tersimpan pada perangkat masing-masing (localStorage).
-      </div>
-
-      <div class="quote" style="margin-top:16px;">💬 <em>Monitoring proses, bukan mencari kesalahan.</em></div>
-
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #E8F5E9;text-align:center;">
-        <p style="margin:0;font-size:11px;color:var(--muted);line-height:1.8;">
-          Provide apps by <strong>Fendi Akhmad, S.Pd.</strong><br>
-          © 2026 SMP NEGERI 1 BANYUBIRU
-        </p>
-      </div>
+      <h2>Panel Admin Sekolah</h2>
+      <p class="subtitle">Masuk dengan lisensi aktif dan akun admin sekolah.</p>
+      <form id="loginForm" onsubmit="adminLogin(event)">
+        <label for="licenseKey">Kunci Lisensi</label>
+        <input id="licenseKey" name="licenseKey" type="password" required autocomplete="off" spellcheck="false" placeholder="VITAQU-XXXX-XXXX-XXXX" />
+        <label for="username">Username</label>
+        <input id="username" name="username" required autocomplete="username" maxlength="80" placeholder="Username admin" />
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password" placeholder="Password akun" />
+        <button id="loginBtn" class="btn primary full" style="margin-top:16px;" type="submit">Masuk ke Dashboard</button>
+      </form>
+      <div id="loginMessage" role="status" aria-live="polite"></div>
+      <div class="notice"><strong>Keamanan:</strong> sesi disimpan dalam cookie HttpOnly. Kunci lisensi, password, dan data sekolah tidak disimpan di localStorage.</div>
+      <p class="small">© 2026 VITAQU — SehatTrack</p>
     </div>
   </section>
 
-  <!-- ═══════════════════════════ TEACHER DASHBOARD ═══════════════════════════ -->
+  <section id="passwordPage" class="login-layout hidden">
+    <div class="card login-card">
+      <div class="hero-emoji">🔑</div>
+      <h2>Ganti Password Wajib</h2>
+      <p class="subtitle">Password sementara harus diganti sebelum dashboard dapat dibuka.</p>
+      <form id="passwordForm" onsubmit="changePassword(event)">
+        <label for="currentPassword">Password Saat Ini</label>
+        <input id="currentPassword" type="password" required autocomplete="current-password" />
+        <label for="newPassword">Password Baru</label>
+        <input id="newPassword" type="password" required minlength="12" autocomplete="new-password" />
+        <label for="confirmPassword">Ulangi Password Baru</label>
+        <input id="confirmPassword" type="password" required minlength="12" autocomplete="new-password" />
+        <button id="passwordBtn" class="btn primary full" style="margin-top:16px;" type="submit">Simpan Password Baru</button>
+      </form>
+      <div id="passwordMessage" role="status" aria-live="polite"></div>
+      <button class="btn light full" type="button" onclick="logout()">Batalkan dan Keluar</button>
+    </div>
+  </section>
+
   <section id="teacherPage" class="hidden">
     <div class="dashboard-header">
-      <div>
-        <h2>Dashboard Admin</h2>
-        <p class="small">Monitoring keterlaksanaan program hidup sehat siswa.</p>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn warning" onclick="showGuide()">📖 Panduan Admin</button>
-        <button class="btn purple" onclick="showReportPage()">📄 Laporan NPET</button>
-        <button class="btn light" onclick="resetAllData()">🗑️ Reset Data</button>
-        <button class="btn danger" onclick="logout()">Keluar</button>
+      <div><h2>Dashboard Admin</h2><p class="small" id="adminMeta">Monitoring program sekolah.</p></div>
+      <div class="actions">
+        <button class="btn warning" type="button" onclick="showGuide()">📖 Panduan</button>
+        <button class="btn purple" type="button" onclick="showReportPage()">📄 Laporan NPET</button>
+        <button class="btn danger" type="button" onclick="logout()">Keluar</button>
       </div>
     </div>
 
-    <div class="card">
-      <h3 class="section-title">Filter Dashboard</h3>
-      <div class="grid three">
-        <div>
-          <label for="filterDate">Tanggal</label>
-          <input id="filterDate" type="date" />
-        </div>
-        <div>
-          <label for="filterClass">Kelas</label>
-          <select id="filterClass">
-            <option value="">Semua Kelas</option>
-            <option>7A</option><option>7B</option><option>7C</option><option>7D</option>
-            <option>7E</option><option>7F</option><option>7G</option>
-            <option>8A</option><option>8B</option><option>8C</option><option>8D</option>
-            <option>8E</option><option>8F</option><option>8G</option>
-            <option>9A</option><option>9B</option><option>9C</option><option>9D</option>
-            <option>9E</option><option>9F</option>
-            <option>GURU</option>
-          </select>
-        </div>
-        <div>
-          <label>&nbsp;</label>
-          <button class="btn primary full" onclick="loadTeacherDashboard()">🔍 MUAT ULANG GRAFIK</button>
-        </div>
-      </div>
-    </div>
+    <nav class="nav-tabs" aria-label="Menu admin">
+      <button class="btn light active" data-view="dashboardView" type="button" onclick="showAdminView('dashboardView', this)">Dashboard</button>
+      <button class="btn light" data-view="schoolView" type="button" onclick="showAdminView('schoolView', this)">Sekolah</button>
+      <button class="btn light" data-view="classesView" type="button" onclick="showAdminView('classesView', this)">Kelas</button>
+      <button class="btn light" data-view="studentsView" type="button" onclick="showAdminView('studentsView', this)">Siswa</button>
+      <button class="btn light" data-view="programsView" type="button" onclick="showAdminView('programsView', this)">Program</button>
+    </nav>
+    <div id="portalMessage" role="status" aria-live="polite"></div>
 
-    <div class="grid three" style="margin-top:16px;">
-      <div class="stat">
-        <div class="label">Total Siswa Terdaftar</div>
-        <div class="num" id="statTotalStudents">0</div>
-      </div>
-      <div class="stat">
-        <div class="label">Sudah Mengisi Hari Ini</div>
-        <div class="num" id="statSubmitted">0</div>
-      </div>
-      <div class="stat">
-        <div class="label">Belum Mengisi</div>
-        <div class="num" id="statNotSubmitted">0</div>
-      </div>
-      <div class="stat">
-        <div class="label">Persentase Pengisian</div>
-        <div class="num" id="statPercentage">0%</div>
-      </div>
-      <div class="stat">
-        <div class="label">Rata-rata Skor Kelas</div>
-        <div class="num" id="statAvgScore">0</div>
-      </div>
-      <div class="stat">
-        <div class="label">Status Program</div>
-        <div class="num" id="statProgramStatus" style="font-size:18px;">-</div>
-      </div>
-    </div>
-
-    <div class="grid two" style="margin-top:16px;">
+    <div id="dashboardView" class="admin-view">
       <div class="card">
-        <h3 class="section-title">📈 Grafik Rata-rata Skor Harian</h3>
-        <canvas id="scoreChart"></canvas>
-      </div>
-      <div class="card">
-        <h3 class="section-title">📊 Grafik Keterlaksanaan Pengisian</h3>
-        <canvas id="submitChart"></canvas>
-      </div>
-    </div>
-
-    <div class="grid two" style="margin-top:16px;">
-      <div class="card">
-        <h3 class="section-title">🏆 Top 5 Pejuang Sehat</h3>
-        <div id="leaderboard">
-          <p class="small">Belum ada data. Muat dashboard terlebih dahulu.</p>
+        <h3 class="section-title">Filter Dashboard</h3>
+        <div class="grid four">
+          <div><label for="filterDate">Tanggal</label><input id="filterDate" type="date" /></div>
+          <div><label for="filterClass">Kelas</label><select id="filterClass"><option value="">Semua Kelas</option></select></div>
+          <div><label for="filterProgram">Program</label><select id="filterProgram"><option value="">Program Aktif</option></select></div>
+          <div><label>&nbsp;</label><button id="dashboardLoadBtn" class="btn primary full" type="button" onclick="loadTeacherDashboard()">Muat Dashboard</button></div>
         </div>
       </div>
 
-      <div class="card">
-        <h3 class="section-title">🔍 Analisis Kebiasaan Kelas</h3>
-        <div id="analysisContent">
-          <p class="small">Muat dashboard terlebih dahulu untuk melihat analisis otomatis.</p>
+      <div class="grid three" style="margin-top:16px;">
+        <div class="stat"><div class="label">Total Siswa Terdaftar</div><div class="num" id="statTotalStudents">0</div></div>
+        <div class="stat"><div class="label">Sudah Mengisi</div><div class="num" id="statSubmitted">0</div></div>
+        <div class="stat"><div class="label">Belum Mengisi</div><div class="num" id="statNotSubmitted">0</div></div>
+        <div class="stat"><div class="label">Persentase Pengisian</div><div class="num" id="statPercentage">0%</div></div>
+        <div class="stat"><div class="label">Rata-rata Skor</div><div class="num" id="statAvgScore">0</div></div>
+        <div class="stat"><div class="label">Status Program</div><div class="num" id="statProgramStatus" style="font-size:16px;">-</div></div>
+      </div>
+
+      <div class="grid two" style="margin-top:16px;">
+        <div class="card"><h3 class="section-title">📈 Rata-rata Skor Harian</h3><canvas id="scoreChart"></canvas></div>
+        <div class="card"><h3 class="section-title">📊 Keterlaksanaan Pengisian</h3><canvas id="submitChart"></canvas></div>
+      </div>
+      <div class="grid two" style="margin-top:16px;">
+        <div class="card"><h3 class="section-title">🏆 Top 5 Pejuang Sehat</h3><div id="leaderboard"><p class="small">Belum ada data.</p></div></div>
+        <div class="card"><h3 class="section-title">🔍 Analisis Kebiasaan Kelas</h3><div id="analysisContent"><p class="small">Belum ada data.</p></div></div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <h3 class="section-title" style="margin:0;">📋 Data Pengisian Siswa</h3>
+          <button class="btn light" type="button" onclick="exportCSV()">⬇️ Export CSV</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>ID Siswa</th><th>Nama</th><th>Kelas</th><th>Tanggal</th><th>Skor</th><th>Kategori</th><th>Mood</th><th>Kebiasaan</th><th>Refleksi</th></tr></thead><tbody id="studentTable"></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="schoolView" class="admin-view hidden">
+      <div class="grid two">
+        <div class="card">
+          <h3 class="section-title">Identitas Sekolah</h3>
+          <form onsubmit="saveSchool(event)">
+            <label for="schoolCode">Kode Sekolah</label><input id="schoolCode" disabled />
+            <label for="schoolName">Nama Sekolah</label><input id="schoolName" required maxlength="160" />
+            <label for="schoolLevel">Jenjang</label><input id="schoolLevel" required maxlength="40" />
+            <label for="principalName">Nama Kepala Sekolah</label><input id="principalName" maxlength="160" />
+            <button id="schoolSaveBtn" class="btn primary full" style="margin-top:16px;" type="submit">Simpan Identitas</button>
+          </form>
+        </div>
+        <div class="card danger-zone">
+          <h3 class="section-title">Arsip Pengisian Tenant</h3>
+          <p class="small">Mengarsipkan data pengisian tenant secara server-side. Aksi tercatat dalam audit dan tidak menghapus data dari browser.</p>
+          <div class="notice error">Kode sekolah wajib diketik ulang. Akses admin dan siswa tetap mengikuti status lisensi serta akun.</div>
+          <button class="btn danger full" type="button" onclick="openArchiveModal()">Arsipkan Pengisian…</button>
         </div>
       </div>
     </div>
 
-    <div class="card" style="margin-top:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-        <h3 class="section-title" style="margin:0;">📋 Data Pengisian Siswa</h3>
-        <button class="btn light" onclick="exportCSV()">⬇️ Export CSV</button>
+    <div id="classesView" class="admin-view hidden">
+      <div class="card">
+        <h3 class="section-title">Tambah Kelas</h3>
+        <form class="grid two" onsubmit="createClass(event)">
+          <div><label for="newClassName">Nama Kelas</label><input id="newClassName" required maxlength="80" placeholder="Contoh: 7A" /></div>
+          <div><label>&nbsp;</label><button id="classCreateBtn" class="btn primary full" type="submit">Tambah Kelas</button></div>
+        </form>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>ID Siswa</th>
-              <th>Kelas</th>
-              <th>Tanggal</th>
-              <th>Skor</th>
-              <th>Kategori</th>
-              <th>Mood</th>
-              <th>Kebiasaan ✅</th>
-              <th>Refleksi</th>
-            </tr>
-          </thead>
-          <tbody id="studentTable">
-            <tr><td colspan="8" style="text-align:center;color:var(--muted);">Belum ada data pengisian</td></tr>
-          </tbody>
-        </table>
+      <div class="card" style="margin-top:16px;"><h3 class="section-title">Daftar Kelas</h3><div class="table-wrap"><table><thead><tr><th>Nama</th><th>Status</th><th>Jumlah Siswa</th><th>Aksi</th></tr></thead><tbody id="classesTable"></tbody></table></div></div>
+    </div>
+
+    <div id="studentsView" class="admin-view hidden">
+      <div class="card">
+        <h3 class="section-title">Tambah Siswa</h3>
+        <form onsubmit="createStudent(event)">
+          <div class="grid four">
+            <div><label for="newStudentId">ID Siswa</label><input id="newStudentId" required maxlength="80" autocomplete="off" /></div>
+            <div><label for="newStudentName">Nama</label><input id="newStudentName" required maxlength="160" /></div>
+            <div><label for="newStudentClass">Kelas</label><select id="newStudentClass" required><option value="">Pilih kelas</option></select></div>
+            <div><label for="newStudentPin">PIN Awal</label><input id="newStudentPin" type="password" required inputmode="numeric" pattern="[0-9]{4,12}" autocomplete="new-password" /></div>
+          </div>
+          <button id="studentCreateBtn" class="btn primary" style="margin-top:14px;" type="submit">Tambah Siswa</button>
+        </form>
       </div>
+      <div class="card" style="margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;"><h3 class="section-title">Daftar Siswa</h3><input id="studentSearch" style="max-width:300px;" placeholder="Cari ID, nama, atau kelas" oninput="renderStudents()" /></div>
+        <div class="table-wrap"><table><thead><tr><th>ID Siswa</th><th>Nama</th><th>Kelas</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="studentsTable"></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="programsView" class="admin-view hidden">
+      <div class="card">
+        <h3 class="section-title">Buat Program</h3>
+        <form onsubmit="createProgram(event)">
+          <div class="grid four">
+            <div><label for="newProgramName">Nama Program</label><input id="newProgramName" required maxlength="160" value="Program 30 Hari Hidup Sehat" /></div>
+            <div><label for="newProgramYear">Tahun Ajaran</label><input id="newProgramYear" required maxlength="30" placeholder="2026/2027" /></div>
+            <div><label for="newProgramStart">Tanggal Mulai</label><input id="newProgramStart" type="date" required /></div>
+            <div><label for="newProgramEnd">Tanggal Selesai</label><input id="newProgramEnd" type="date" required /></div>
+          </div>
+          <button id="programCreateBtn" class="btn primary" style="margin-top:14px;" type="submit">Buat Program</button>
+        </form>
+      </div>
+      <div class="card" style="margin-top:16px;"><h3 class="section-title">Daftar Program</h3><div class="table-wrap"><table><thead><tr><th>Program</th><th>Tahun Ajaran</th><th>Periode</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="programsTable"></tbody></table></div></div>
     </div>
   </section>
 
-  <!-- ═══════════════════════════ LAPORAN NPET ═══════════════════════════ -->
   <section id="reportPage" class="hidden">
     <div class="dashboard-header no-print">
-      <div>
-        <h2>📄 Laporan NPET</h2>
-        <p class="small">Narasi Perkembangan Efektivitas Terlaksana — Program 30 Hari Hidup Sehat</p>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn light" onclick="showTeacher()">← Kembali</button>
-        <button class="btn primary" onclick="window.print()">🖨️ Cetak Laporan</button>
-        <select id="saveAsDropdown" onchange="handleSaveAs()" class="btn light" style="font-family:inherit;font-weight:800;border:none;outline:none;">
-          <option value="">💾 SIMPAN SEBAGAI</option>
-          <option value="pdf">PDF</option>
-          <option value="word">WORD</option>
-        </select>
+      <div><h2>📄 Laporan NPET</h2><p class="small">Narasi Perkembangan Efektivitas Terlaksana</p></div>
+      <div class="actions">
+        <button class="btn light" type="button" onclick="showTeacher()">← Kembali</button>
+        <button class="btn primary" type="button" onclick="window.print()">🖨️ Cetak</button>
+        <select id="saveAsDropdown" onchange="handleSaveAs()" class="btn light" style="width:auto;"><option value="">💾 Simpan Sebagai</option><option value="pdf">PDF</option><option value="word">WORD</option></select>
       </div>
     </div>
-
-    <div class="print-area" id="reportContent">
-      <div class="report-header">
-        <h2>Laporan NPET — Program 30 Hari Hidup Sehat</h2>
-        <p>SMP Negeri 1 Banyubiru &nbsp;•&nbsp; <span id="reportDate"></span></p>
-      </div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <h3 class="section-title">A. Ringkasan Eksekutif</h3>
-        <div id="reportSummary"></div>
-      </div>
-
+    <div id="reportMessage" role="status" aria-live="polite"></div>
+    <div id="reportContent">
+      <div class="report-header"><h2 id="reportTitle">Laporan NPET</h2><p><span id="reportSchool">-</span> • <span id="reportDate">-</span></p></div>
+      <div class="card" style="margin-bottom:16px;"><h3 class="section-title">A. Ringkasan Eksekutif</h3><div id="reportSummary"></div></div>
       <div class="card" style="margin-bottom:16px;">
         <h3 class="section-title">B. Data Statistik Program</h3>
         <div class="grid three">
@@ -367,631 +335,510 @@
           <div class="stat"><div class="label">Total Entri</div><div class="num" id="rTotalEntries">-</div></div>
           <div class="stat"><div class="label">Rata-rata Skor</div><div class="num" id="rAvgScore">-</div></div>
           <div class="stat"><div class="label">Siswa Kategori Sehat</div><div class="num" id="rHealthy">-</div></div>
-          <div class="stat"><div class="label">Kebiasaan Terpopuler</div><div class="num" id="rTopHabit" style="font-size:16px;">-</div></div>
-          <div class="stat"><div class="label">Kebiasaan Tersulit</div><div class="num" id="rHardHabit" style="font-size:16px;">-</div></div>
+          <div class="stat"><div class="label">Kebiasaan Terpopuler</div><div class="num" id="rTopHabit" style="font-size:15px;">-</div></div>
+          <div class="stat"><div class="label">Kebiasaan Tersulit</div><div class="num" id="rHardHabit" style="font-size:15px;">-</div></div>
         </div>
       </div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <h3 class="section-title">C. Analisis Keterlaksanaan per Kebiasaan</h3>
-        <div id="reportHabitAnalysis"></div>
-      </div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <h3 class="section-title">D. Distribusi Kategori Siswa</h3>
-        <div id="reportCategoryDist"></div>
-      </div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <h3 class="section-title">E. Rekomendasi Tindak Lanjut</h3>
-        <div id="reportRecommendations"></div>
-      </div>
-
-      <div class="card">
-        <h3 class="section-title">F. Kesimpulan &amp; Tanda Tangan</h3>
-        <div id="reportConclusion"></div>
-        <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:32px;">
-          <div style="text-align:center;">
-            <p style="margin:0;font-size:13px;color:var(--muted);">Mengetahui,<br>Kepala Sekolah</p>
-            <div style="height:60px;border-bottom:2px solid transparent;margin:16px 0;"></div>
-            <p style="margin:0;font-size:13px;font-weight:bold;">(Dra. Sriyatun, M.Si)</p>
-          </div>
-          <div style="text-align:center;">
-            <p style="margin:0;font-size:13px;color:var(--text);" id="signatureDate">Banyubiru, ........................</p>
-            <p style="margin:0;font-size:13px;color:var(--muted);">Guru PJOK,</p>
-            <div style="height:60px;border-bottom:2px solid transparent;margin:16px 0;"></div>
-            <p style="margin:0;font-size:13px;font-weight:bold;">(Fendi Akhmad, S.Pd)</p>
-          </div>
-        </div>
-      </div>
+      <div class="card" style="margin-bottom:16px;"><h3 class="section-title">C. Analisis Keterlaksanaan per Kebiasaan</h3><div id="reportHabitAnalysis"></div></div>
+      <div class="card" style="margin-bottom:16px;"><h3 class="section-title">D. Distribusi Kategori Siswa</h3><div id="reportCategoryDist"></div></div>
+      <div class="card" style="margin-bottom:16px;"><h3 class="section-title">E. Rekomendasi Tindak Lanjut</h3><div id="reportRecommendations"></div></div>
+      <div class="card"><h3 class="section-title">F. Kesimpulan &amp; Tanda Tangan</h3><div id="reportConclusion"></div><div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:32px;"><div style="text-align:center;"><p class="small">Mengetahui,<br>Kepala Sekolah</p><div style="height:65px;"></div><strong id="principalSignature">(........................)</strong></div><div style="text-align:center;"><p class="small" id="signatureDate">........................</p><p class="small">Admin Program</p><div style="height:48px;"></div><strong id="adminSignature">(........................)</strong></div></div></div>
     </div>
   </section>
 </div>
 
-<!-- ═══════════════════════════ MODAL PANDUAN ═══════════════════════════ -->
-<div id="guideModal" class="modal">
-  <div class="modal-card">
-    <div class="big" id="guideIcon">📊</div>
-    <h3 id="guideTitle">Panduan Dashboard Admin</h3>
-    <div id="guideBody"></div>
-    <button class="btn primary full" style="margin-top:16px;" onclick="closeModal('guideModal')">Mengerti, Tutup</button>
-  </div>
+<div id="guideModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+  <div class="modal-card"><div class="big">📊</div><h3 id="guideTitle">Panduan Admin</h3><ul><li>Gunakan filter tanggal, kelas, dan program untuk memuat dashboard server.</li><li>Kelola identitas sekolah, kelas, siswa, dan program dari menu utama.</li><li>Reset PIN membuat kredensial baru; PIN tidak pernah ditampilkan kembali oleh portal.</li><li>Laporan dan CSV mengikuti cakupan program/kelas terpilih.</li><li>Arsip tenant memerlukan kode sekolah dan dicatat dalam audit server.</li></ul><div class="notice">Semua akses dibatasi tenant dari sesi server, bukan ID sekolah dari browser.</div><button class="btn primary full" type="button" onclick="closeModal('guideModal')">Tutup</button></div>
 </div>
 
-<!-- ═══════════════════════════ MODAL KONFIRMASI RESET ═══════════════════════════ -->
-<div id="resetModal" class="modal">
-  <div class="modal-card">
-    <div class="big">⚠️</div>
-    <h3>Reset Semua Data?</h3>
-    <p style="text-align:center;">Tindakan ini akan menghapus seluruh data siswa secara permanen. Tidak dapat dibatalkan.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
-      <button class="btn light full" onclick="closeModal('resetModal')">Batal</button>
-      <button class="btn danger full" onclick="confirmReset()">Ya, Hapus Semua</button>
-    </div>
-  </div>
+<div id="archiveModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="archiveTitle">
+  <div class="modal-card"><div class="big">⚠️</div><h3 id="archiveTitle">Arsipkan Pengisian?</h3><p>Operasi ini mengarsipkan pengisian tenant. Ketik kode sekolah <strong id="archiveExpectedCode"></strong> untuk melanjutkan.</p><label for="archiveSchoolCode">Konfirmasi Kode Sekolah</label><input id="archiveSchoolCode" autocomplete="off" /><label for="archiveBeforeDate">Arsipkan Pengisian Sebelum Tanggal (Opsional)</label><input id="archiveBeforeDate" type="date" /><label for="archiveReason">Alasan</label><input id="archiveReason" maxlength="300" value="Arsip melalui portal admin" /><label style="display:flex;gap:10px;align-items:flex-start;font-weight:500;"><input id="archiveAcknowledge" type="checkbox" style="width:auto;margin-top:3px;" /> Saya memahami pengisian terpilih tidak lagi tampil pada dashboard aktif.</label><div id="archiveMessage"></div><div class="grid two" style="margin-top:14px;"><button class="btn light" type="button" onclick="closeModal('archiveModal')">Batal</button><button id="archiveBtn" class="btn danger" type="button" onclick="confirmArchive()">Arsipkan Pengisian</button></div></div>
 </div>
 
-<!-- ═══════════════════════════ JAVASCRIPT (ADMIN PANEL) ═══════════════════════════ -->
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const TEACHER_CODE = "ESNESABA123OKE";
-const PROGRAM_START = "2026-11-18"; // Tanggal mulai program — di-hardcode agar counter hari tidak reset
-
+"use strict";
+const API_BASE = "/api/admin";
 const HABITS = [
-  { id: "air",      icon: "💧", label: "Minum 8 gelas air putih",        pts: 12 },
-  { id: "buah",     icon: "🥗", label: "Makan buah atau sayur",           pts: 12 },
-  { id: "olahraga", icon: "🏃", label: "Olahraga / aktivitas fisik ≥30m", pts: 12 },
-  { id: "tidur",    icon: "😴", label: "Tidur cukup 7–9 jam",             pts: 12 },
-  { id: "jajan",    icon: "🚫", label: "Tidak jajan makanan/minuman yang mengandung banyak gula", pts: 11 },
-  { id: "cuci",     icon: "🤲", label: "Cuci tangan sebelum makan",        pts: 10 },
-  { id: "sarapan",  icon: "🍳", label: "Sarapan pagi",                    pts: 10 },
-  { id: "screen",   icon: "📱", label: "Screen time < 2 jam",             pts: 11 },
-  { id: "begadang", icon: "🌙", label: "Tidak begadang larut malam",      pts: 10 },
+  { id: "air", icon: "💧", label: "Minum 8 gelas air putih" },
+  { id: "buah", icon: "🥗", label: "Makan buah atau sayur" },
+  { id: "olahraga", icon: "🏃", label: "Olahraga / aktivitas fisik ≥30m" },
+  { id: "tidur", icon: "😴", label: "Tidur cukup 7–9 jam" },
+  { id: "jajan", icon: "🚫", label: "Tidak jajan makanan/minuman tinggi gula" },
+  { id: "cuci", icon: "🤲", label: "Cuci tangan sebelum makan" },
+  { id: "sarapan", icon: "🍳", label: "Sarapan pagi" },
+  { id: "screen", icon: "📱", label: "Screen time < 2 jam" },
+  { id: "begadang", icon: "🌙", label: "Tidak begadang larut malam" },
 ];
-
-// ─── STATE ────────────────────────────────────────────────────────────────────
+const state = { session: null, school: null, classes: [], students: [], programs: [], dashboard: null, report: null };
 let scoreChartObj = null;
 let submitChartObj = null;
+let handlingAuthFailure = false;
 
-// ─── DATA (localStorage) ──────────────────────────────────────────────────────
-function getData() {
-  return JSON.parse(localStorage.getItem("sehattrack_data") || "{}");
+class ApiError extends Error {
+  constructor(message, status, payload) { super(message); this.name = "ApiError"; this.status = status; this.payload = payload; }
 }
 
+function unwrap(payload) { return payload && typeof payload === "object" && "data" in payload ? payload.data : payload; }
+function text(value, fallback = "-") { return value === null || value === undefined || value === "" ? fallback : String(value); }
+function number(value, fallback = 0) { const parsed = Number(value); return Number.isFinite(parsed) ? parsed : fallback; }
+function clamp(value, min = 0, max = 100) { return Math.max(min, Math.min(max, number(value))); }
 function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
 }
-
-function formatDate(str) {
-  if (!str) return "";
-  const d = new Date(str + "T00:00:00");
-  return d.toLocaleDateString("id-ID", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+function formatDate(value) {
+  if (!value) return "-";
+  const raw = String(value).slice(0, 10);
+  const date = new Date(raw + "T00:00:00");
+  return Number.isNaN(date.getTime()) ? text(value) : date.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 }
-
-function programDay() {
-  const start = new Date(PROGRAM_START + "T00:00:00");
-  const today = new Date();
-  const diff = Math.floor((today - start) / 86400000) + 1;
-  return Math.max(1, Math.min(diff, 30));
+function setText(id, value, fallback = "-") { const node = document.getElementById(id); if (node) node.textContent = text(value, fallback); }
+function clearNode(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+function create(tag, options = {}) {
+  const node = document.createElement(tag);
+  if (options.className) node.className = options.className;
+  if (options.text !== undefined) node.textContent = text(options.text, "");
+  if (options.type) node.type = options.type;
+  return node;
 }
-
-function calcScore(checkedIds) {
-  return HABITS.reduce((s, h) => s + (checkedIds.includes(h.id) ? h.pts : 0), 0);
+function appendCell(row, value, options = {}) {
+  const cell = create("td");
+  if (options.strong) cell.appendChild(create("strong", { text: value })); else cell.textContent = text(value, options.fallback ?? "-");
+  row.appendChild(cell); return cell;
 }
-
-function scoreCategory(score) {
-  if (score >= 85) return { label: "🌟 Luar Biasa Sehat", color: "green" };
-  if (score >= 70) return { label: "💚 Sehat", color: "green" };
-  if (score >= 50) return { label: "🟡 Cukup Sehat", color: "orange" };
-  if (score >= 30) return { label: "🟠 Perlu Perhatian", color: "orange" };
-  return { label: "🔴 Perlu Bimbingan", color: "red" };
+function showMessage(id, message, type = "") {
+  const host = document.getElementById(id); if (!host) return;
+  clearNode(host); if (!message) return;
+  host.appendChild(create("div", { className: "notice " + type, text: message }));
 }
-
-// ─── UTILS ────────────────────────────────────────────────────────────────────
-function showMsg(elId, msg, type = "notice") {
-  document.getElementById(elId).innerHTML = `<div class="notice ${type === "error" ? "error" : type === "success" ? "success" : ""}">${msg}</div>`;
+function setBusy(button, busy, busyLabel) {
+  if (!button) return;
+  if (busy) { button.dataset.label = button.textContent; button.textContent = busyLabel; button.disabled = true; }
+  else { button.textContent = button.dataset.label || button.textContent; button.disabled = false; }
 }
-
-function hideAll() {
-  ["adminLoginPage", "teacherPage", "reportPage"].forEach(id => {
-    document.getElementById(id).classList.add("hidden");
-  });
+function showOnly(id) {
+  ["bootPage", "adminLoginPage", "passwordPage", "teacherPage", "reportPage"].forEach(name => document.getElementById(name).classList.toggle("hidden", name !== id));
 }
-
 function openModal(id) { document.getElementById(id).classList.add("show"); }
 function closeModal(id) { document.getElementById(id).classList.remove("show"); }
+document.querySelectorAll(".modal").forEach(modal => modal.addEventListener("click", event => { if (event.target === modal) closeModal(modal.id); }));
 
-document.querySelectorAll(".modal").forEach(m => {
-  m.addEventListener("click", e => { if (e.target === m) m.classList.remove("show"); });
-});
-
-// ─── ADMIN LOGIN ──────────────────────────────────────────────────────────────
-function adminLogin() {
-  const code = document.getElementById("teacherCode").value;
-  if (code !== TEACHER_CODE) return showMsg("loginMessage", "Kode admin salah.", "error");
-  showTeacher();
+function authMessage(payload, fallback) {
+  return payload?.error?.message || payload?.message || payload?.error || fallback;
 }
-
-function logout() {
-  hideAll();
-  document.getElementById("adminLoginPage").classList.remove("hidden");
-  document.getElementById("teacherPage").classList.add("hidden");
-  document.getElementById("reportPage").classList.add("hidden");
+async function api(path, options = {}) {
+  const method = (options.method || "GET").toUpperCase();
+  const headers = new Headers(options.headers || {});
+  headers.set("Accept", "application/json");
+  if (options.body !== undefined) headers.set("Content-Type", "application/json");
+  if (!/^(GET|HEAD|OPTIONS)$/.test(method) && state.session?.csrfToken) headers.set("X-CSRF-Token", state.session.csrfToken);
+  const response = await fetch(API_BASE + path, {
+    method, headers, credentials: "same-origin", cache: "no-store",
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+  });
+  const payload = response.status === 204 ? null : await response.json().catch(() => null);
+  if (!response.ok) {
+    const error = new ApiError(authMessage(payload, `Server merespons ${response.status}.`), response.status, payload);
+    if (options.handleAuth !== false && (response.status === 401 || response.status === 403)) handleAuthFailure(error);
+    throw error;
+  }
+  return unwrap(payload);
+}
+function handleAuthFailure(error) {
+  if (handlingAuthFailure) return;
+  handlingAuthFailure = true;
+  state.session = null;
+  const code = error.payload?.code || error.payload?.error?.code || "";
+  const licenseFailure = error.status === 403;
+  showLogin(licenseFailure ? `Akses lisensi ditolak${code ? ` (${code})` : ""}. Hubungi pengelola lisensi.` : "Sesi berakhir. Silakan masuk kembali.");
+  window.setTimeout(() => { handlingAuthFailure = false; }, 0);
+}
+function normalizedSession(raw) {
+  const value = unwrap(raw) || {};
+  const admin = value.admin || value.user || {};
+  return {
+    ...value,
+    authenticated: value.authenticated !== false && Boolean(admin.id || admin.username || value.csrfToken),
+    admin,
+    school: value.school || {},
+    license: value.license || {},
+    csrfToken: value.csrfToken || value.csrf || "",
+    mustChangePassword: Boolean(value.mustChangePassword ?? admin.mustChangePassword),
+  };
+}
+function showLogin(message = "") {
+  showOnly("adminLoginPage");
   document.getElementById("dayCounter").classList.add("hidden");
-  document.getElementById("teacherCode").value = "";
-  document.getElementById("loginMessage").innerHTML = "";
+  document.getElementById("licenseStatus").classList.add("hidden");
+  document.getElementById("licenseExpiry").classList.add("hidden");
+  setText("schoolHeader", "Portal administrasi sekolah");
+  document.getElementById("password").value = "";
+  showMessage("loginMessage", message, message ? "error" : "");
 }
-
-// ─── TEACHER DASHBOARD ────────────────────────────────────────────────────────
-function showTeacher() {
-  hideAll();
-  document.getElementById("teacherPage").classList.remove("hidden");
-  document.getElementById("dayCounter").textContent = `Hari ke-${programDay()}/30`;
-  document.getElementById("dayCounter").classList.remove("hidden");
-  document.getElementById("filterDate").value = todayStr();
-  loadTeacherDashboard();
-}
-
-function loadTeacherDashboard() {
-  const filterDate = document.getElementById("filterDate").value || todayStr();
-  const filterClass = document.getElementById("filterClass").value;
-  const data = getData();
-
-  let students = Object.entries(data);
-  if (filterClass) students = students.filter(([, v]) => v.classCode === filterClass);
-
-  const total = students.length;
-  const submitted = students.filter(([, v]) => v.submissions?.[filterDate]).length;
-  const notSubmitted = total - submitted;
-  const pct = total > 0 ? Math.round((submitted / total) * 100) : 0;
-
-  const scores = students
-    .map(([, v]) => v.submissions?.[filterDate]?.score)
-    .filter(s => s !== undefined);
-  const avg = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-
-  document.getElementById("statTotalStudents").textContent = total;
-  document.getElementById("statSubmitted").textContent = submitted;
-  document.getElementById("statNotSubmitted").textContent = notSubmitted;
-  document.getElementById("statPercentage").textContent = pct + "%";
-  document.getElementById("statAvgScore").textContent = avg;
-
-  const cat = scoreCategory(avg);
-  document.getElementById("statProgramStatus").innerHTML = pct >= 80
-    ? `<span class="badge">✅ Terlaksana Baik</span>`
-    : pct >= 50
-    ? `<span class="badge orange">⚠️ Perlu Dorongan</span>`
-    : `<span class="badge red">❗ Perlu Perhatian</span>`;
-
-  renderScoreChart(students);
-  renderSubmitChart(students);
-  renderLeaderboard(students);
-  renderAnalysis(students, filterDate);
-  renderStudentTable(students, filterDate);
-}
-
-function getLast7Days() {
-  const days = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    days.push(d.toISOString().slice(0, 10));
+async function bootstrapSession() {
+  showOnly("bootPage");
+  try {
+    const session = normalizedSession(await api("/session", { handleAuth: false }));
+    if (!session.authenticated) return showLogin();
+    await acceptSession(session);
+  } catch (error) {
+    if (error.status === 401) showLogin();
+    else if (error.status === 403) showLogin("Lisensi sekolah tidak aktif, telah dicabut, atau kedaluwarsa.");
+    else showLogin("Server belum dapat dihubungi. Coba lagi beberapa saat.");
   }
-  return days;
+}
+async function adminLogin(event) {
+  event.preventDefault();
+  const button = document.getElementById("loginBtn");
+  showMessage("loginMessage", ""); setBusy(button, true, "Memverifikasi…");
+  try {
+    await api("/login", { method: "POST", handleAuth: false, body: {
+      licenseKey: document.getElementById("licenseKey").value.trim(),
+      username: document.getElementById("username").value.trim(),
+      password: document.getElementById("password").value,
+    }});
+    document.getElementById("licenseKey").value = "";
+    document.getElementById("password").value = "";
+    const session = normalizedSession(await api("/session", { handleAuth: false }));
+    await acceptSession(session);
+  } catch (error) {
+    showMessage("loginMessage", error.message || "Login gagal.", "error");
+  } finally { setBusy(button, false); }
+}
+async function acceptSession(session) {
+  state.session = session;
+  state.school = session.school || {};
+  updateHeader();
+  if (session.mustChangePassword) { showOnly("passwordPage"); document.getElementById("currentPassword").focus(); return; }
+  showOnly("teacherPage");
+  await loadPortalData();
+}
+async function changePassword(event) {
+  event.preventDefault();
+  const currentPassword = document.getElementById("currentPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmation = document.getElementById("confirmPassword").value;
+  if (newPassword !== confirmation) return showMessage("passwordMessage", "Konfirmasi password tidak sama.", "error");
+  if (newPassword.length < 12) return showMessage("passwordMessage", "Password baru minimal 12 karakter.", "error");
+  const button = document.getElementById("passwordBtn"); setBusy(button, true, "Menyimpan…");
+  try {
+    await api("/change-password", { method: "POST", body: { currentPassword, newPassword } });
+    document.getElementById("passwordForm").reset();
+    const session = normalizedSession(await api("/session", { handleAuth: false }));
+    await acceptSession(session);
+  } catch (error) { showMessage("passwordMessage", error.message, "error"); }
+  finally { setBusy(button, false); }
+}
+async function logout() {
+  try { await api("/logout", { method: "POST", handleAuth: false }); } catch (_) { /* local view still closes */ }
+  state.session = null; state.school = null; state.dashboard = null; state.report = null;
+  showLogin("Anda telah keluar.");
+}
+function updateHeader() {
+  const school = state.school || state.session?.school || {};
+  const license = state.session?.license || {};
+  setText("schoolHeader", `${text(school.name, "Sekolah")} • ${text(school.code, "-")}`);
+  const status = String(license.status || "unknown").toLowerCase();
+  const statusNode = document.getElementById("licenseStatus");
+  statusNode.textContent = `Lisensi: ${status.toUpperCase()}`;
+  statusNode.className = "badge " + (status === "active" ? "" : status === "revoked" || status === "expired" ? "red" : "orange");
+  const expiryNode = document.getElementById("licenseExpiry");
+  expiryNode.textContent = `Berlaku s.d. ${formatDate(license.expiresAt)}`;
+  expiryNode.classList.remove("hidden");
+  const admin = state.session?.admin || {};
+  setText("adminMeta", `${text(admin.displayName || admin.username, "Admin")} • ${text(school.name, "Sekolah")}`);
 }
 
-function renderScoreChart(students) {
-  const days = getLast7Days();
-  const labels = days.map(d => new Date(d + "T00:00:00").toLocaleDateString("id-ID", { weekday: "short", day: "numeric" }));
-  const avgs = days.map(day => {
-    const scores = students.map(([, v]) => v.submissions?.[day]?.score).filter(s => s !== undefined);
-    return scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
-  });
-
-  const ctx = document.getElementById("scoreChart");
-  if (!ctx) return;
-  if (scoreChartObj) scoreChartObj.destroy();
-  scoreChartObj = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [{
-        label: "Rata-rata Skor",
-        data: avgs,
-        borderColor: "#2ECC71",
-        backgroundColor: "rgba(46,204,113,0.12)",
-        tension: 0.4, fill: true,
-        pointBackgroundColor: "#2ECC71",
-        spanGaps: true,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { y: { min: 0, max: 100, ticks: { stepSize: 20 } } }
-    }
-  });
+async function loadPortalData() {
+  showMessage("portalMessage", "Memuat data sekolah dari server…");
+  try {
+    const [school, classes, students, programs] = await Promise.all([
+      api("/school"), api("/classes"), api("/students"), api("/programs"),
+    ]);
+    state.school = school?.school || school || state.session.school;
+    state.classes = Array.isArray(classes) ? classes : classes?.classes || classes?.items || [];
+    state.students = Array.isArray(students) ? students : students?.students || students?.items || [];
+    state.programs = Array.isArray(programs) ? programs : programs?.programs || programs?.items || [];
+    state.session.school = state.school;
+    updateHeader(); renderSchool(); renderClasses(); renderStudents(); renderPrograms(); populateFilters();
+    showMessage("portalMessage", "");
+    await loadTeacherDashboard();
+  } catch (error) { showMessage("portalMessage", error.message || "Data portal gagal dimuat.", "error"); }
 }
-
-function renderSubmitChart(students) {
-  const days = getLast7Days();
-  const labels = days.map(d => new Date(d + "T00:00:00").toLocaleDateString("id-ID", { weekday: "short", day: "numeric" }));
-  const counts = days.map(day => students.filter(([, v]) => v.submissions?.[day]).length);
-
-  const ctx = document.getElementById("submitChart");
-  if (!ctx) return;
-  if (submitChartObj) submitChartObj.destroy();
-  submitChartObj = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: "Jumlah Pengisian",
-        data: counts,
-        backgroundColor: "rgba(52,152,219,0.7)",
-        borderRadius: 8,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-    }
-  });
+function showAdminView(id, button) {
+  document.querySelectorAll(".admin-view").forEach(view => view.classList.toggle("hidden", view.id !== id));
+  document.querySelectorAll(".nav-tabs .btn").forEach(item => item.classList.toggle("active", item === button));
 }
-
-function renderLeaderboard(students) {
-  const lb = students.map(([id, v]) => {
-    const allScores = Object.values(v.submissions || {}).map(s => s.score);
-    const avg = allScores.length ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 0;
-    return { id, avg, cls: v.classCode };
-  }).sort((a, b) => b.avg - a.avg).slice(0, 5);
-
-  const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
-  const el = document.getElementById("leaderboard");
-  if (!lb.length) { el.innerHTML = '<p class="small">Belum ada data.</p>'; return; }
-  el.innerHTML = lb.map((s, i) => `
-    <div class="lb-row">
-      <div class="lb-rank">${medals[i]}</div>
-      <div class="lb-name">${s.id} <span class="small">${s.cls}</span></div>
-      <div class="lb-score">${s.avg} pts</div>
-    </div>
-  `).join("");
-}
-
-function renderAnalysis(students, filterDate) {
-  const el = document.getElementById("analysisContent");
-  if (!students.length) { el.innerHTML = '<p class="small">Belum ada data siswa.</p>'; return; }
-
-  const habitCounts = {};
-  HABITS.forEach(h => habitCounts[h.id] = 0);
-  let submitters = 0;
-  students.forEach(([, v]) => {
-    const sub = v.submissions?.[filterDate];
-    if (sub) {
-      submitters++;
-      sub.habits.forEach(hid => { if (habitCounts[hid] !== undefined) habitCounts[hid]++; });
-    }
-  });
-
-  if (!submitters) { el.innerHTML = '<p class="small">Belum ada pengisian pada tanggal ini.</p>'; return; }
-
-  const sorted = HABITS.map(h => ({ ...h, count: habitCounts[h.id], pct: Math.round((habitCounts[h.id] / submitters) * 100) }))
-    .sort((a, b) => b.pct - a.pct);
-
-  const best = sorted[0];
-  const worst = sorted[sorted.length - 1];
-
-  const moods = {};
-  students.forEach(([, v]) => {
-    const m = v.submissions?.[filterDate]?.mood;
-    if (m) moods[m] = (moods[m] || 0) + 1;
-  });
-  const topMood = Object.entries(moods).sort((a, b) => b[1] - a[1])[0];
-
-  el.innerHTML = `
-    <div class="insight-item">
-      <div class="insight-icon">✅</div>
-      <div><strong>Kebiasaan terbaik:</strong> ${best.icon} ${best.label} — ${best.pct}% siswa melakukan</div>
-    </div>
-    <div class="insight-item">
-      <div class="insight-icon">⚠️</div>
-      <div><strong>Kebiasaan tersulit:</strong> ${worst.icon} ${worst.label} — hanya ${worst.pct}% siswa</div>
-    </div>
-    ${topMood ? `<div class="insight-item"><div class="insight-icon">😊</div><div><strong>Mood dominan:</strong> ${topMood[0]} (${topMood[1]} siswa)</div></div>` : ""}
-    <div class="insight-item">
-      <div class="insight-icon">💡</div>
-      <div><strong>Rekomendasi:</strong> ${worst.pct < 50 ? `Fokus intervensi pada kebiasaan "${worst.label}". Pertimbangkan tantangan kelompok.` : "Pertahankan momentum kelas! Semua kebiasaan di atas 50%."}</div>
-    </div>
-  `;
-}
-
-function renderStudentTable(students, filterDate) {
-  const tbody = document.getElementById("studentTable");
-  const rows = [];
-  students.forEach(([id, v]) => {
-    const sub = v.submissions?.[filterDate];
-    if (sub) {
-      const cat = scoreCategory(sub.score);
-      const habits = HABITS.filter(h => sub.habits.includes(h.id)).map(h => h.icon).join(" ");
-      rows.push(`
-        <tr>
-          <td><strong>${id}</strong></td>
-          <td><span class="badge blue">${v.classCode}</span></td>
-          <td>${formatDate(filterDate)}</td>
-          <td><strong>${sub.score}</strong>/100</td>
-          <td><span class="badge ${cat.color === 'orange' ? 'orange' : cat.color === 'red' ? 'red' : ''}">${cat.label}</span></td>
-          <td>${sub.mood || "-"}</td>
-          <td>${habits || "—"}</td>
-          <td style="max-width:200px;font-size:12px;color:var(--muted);">${sub.journal || "—"}</td>
-        </tr>
-      `);
-    }
-  });
-  tbody.innerHTML = rows.length ? rows.join("") : `<tr><td colspan="8" style="text-align:center;color:var(--muted);">Tidak ada pengisian pada tanggal ini</td></tr>`;
-}
-
-// ─── LAPORAN NPET ─────────────────────────────────────────────────────────────
-function showReportPage() {
-  hideAll();
-  document.getElementById("reportPage").classList.remove("hidden");
-  generateReport();
-}
-
-function collectReportData() {
-  const data = getData();
-  const students = Object.entries(data);
-  let totalEntries = 0;
-  let allScores = [];
-  const habitCounts = {};
-  HABITS.forEach(h => habitCounts[h.id] = 0);
-  const categories = { "Luar Biasa": 0, "Sehat": 0, "Cukup": 0, "Perhatian": 0, "Bimbingan": 0 };
-
-  students.forEach(([, v]) => {
-    Object.values(v.submissions || {}).forEach(sub => {
-      totalEntries++;
-      allScores.push(sub.score);
-      sub.habits.forEach(hid => { if (habitCounts[hid] !== undefined) habitCounts[hid]++; });
-      if (sub.score >= 85) categories["Luar Biasa"]++;
-      else if (sub.score >= 70) categories["Sehat"]++;
-      else if (sub.score >= 50) categories["Cukup"]++;
-      else if (sub.score >= 30) categories["Perhatian"]++;
-      else categories["Bimbingan"]++;
+function showTeacher() { showOnly("teacherPage"); }
+function populateFilters() {
+  const classSelects = [document.getElementById("filterClass"), document.getElementById("newStudentClass")];
+  classSelects.forEach((select, index) => {
+    const selected = select.value; clearNode(select);
+    const first = create("option", { text: index === 0 ? "Semua Kelas" : "Pilih kelas" }); first.value = ""; select.appendChild(first);
+    state.classes.filter(item => String(item.status || "active").toLowerCase() !== "archived").forEach(item => {
+      const option = create("option", { text: item.name }); option.value = text(item.id, ""); select.appendChild(option);
     });
+    if ([...select.options].some(option => option.value === selected)) select.value = selected;
   });
-
-  const avgScore = allScores.length ? Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length) : 0;
-  const healthyCount = students.filter(([, v]) => {
-    const scores = Object.values(v.submissions || {}).map(s => s.score);
-    return scores.length && (scores.reduce((a, b) => a + b, 0) / scores.length) >= 70;
-  }).length;
-
-  const sortedHabits = HABITS.map(h => ({ ...h, count: habitCounts[h.id] })).sort((a, b) => b.count - a.count);
-  const topHabit = sortedHabits[0];
-  const hardHabit = sortedHabits[sortedHabits.length - 1];
-
-  return { students, totalEntries, avgScore, healthyCount, sortedHabits, topHabit, hardHabit, categories };
+  const programSelect = document.getElementById("filterProgram"); const selectedProgram = programSelect.value; clearNode(programSelect);
+  const firstProgram = create("option", { text: "Program Aktif" }); firstProgram.value = ""; programSelect.appendChild(firstProgram);
+  state.programs.forEach(item => { const option = create("option", { text: `${text(item.name)} (${text(item.status)})` }); option.value = text(item.id, ""); programSelect.appendChild(option); });
+  if ([...programSelect.options].some(option => option.value === selectedProgram)) programSelect.value = selectedProgram;
 }
-
-function generateReport() {
-  const { students, totalEntries, avgScore, healthyCount, sortedHabits, topHabit, hardHabit, categories } = collectReportData();
-  document.getElementById("reportDate").textContent = formatDate(todayStr());
-  const sigDate = document.getElementById("signatureDate");
-  if (sigDate) sigDate.textContent = "Banyubiru, " + formatDate(todayStr());
-
-  document.getElementById("rTotalStudents").textContent = students.length;
-  document.getElementById("rTotalEntries").textContent = totalEntries;
-  document.getElementById("rAvgScore").textContent = avgScore + "/100";
-  document.getElementById("rHealthy").textContent = healthyCount + " siswa";
-  document.getElementById("rTopHabit").textContent = topHabit ? `${topHabit.icon} ${topHabit.label}` : "-";
-  document.getElementById("rHardHabit").textContent = hardHabit ? `${hardHabit.icon} ${hardHabit.label}` : "-";
-
-  const catObj = scoreCategory(avgScore);
-  document.getElementById("reportSummary").innerHTML = `
-    <p>Program 30 Hari Hidup Sehat SMP Negeri 1 Banyubiru saat ini berada pada <strong>Hari ke-${programDay()}</strong> dari 30 hari total pelaksanaan.
-    Sebanyak <strong>${students.length} siswa</strong> telah terdaftar dengan total <strong>${totalEntries} entri</strong> pengisian checklist.
-    Rata-rata skor kelas adalah <strong>${avgScore}/100</strong> (${catObj.label}).
-    Sebanyak <strong>${healthyCount} siswa (${students.length ? Math.round((healthyCount/students.length)*100) : 0}%)</strong> mencapai kategori Sehat atau di atasnya.</p>
-  `;
-
-  const habitRows = sortedHabits.map(h => {
-    const pct = totalEntries > 0 ? Math.round((h.count / totalEntries) * 100) : 0;
-    const bar = `<div class="progress-wrap" style="height:10px;margin-top:4px;"><div class="progress-bar" style="width:${pct}%;"></div></div>`;
-    return `<div style="margin-bottom:10px;font-size:13px;"><div><strong>${h.icon} ${h.label}</strong> — ${pct}% keterlaksanaan (${h.count}/${totalEntries} entri)</div>${bar}</div>`;
-  }).join("");
-  document.getElementById("reportHabitAnalysis").innerHTML = habitRows;
-
-  const catDist = Object.entries(categories).map(([k, v]) => {
-    const pct = totalEntries > 0 ? Math.round((v / totalEntries) * 100) : 0;
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #EEF6F0;font-size:13px;">
-      <span>${k}</span><span><strong>${v} entri</strong> (${pct}%)</span></div>`;
-  }).join("");
-  document.getElementById("reportCategoryDist").innerHTML = catDist;
-
-  const recs = [];
-  if (hardHabit && hardHabit.count / Math.max(totalEntries, 1) < 0.5) {
-    recs.push(`<li>Adakan tantangan khusus untuk meningkatkan kebiasaan <strong>${hardHabit.icon} ${hardHabit.label}</strong> yang masih rendah keterlaksanaannya.</li>`);
-  }
-  if (avgScore < 70) {
-    recs.push(`<li>Lakukan sesi motivasi dan sharing antar siswa untuk meningkatkan rata-rata skor kelas di atas 70.</li>`);
-  }
-  if (categories["Bimbingan"] > 0 || categories["Perhatian"] > 0) {
-    recs.push(`<li>Identifikasi dan berikan bimbingan personal kepada siswa dengan kategori Perlu Bimbingan dan Perlu Perhatian.</li>`);
-  }
-  recs.push(`<li>Lanjutkan pemantauan harian dan berikan apresiasi kepada siswa yang konsisten mengisi checklist.</li>`);
-  recs.push(`<li>Komunikasikan perkembangan program kepada orang tua/wali melalui laporan mingguan.</li>`);
-  document.getElementById("reportRecommendations").innerHTML = `<ul>${recs.join("")}</ul>`;
-
-  document.getElementById("reportConclusion").innerHTML = `
-    <p>Berdasarkan data yang terkumpul, program 30 Hari Hidup Sehat SMP Negeri 1 Banyubiru menunjukkan
-    ${avgScore >= 70 ? "perkembangan yang <strong>baik dan konsisten</strong>" : "perkembangan yang <strong>membutuhkan intervensi lebih lanjut</strong>"}.
-    Kebiasaan yang paling berhasil ditanamkan adalah <strong>${topHabit?.icon} ${topHabit?.label}</strong>,
-    sementara kebiasaan <strong>${hardHabit?.icon} ${hardHabit?.label}</strong> masih memerlukan perhatian dan strategi khusus.
-    Diharapkan program ini memberikan dampak positif jangka panjang pada gaya hidup sehat siswa.</p>
-  `;
+function dashboardQuery() {
+  const query = new URLSearchParams();
+  const date = document.getElementById("filterDate").value;
+  const classId = document.getElementById("filterClass").value;
+  if (date) query.set("date", date);
+  if (classId) query.set("classId", classId);
+  return query.toString();
 }
-
-// ─── GUIDE MODAL ──────────────────────────────────────────────────────────────
-function showGuide() {
-  document.getElementById("guideIcon").textContent = "📊";
-  document.getElementById("guideTitle").textContent = "Panduan Dashboard Admin";
-  document.getElementById("guideBody").innerHTML = `
-    <p>Dashboard ini membantu memantau pelaksanaan program 30 Hari Hidup Sehat.</p>
-    <ul>
-      <li>Gunakan <strong>Filter Tanggal &amp; Kelas</strong> untuk melihat data spesifik.</li>
-      <li>Grafik menampilkan tren 7 hari terakhir.</li>
-      <li><strong>Top 5 Pejuang Sehat</strong> dihitung dari rata-rata skor seluruh hari.</li>
-      <li><strong>Analisis Kebiasaan</strong> memberikan wawasan otomatis tentang kebiasaan yang sulit dilakukan kelas.</li>
-      <li>Cetak <strong>Laporan NPET</strong> untuk dokumentasi resmi program.</li>
-      <li>Export CSV untuk pengolahan data lebih lanjut.</li>
-    </ul>
-    <div class="notice">Status program dianggap "Terlaksana Baik" jika ≥80% siswa mengisi checklist pada tanggal yang dipilih.</div>
-  `;
-  openModal("guideModal");
+function reportQuery() {
+  const query = new URLSearchParams();
+  const selectedDate = document.getElementById("filterDate").value;
+  const classId = document.getElementById("filterClass").value;
+  const programId = document.getElementById("filterProgram").value;
+  const program = state.programs.find(item => String(item.id) === String(programId)) || state.programs.find(item => String(item.status).toLowerCase() === "active");
+  const to = selectedDate || program?.endDate || todayStr();
+  const from = program?.startDate || to;
+  query.set("from", from > to ? to : from);
+  query.set("to", to);
+  if (classId) query.set("classId", classId);
+  return query.toString();
 }
-
-// ─── EXPORT CSV ───────────────────────────────────────────────────────────────
-function exportCSV() {
-  const data = getData();
-  const rows = [["ID Siswa", "Kelas", "Tanggal", "Skor", "Kategori", "Mood", "Kebiasaan", "Jurnal"]];
-  Object.entries(data).forEach(([id, v]) => {
-    Object.entries(v.submissions || {}).forEach(([date, sub]) => {
-      const habits = HABITS.filter(h => sub.habits.includes(h.id)).map(h => h.label).join("; ");
-      rows.push([id, v.classCode, date, sub.score, scoreCategory(sub.score).label.replace(/[🌟💚🟡🟠🔴]/g, "").trim(), sub.mood, habits, sub.journal]);
-    });
+async function loadTeacherDashboard() {
+  const button = document.getElementById("dashboardLoadBtn"); setBusy(button, true, "Memuat…");
+  try {
+    const dashboard = await api("/dashboard?" + dashboardQuery());
+    state.dashboard = dashboard || {};
+    renderDashboard(state.dashboard);
+    showMessage("portalMessage", "");
+  } catch (error) { showMessage("portalMessage", error.message || "Dashboard gagal dimuat.", "error"); }
+  finally { setBusy(button, false); }
+}
+function summaryValue(summary, camel, snake) { return summary?.[camel] ?? summary?.[snake]; }
+function renderDashboard(data) {
+  const summary = data.stats || {};
+  const total = number(summaryValue(summary, "totalStudents", "total_students"));
+  const submitted = number(summaryValue(summary, "submitted", "submitted_count"));
+  const notSubmitted = summaryValue(summary, "notSubmitted", "not_submitted") ?? Math.max(total - submitted, 0);
+  const percentage = summaryValue(summary, "submissionRate", "submission_rate") ?? summary.percentage ?? (total ? Math.round(submitted / total * 100) : 0);
+  const average = summaryValue(summary, "averageScore", "average_score") ?? 0;
+  setText("statTotalStudents", total); setText("statSubmitted", submitted); setText("statNotSubmitted", notSubmitted);
+  setText("statPercentage", `${Math.round(number(percentage))}%`); setText("statAvgScore", Math.round(number(average)));
+  setText("statProgramStatus", summary.status || (percentage >= 80 ? "Terlaksana Baik" : percentage >= 50 ? "Perlu Dorongan" : "Perlu Perhatian"));
+  const program = data.program || state.programs.find(item => item.id === document.getElementById("filterProgram").value) || state.programs.find(item => item.status === "active");
+  const day = data.programDay ?? program?.day;
+  const duration = data.programDuration ?? program?.durationDays ?? 30;
+  const counter = document.getElementById("dayCounter");
+  if (day !== undefined && day !== null) { counter.textContent = `Hari ke-${day}/${duration}`; counter.classList.remove("hidden"); } else counter.classList.add("hidden");
+  renderCharts(data.trends || []); renderLeaderboard(data.leaderboard || []); renderAnalysis(data.habitStats || []); renderSubmissionTable(data.students || []);
+}
+function renderCharts(trends) {
+  const labels = trends.map(item => formatDate(item.date));
+  const scores = trends.map(item => item.averageScore ?? item.average_score ?? null);
+  const submitted = trends.map(item => item.submitted ?? item.submissionCount ?? item.submission_count ?? 0);
+  if (scoreChartObj) scoreChartObj.destroy(); if (submitChartObj) submitChartObj.destroy();
+  if (typeof Chart !== "function") return;
+  scoreChartObj = new Chart(document.getElementById("scoreChart"), { type: "line", data: { labels, datasets: [{ data: scores, borderColor: "#2ECC71", backgroundColor: "rgba(46,204,113,.12)", fill: true, tension: .35, spanGaps: true }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100 } } } });
+  submitChartObj = new Chart(document.getElementById("submitChart"), { type: "bar", data: { labels, datasets: [{ data: submitted, backgroundColor: "rgba(52,152,219,.72)", borderRadius: 7 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } });
+}
+function renderLeaderboard(items) {
+  const host = document.getElementById("leaderboard"); clearNode(host);
+  if (!items.length) return host.appendChild(create("p", { className: "small", text: "Belum ada data." }));
+  const medals = ["🥇", "🥈", "🥉", "4", "5"];
+  items.slice(0, 5).forEach((item, index) => {
+    const row = create("div", { className: "lb-row" }); row.appendChild(create("div", { className: "lb-rank", text: medals[index] }));
+    const name = create("div", { className: "lb-name", text: item.name || item.studentName || item.studentId });
+    name.appendChild(create("div", { className: "small", text: item.className || item.class || "" })); row.appendChild(name);
+    row.appendChild(create("div", { className: "lb-score", text: `${Math.round(number(item.averageScore ?? item.score))} pts` })); host.appendChild(row);
   });
-  const csv = rows.map(r => r.map(c => `"${String(c || "").replace(/"/g, '""')}"`).join(",")).join("\n");
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `SehatTrack_${todayStr()}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
 }
-
-// ─── RESET ────────────────────────────────────────────────────────────────────
-function resetAllData() { openModal("resetModal"); }
-function confirmReset() {
-  localStorage.removeItem("sehattrack_data");
-  closeModal("resetModal");
-  loadTeacherDashboard();
+function habitLabel(item) {
+  const known = HABITS.find(habit => habit.id === (item.id || item.habitId || item));
+  return item.label || item.name || known?.label || text(item.id || item.habitId || item);
 }
-
-// ─── FORMAL REPORT HTML (PDF / WORD) ──────────────────────────────────────────
-function getFormalReportHTML() {
-  const { students, totalEntries, avgScore, healthyCount, sortedHabits, topHabit, hardHabit, categories } = collectReportData();
-  const catObj = scoreCategory(avgScore);
-
-  let habitRows = "";
-  sortedHabits.forEach(h => {
-    const pct = totalEntries > 0 ? Math.round((h.count / totalEntries) * 100) : 0;
-    habitRows += `<tr><td style="padding:8px;"><strong>${h.icon} ${h.label}</strong></td><td style="padding:8px;">${pct}% (${h.count}/${totalEntries} entri)</td></tr>`;
+function renderAnalysis(items) {
+  const host = document.getElementById("analysisContent"); clearNode(host);
+  if (!items.length) return host.appendChild(create("p", { className: "small", text: "Belum ada analisis untuk filter ini." }));
+  items.forEach(item => {
+    const row = create("div", { className: "insight-item" });
+    row.appendChild(create("div", { className: "insight-icon", text: item.icon || HABITS.find(habit => habit.id === item.id)?.icon || "•" }));
+    const percentage = item.percentage ?? item.rate ?? 0;
+    row.appendChild(create("div", { text: `${habitLabel(item)} — ${Math.round(number(percentage))}% (${number(item.count)} pengisian)` })); host.appendChild(row);
   });
-
-  let catDist = "";
-  Object.entries(categories).forEach(([k, v]) => {
-    const pct = totalEntries > 0 ? Math.round((v / totalEntries) * 100) : 0;
-    catDist += `<tr><td style="padding:8px;">${k}</td><td style="padding:8px;"><strong>${v} entri</strong> (${pct}%)</td></tr>`;
+}
+function scoreCategory(score) {
+  score = number(score); if (score >= 85) return "Luar Biasa Sehat"; if (score >= 70) return "Sehat"; if (score >= 50) return "Cukup Sehat"; if (score >= 30) return "Perlu Perhatian"; return "Perlu Bimbingan";
+}
+function submissionHabitText(habits) { return Array.isArray(habits) ? habits.map(item => typeof item === "string" ? habitLabel(item) : habitLabel(item)).join("; ") : text(habits, "—"); }
+function renderSubmissionTable(items) {
+  const body = document.getElementById("studentTable"); clearNode(body);
+  if (!items.length) { const row = create("tr"); const cell = appendCell(row, "Tidak ada pengisian pada filter ini."); cell.colSpan = 9; cell.style.textAlign = "center"; body.appendChild(row); return; }
+  items.forEach(item => {
+    const row = create("tr"); appendCell(row, item.studentId || item.student_id, { strong: true }); appendCell(row, item.studentName || item.name);
+    appendCell(row, item.className || item.class); appendCell(row, formatDate(item.date)); appendCell(row, `${number(item.score)}/100`, { strong: true });
+    appendCell(row, item.category || scoreCategory(item.score)); appendCell(row, item.mood); appendCell(row, submissionHabitText(item.habits)); appendCell(row, item.journal, { fallback: "—" }); body.appendChild(row);
   });
-
-  const recs = [];
-  if (hardHabit && hardHabit.count / Math.max(totalEntries, 1) < 0.5) {
-    recs.push(`<li>Adakan tantangan khusus untuk meningkatkan kebiasaan <strong>${hardHabit.icon} ${hardHabit.label}</strong> yang masih rendah keterlaksanaannya.</li>`);
-  }
-  if (avgScore < 70) {
-    recs.push(`<li>Lakukan sesi motivasi dan sharing antar siswa untuk meningkatkan rata-rata skor kelas di atas 70.</li>`);
-  }
-  if (categories["Bimbingan"] > 0 || categories["Perhatian"] > 0) {
-    recs.push(`<li>Identifikasi dan berikan bimbingan personal kepada siswa dengan kategori Perlu Bimbingan dan Perlu Perhatian.</li>`);
-  }
-  recs.push(`<li>Lanjutkan pemantauan harian dan berikan apresiasi kepada siswa yang konsisten mengisi checklist.</li>`);
-  recs.push(`<li>Komunikasikan perkembangan program kepada orang tua/wali melalui laporan mingguan.</li>`);
-
-  const conclusion = `Berdasarkan data yang terkumpul, program 30 Hari Hidup Sehat SMP Negeri 1 Banyubiru menunjukkan ${avgScore >= 70 ? "perkembangan yang <strong>baik dan konsisten</strong>" : "perkembangan yang <strong>membutuhkan intervensi lebih lanjut</strong>"}. Kebiasaan yang paling berhasil ditanamkan adalah <strong>${topHabit?.icon} ${topHabit?.label}</strong>, sementara kebiasaan <strong>${hardHabit?.icon} ${hardHabit?.label}</strong> masih memerlukan perhatian dan strategi khusus. Diharapkan program ini memberikan dampak positif jangka panjang pada gaya hidup sehat siswa.`;
-
-  return `
-    <div style="font-family: sans-serif; color: #000; padding: 20px; position: relative;">
-      <img src="nutrifood.png" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; opacity: 0.15; z-index: -1; pointer-events: none;" alt="Watermark" />
-      <h2 style="text-align:center; margin-bottom: 0;">Laporan NPET — Program 30 Hari Hidup Sehat</h2>
-      <p style="text-align:center; margin-top: 5px;">SMP Negeri 1 Banyubiru • ${formatDate(todayStr())}</p>
-
-      <h3>A. Ringkasan Eksekutif</h3>
-      <p>Program 30 Hari Hidup Sehat SMP Negeri 1 Banyubiru saat ini berada pada <strong>Hari ke-${programDay()}</strong> dari 30 hari total pelaksanaan. Sebanyak <strong>${students.length} siswa</strong> telah terdaftar dengan total <strong>${totalEntries} entri</strong> pengisian checklist. Rata-rata skor kelas adalah <strong>${avgScore}/100</strong> (${catObj.label}). Sebanyak <strong>${healthyCount} siswa (${students.length ? Math.round((healthyCount/students.length)*100) : 0}%)</strong> mencapai kategori Sehat atau di atasnya.</p>
-
-      <h3>B. Data Statistik Program</h3>
-      <table border="1" style="width:100%; border-collapse: collapse; text-align: left; font-size: 13px;">
-        <tr><th style="padding:8px;">Total Siswa</th><td style="padding:8px;">${students.length}</td><th style="padding:8px;">Total Entri</th><td style="padding:8px;">${totalEntries}</td></tr>
-        <tr><th style="padding:8px;">Rata-rata Skor</th><td style="padding:8px;">${avgScore}/100</td><th style="padding:8px;">Siswa Kategori Sehat</th><td style="padding:8px;">${healthyCount} siswa</td></tr>
-        <tr><th style="padding:8px;">Kebiasaan Terpopuler</th><td style="padding:8px;">${topHabit ? topHabit.icon+' '+topHabit.label : '-'}</td><th style="padding:8px;">Kebiasaan Tersulit</th><td style="padding:8px;">${hardHabit ? hardHabit.icon+' '+hardHabit.label : '-'}</td></tr>
-      </table>
-
-      <h3>C. Analisis Keterlaksanaan per Kebiasaan</h3>
-      <table border="1" style="width:100%; border-collapse: collapse; text-align: left; font-size: 13px;">
-        <thead><tr><th style="padding:8px;width:60%;">Kebiasaan</th><th style="padding:8px;width:40%;">Persentase Keterlaksanaan</th></tr></thead>
-        <tbody>${habitRows}</tbody>
-      </table>
-
-      <h3>D. Distribusi Kategori Siswa</h3>
-      <table border="1" style="width:100%; border-collapse: collapse; text-align: left; font-size: 13px;">
-        <thead><tr><th style="padding:8px;width:60%;">Kategori</th><th style="padding:8px;width:40%;">Jumlah Entri</th></tr></thead>
-        <tbody>${catDist}</tbody>
-      </table>
-
-      <h3>E. Rekomendasi Tindak Lanjut</h3>
-      <ul>${recs.join("")}</ul>
-
-      <h3>F. Kesimpulan & Tanda Tangan</h3>
-      <p>${conclusion}</p>
-
-      <table border="0" style="width:100%; margin-top:30px; text-align:center; font-size: 13px;">
-        <tr>
-          <td style="width:50%; vertical-align: bottom;">
-            Mengetahui,<br>Kepala Sekolah
-            <br><br><br><br>
-            <strong>(Dra. Sriyatun, M.Si)</strong>
-          </td>
-          <td style="width:50%; vertical-align: bottom;">
-            <span>Banyubiru, ${formatDate(todayStr())}</span><br>Guru PJOK,
-            <br><br><br><br>
-            <strong>(Fendi Akhmad, S.Pd)</strong>
-          </td>
-        </tr>
-      </table>
-    </div>
-  `;
 }
 
+function renderSchool() {
+  const school = state.school || {};
+  document.getElementById("schoolCode").value = text(school.code, ""); document.getElementById("schoolName").value = text(school.name, "");
+  document.getElementById("schoolLevel").value = text(school.level, ""); document.getElementById("principalName").value = text(school.principalName, "");
+}
+async function saveSchool(event) {
+  event.preventDefault(); const button = document.getElementById("schoolSaveBtn"); setBusy(button, true, "Menyimpan…");
+  try {
+    const result = await api("/school", { method: "PATCH", body: { name: document.getElementById("schoolName").value.trim(), level: document.getElementById("schoolLevel").value.trim(), principalName: document.getElementById("principalName").value.trim() } });
+    state.school = result?.school || result || state.school; state.session.school = state.school; renderSchool(); updateHeader(); showMessage("portalMessage", "Identitas sekolah tersimpan.", "success");
+  } catch (error) { showMessage("portalMessage", error.message, "error"); } finally { setBusy(button, false); }
+}
+function renderClasses() {
+  const body = document.getElementById("classesTable"); clearNode(body);
+  if (!state.classes.length) { const row = create("tr"); const cell = appendCell(row, "Belum ada kelas."); cell.colSpan = 4; body.appendChild(row); return; }
+  state.classes.forEach(item => {
+    const row = create("tr"); appendCell(row, item.name, { strong: true }); appendCell(row, item.status || "active"); appendCell(row, item.studentCount ?? item.student_count ?? 0);
+    const actions = appendCell(row, ""); actions.textContent = "";
+    const rename = create("button", { className: "btn light small-btn", text: "Ubah", type: "button" }); rename.addEventListener("click", () => renameClass(item)); actions.appendChild(rename);
+    const remove = create("button", { className: "btn danger small-btn", text: "Arsip", type: "button" }); remove.style.marginLeft = "6px"; remove.addEventListener("click", () => archiveClass(item)); actions.appendChild(remove); body.appendChild(row);
+  });
+}
+async function createClass(event) {
+  event.preventDefault(); const button = document.getElementById("classCreateBtn"); setBusy(button, true, "Menambah…");
+  try { await api("/classes", { method: "POST", body: { name: document.getElementById("newClassName").value.trim() } }); document.getElementById("newClassName").value = ""; await reloadClasses(); showMessage("portalMessage", "Kelas ditambahkan.", "success"); }
+  catch (error) { showMessage("portalMessage", error.message, "error"); } finally { setBusy(button, false); }
+}
+async function reloadClasses() { const result = await api("/classes"); state.classes = Array.isArray(result) ? result : result?.classes || result?.items || []; renderClasses(); populateFilters(); }
+async function renameClass(item) {
+  const name = window.prompt("Nama kelas baru:", text(item.name, "")); if (name === null || !name.trim() || name.trim() === item.name) return;
+  try { await api(`/classes/${encodeURIComponent(item.id)}`, { method: "PATCH", body: { name: name.trim() } }); await reloadClasses(); showMessage("portalMessage", "Nama kelas diperbarui.", "success"); } catch (error) { showMessage("portalMessage", error.message, "error"); }
+}
+async function archiveClass(item) {
+  if (!window.confirm(`Arsipkan kelas ${text(item.name)}?`)) return;
+  try { await api(`/classes/${encodeURIComponent(item.id)}`, { method: "DELETE" }); await reloadClasses(); showMessage("portalMessage", "Kelas diarsipkan.", "success"); } catch (error) { showMessage("portalMessage", error.message, "error"); }
+}
+function classNameById(id) { return state.classes.find(item => String(item.id) === String(id))?.name || "-"; }
+function renderStudents() {
+  const body = document.getElementById("studentsTable"); clearNode(body);
+  const query = (document.getElementById("studentSearch")?.value || "").trim().toLocaleLowerCase("id-ID");
+  const items = state.students.filter(item => !query || [item.studentId, item.name, item.className, classNameById(item.classId)].some(value => String(value || "").toLocaleLowerCase("id-ID").includes(query)));
+  if (!items.length) { const row = create("tr"); const cell = appendCell(row, "Tidak ada siswa."); cell.colSpan = 5; body.appendChild(row); return; }
+  items.forEach(item => {
+    const row = create("tr"); appendCell(row, item.studentId || item.student_id, { strong: true }); appendCell(row, item.name); appendCell(row, item.className || classNameById(item.classId)); appendCell(row, item.status || "active");
+    const actions = appendCell(row, ""); actions.textContent = "";
+    const pin = create("button", { className: "btn light small-btn", text: "Reset PIN", type: "button" }); pin.addEventListener("click", () => resetStudentPin(item)); actions.appendChild(pin);
+    const toggle = create("button", { className: `btn ${String(item.status).toLowerCase() === "inactive" ? "primary" : "danger"} small-btn`, text: String(item.status).toLowerCase() === "inactive" ? "Aktifkan" : "Nonaktifkan", type: "button" }); toggle.style.marginLeft = "6px"; toggle.addEventListener("click", () => toggleStudent(item)); actions.appendChild(toggle); body.appendChild(row);
+  });
+}
+async function createStudent(event) {
+  event.preventDefault(); const button = document.getElementById("studentCreateBtn"); setBusy(button, true, "Menambah…");
+  try {
+    await api("/students", { method: "POST", body: { studentId: document.getElementById("newStudentId").value.trim(), name: document.getElementById("newStudentName").value.trim(), classId: document.getElementById("newStudentClass").value, pin: document.getElementById("newStudentPin").value } });
+    event.target.reset(); await reloadStudents(); showMessage("portalMessage", "Siswa ditambahkan. Sampaikan PIN awal melalui kanal aman.", "success");
+  } catch (error) { showMessage("portalMessage", error.message, "error"); } finally { setBusy(button, false); }
+}
+async function reloadStudents() { const result = await api("/students"); state.students = Array.isArray(result) ? result : result?.students || result?.items || []; renderStudents(); }
+async function resetStudentPin(item) {
+  const pin = window.prompt(`PIN baru untuk ${text(item.studentId || item.student_id)} (4–12 digit):`); if (pin === null) return;
+  if (!/^\d{4,12}$/.test(pin)) return showMessage("portalMessage", "PIN harus 4–12 digit.", "error");
+  try { await api(`/students/${encodeURIComponent(item.id)}/reset-pin`, { method: "POST", body: { pin } }); showMessage("portalMessage", "PIN siswa direset. Sampaikan PIN melalui kanal aman.", "success"); } catch (error) { showMessage("portalMessage", error.message, "error"); }
+}
+async function toggleStudent(item) {
+  const inactive = String(item.status).toLowerCase() === "inactive"; const status = inactive ? "active" : "inactive";
+  if (!window.confirm(`${inactive ? "Aktifkan" : "Nonaktifkan"} siswa ${text(item.studentId || item.student_id)}?`)) return;
+  try { await api(`/students/${encodeURIComponent(item.id)}`, { method: "PATCH", body: { status } }); await reloadStudents(); showMessage("portalMessage", "Status siswa diperbarui.", "success"); } catch (error) { showMessage("portalMessage", error.message, "error"); }
+}
+function renderPrograms() {
+  const body = document.getElementById("programsTable"); clearNode(body);
+  if (!state.programs.length) { const row = create("tr"); const cell = appendCell(row, "Belum ada program."); cell.colSpan = 5; body.appendChild(row); return; }
+  state.programs.forEach(item => {
+    const row = create("tr"); appendCell(row, item.name, { strong: true }); appendCell(row, item.academicYear || item.academic_year); appendCell(row, `${formatDate(item.startDate)} – ${formatDate(item.endDate)}`); appendCell(row, item.status);
+    const actions = appendCell(row, ""); actions.textContent = "";
+    if (String(item.status).toLowerCase() !== "active") { const activate = create("button", { className: "btn primary small-btn", text: "Aktifkan", type: "button" }); activate.addEventListener("click", () => updateProgramStatus(item, "active")); actions.appendChild(activate); }
+    if (String(item.status).toLowerCase() !== "archived") { const archive = create("button", { className: "btn danger small-btn", text: "Arsip", type: "button" }); archive.style.marginLeft = "6px"; archive.addEventListener("click", () => updateProgramStatus(item, "archived")); actions.appendChild(archive); } body.appendChild(row);
+  });
+}
+async function createProgram(event) {
+  event.preventDefault(); const startDate = document.getElementById("newProgramStart").value; const endDate = document.getElementById("newProgramEnd").value;
+  if (endDate < startDate) return showMessage("portalMessage", "Tanggal selesai harus setelah tanggal mulai.", "error");
+  const button = document.getElementById("programCreateBtn"); setBusy(button, true, "Membuat…");
+  try { await api("/programs", { method: "POST", body: { name: document.getElementById("newProgramName").value.trim(), academicYear: document.getElementById("newProgramYear").value.trim(), startDate, endDate, status: "draft" } }); await reloadPrograms(); showMessage("portalMessage", "Program dibuat sebagai draft.", "success"); }
+  catch (error) { showMessage("portalMessage", error.message, "error"); } finally { setBusy(button, false); }
+}
+async function reloadPrograms() { const result = await api("/programs"); state.programs = Array.isArray(result) ? result : result?.programs || result?.items || []; renderPrograms(); populateFilters(); }
+async function updateProgramStatus(item, status) {
+  if (!window.confirm(`${status === "active" ? "Aktifkan" : "Arsipkan"} program ${text(item.name)}?`)) return;
+  try { await api(`/programs/${encodeURIComponent(item.id)}`, { method: "PATCH", body: { status } }); await reloadPrograms(); showMessage("portalMessage", "Status program diperbarui.", "success"); } catch (error) { showMessage("portalMessage", error.message, "error"); }
+}
+
+function openArchiveModal() {
+  const code = text(state.school?.code, ""); setText("archiveExpectedCode", code, ""); document.getElementById("archiveSchoolCode").value = ""; document.getElementById("archiveAcknowledge").checked = false; showMessage("archiveMessage", ""); openModal("archiveModal");
+}
+async function confirmArchive() {
+  const code = document.getElementById("archiveSchoolCode").value.trim();
+  if (code !== text(state.school?.code, "")) return showMessage("archiveMessage", "Kode sekolah tidak cocok.", "error");
+  if (!document.getElementById("archiveAcknowledge").checked) return showMessage("archiveMessage", "Centang pernyataan pemahaman terlebih dahulu.", "error");
+  const button = document.getElementById("archiveBtn"); setBusy(button, true, "Mengarsipkan…");
+  const beforeDate = document.getElementById("archiveBeforeDate").value;
+  const reason = document.getElementById("archiveReason").value.trim();
+  try { await api("/archive-submissions", { method: "POST", body: { confirmSchoolCode: code, ...(beforeDate ? { beforeDate } : {}), ...(reason ? { reason } : {}) } }); closeModal("archiveModal"); state.report = null; await loadTeacherDashboard(); showMessage("portalMessage", "Pengisian tenant berhasil diarsipkan.", "success"); }
+  catch (error) { showMessage("archiveMessage", error.message, "error"); } finally { setBusy(button, false); }
+}
+
+async function showReportPage() {
+  showOnly("reportPage"); showMessage("reportMessage", "Menyusun laporan dari server…");
+  try { const report = await api("/reports?" + reportQuery()); state.report = report || {}; renderReport(state.report); showMessage("reportMessage", ""); }
+  catch (error) { showMessage("reportMessage", error.message || "Laporan gagal dimuat.", "error"); }
+}
+function reportSummary(report) { return report.summary || report.stats || {}; }
+function renderReport(report) {
+  const summary = reportSummary(report); const school = report.school || state.school || {}; const program = report.program || {};
+  setText("reportTitle", `Laporan NPET — ${text(program.name, "Program Hidup Sehat")}`); setText("reportSchool", school.name); setText("reportDate", formatDate(report.generatedAt || todayStr()));
+  const totalStudents = summary.totalStudents ?? summary.total_students ?? 0; const totalEntries = summary.totalEntries ?? summary.total_entries ?? 0;
+  const avg = summary.averageScore ?? summary.average_score ?? 0; const healthy = summary.healthyStudents ?? summary.healthy_students ?? 0;
+  setText("rTotalStudents", totalStudents); setText("rTotalEntries", totalEntries); setText("rAvgScore", `${Math.round(number(avg))}/100`); setText("rHealthy", `${healthy} siswa`);
+  const habits = report.habitStats || []; const sorted = [...habits].sort((a, b) => number(b.percentage ?? b.count) - number(a.percentage ?? a.count));
+  setText("rTopHabit", sorted.length ? `${sorted[0].icon || ""} ${habitLabel(sorted[0])}`.trim() : "-"); setText("rHardHabit", sorted.length ? `${sorted[sorted.length - 1].icon || ""} ${habitLabel(sorted[sorted.length - 1])}`.trim() : "-");
+  const summaryHost = document.getElementById("reportSummary"); clearNode(summaryHost);
+  summaryHost.appendChild(create("p", { text: report.narrative || `Program ${text(program.name, "hidup sehat")} mencatat ${totalEntries} entri dari ${totalStudents} siswa dengan rata-rata skor ${Math.round(number(avg))}/100. Sebanyak ${healthy} siswa berada pada kategori Sehat atau lebih tinggi.` }));
+  const habitHost = document.getElementById("reportHabitAnalysis"); clearNode(habitHost);
+  if (!habits.length) habitHost.appendChild(create("p", { className: "small", text: "Belum ada data kebiasaan." }));
+  habits.forEach(item => { const wrapper = create("div"); wrapper.style.marginBottom = "11px"; wrapper.appendChild(create("div", { text: `${item.icon || ""} ${habitLabel(item)} — ${Math.round(number(item.percentage))}% (${number(item.count)}/${number(totalEntries)} entri)` })); const track = create("div", { className: "progress-wrap" }); track.style.height = "10px"; track.style.marginTop = "5px"; const bar = create("div", { className: "progress-bar" }); bar.style.width = clamp(item.percentage) + "%"; track.appendChild(bar); wrapper.appendChild(track); habitHost.appendChild(wrapper); });
+  const categoryHost = document.getElementById("reportCategoryDist"); clearNode(categoryHost);
+  const categories = Array.isArray(report.categories) ? report.categories : Object.entries(report.categories || {}).map(([label, count]) => ({ label, count }));
+  if (!categories.length) categoryHost.appendChild(create("p", { className: "small", text: "Belum ada distribusi kategori." }));
+  categories.forEach(item => { const row = create("div"); row.style.cssText = "display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #EEF6F0;font-size:13px"; row.appendChild(create("span", { text: item.label || item.name })); row.appendChild(create("strong", { text: `${number(item.count)} entri (${Math.round(number(item.percentage ?? (totalEntries ? number(item.count) / totalEntries * 100 : 0)))}%)` })); categoryHost.appendChild(row); });
+  const recommendationsHost = document.getElementById("reportRecommendations"); clearNode(recommendationsHost); const list = create("ul");
+  (report.recommendations || ["Lanjutkan pemantauan harian dan berikan apresiasi atas konsistensi siswa."]).forEach(item => list.appendChild(create("li", { text: item }))); recommendationsHost.appendChild(list);
+  const conclusionHost = document.getElementById("reportConclusion"); clearNode(conclusionHost); conclusionHost.appendChild(create("p", { text: report.conclusion || "Program perlu dilanjutkan dengan evaluasi berkala berdasarkan data terotorisasi dari server." }));
+  setText("principalSignature", school.principalName ? `(${school.principalName})` : "(........................)"); setText("adminSignature", `(${text(state.session?.admin?.displayName || state.session?.admin?.username, "Admin")})`); setText("signatureDate", `${text(school.city, "")}${school.city ? ", " : ""}${formatDate(report.generatedAt || todayStr())}`);
+}
+function csvNeutralize(value) { const raw = value === null || value === undefined ? "" : String(value); return /^(?:[\t\r\n]|\s*[=+\-@])/.test(raw) ? "'" + raw : raw; }
+function csvCell(value) { return `"${csvNeutralize(value).replace(/"/g, '""')}"`; }
+async function exportCSV() {
+  try {
+    if (!state.report) state.report = await api("/reports?" + reportQuery());
+    const rows = [["ID Siswa", "Nama", "Kelas", "Tanggal", "Skor", "Kategori", "Mood", "Kebiasaan", "Jurnal"]];
+    (state.report.submissions || state.report.rows || []).forEach(item => rows.push([item.studentId || item.student_id, item.studentName || item.name, item.className || item.class, item.date, item.score, item.category || scoreCategory(item.score), item.mood, submissionHabitText(item.habits), item.journal]));
+    const csv = "\uFEFF" + rows.map(row => row.map(csvCell).join(",")).join("\r\n"); const blob = new Blob([csv], { type: "text/csv;charset=utf-8" }); const url = URL.createObjectURL(blob); const link = document.createElement("a");
+    link.href = url; link.download = `VITAQU_${text(state.school?.code, "SEKOLAH").replace(/[^A-Za-z0-9_-]/g, "_")}_${todayStr()}.csv`; document.body.appendChild(link); link.click(); link.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (error) { showMessage("portalMessage", error.message || "CSV gagal dibuat.", "error"); }
+}
 function handleSaveAs() {
-  const val = document.getElementById("saveAsDropdown").value;
-  if (!val) return;
-  document.getElementById("saveAsDropdown").value = "";
-
-  if (val === "pdf") {
-    const content = getFormalReportHTML();
-    html2pdf().from(content).set({
-      margin: 10,
-      filename: 'Laporan_NPET_' + todayStr() + '.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).save();
-  } else if (val === "word") {
-    const htmlBody = getFormalReportHTML();
-    const content = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Laporan NPET</title></head><body>" + htmlBody + "</body></html>";
-    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), content], { type: 'application/msword' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'Laporan_NPET_' + todayStr() + '.doc';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const select = document.getElementById("saveAsDropdown"); const value = select.value; select.value = ""; if (!value || !state.report) return;
+  if (value === "pdf") {
+    if (typeof html2pdf !== "function") return showMessage("reportMessage", "Pustaka PDF gagal dimuat. Gunakan tombol Cetak.", "error");
+    html2pdf().from(document.getElementById("reportContent")).set({ margin: 8, filename: `Laporan_NPET_${todayStr()}.pdf`, image: { type: "jpeg", quality: .97 }, html2canvas: { scale: 2 }, jsPDF: { unit: "mm", format: "a4", orientation: "portrait" } }).save();
+  } else {
+    const clone = document.getElementById("reportContent").cloneNode(true); const html = `<!doctype html><html><head><meta charset="utf-8"><title>Laporan NPET</title><style>body{font-family:Arial,sans-serif;color:#222}table{border-collapse:collapse;width:100%}.card{margin:16px 0}.grid{display:block}.stat{margin:8px 0}.progress-wrap{display:none}</style></head><body>${clone.outerHTML}</body></html>`;
+    const blob = new Blob(["\uFEFF", html], { type: "application/msword" }); const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = `Laporan_NPET_${todayStr()}.doc`; document.body.appendChild(link); link.click(); link.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 }
+function showGuide() { openModal("guideModal"); }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 document.getElementById("filterDate").value = todayStr();
+document.addEventListener("DOMContentLoaded", bootstrapSession);
 </script>
 </body>
 </html>

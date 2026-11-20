@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#06090f">
+  <title>VITAQU Control — Super Admin</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Lewati ke konten utama</a>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <section class="auth-view" id="authView" aria-labelledby="authTitle">
+    <div class="auth-shell">
+      <div class="auth-brand-row">
+        <div class="brand" aria-label="VITAQU Control">
+          <span class="brand-mark" aria-hidden="true">V</span>
+          <span class="brand-copy">
+            <span class="brand-name">VITAQU</span>
+            <span class="brand-role">Central Licensing Control</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="auth-layout">
+        <aside class="auth-story" aria-hidden="true">
+          <p class="eyebrow">Command center</p>
+          <h1>Kelola akses sekolah dengan <span>kendali penuh.</span></h1>
+          <p>Portal privat untuk penerbitan lisensi, pemantauan masa aktif, manajemen admin sekolah, dan audit aktivitas platform.</p>
+          <div class="trust-list">
+            <div class="trust-item">
+              <span class="trust-icon">2FA</span>
+              <div><strong>Proteksi dua faktor</strong><small>Password dan TOTP untuk setiap sesi super admin.</small></div>
+            </div>
+            <div class="trust-item">
+              <span class="trust-icon">1×</span>
+              <div><strong>Kredensial sekali tampil</strong><small>License key dan password awal tidak disimpan di browser.</small></div>
+            </div>
+            <div class="trust-item">
+              <span class="trust-icon">LOG</span>
+              <div><strong>Jejak audit menyeluruh</strong><small>Setiap perubahan sensitif dapat ditelusuri.</small></div>
+            </div>
+          </div>
+        </aside>
+
+        <main class="auth-card">
+          <div class="auth-security">Koneksi portal terlindungi</div>
+
+          <div id="loginPanel">
+            <p class="eyebrow">Super admin</p>
+            <h2 id="authTitle">Masuk ke VITAQU Control</h2>
+            <p class="auth-intro">Gunakan akun pusat dan kode autentikator enam digit.</p>
+
+            <form id="loginForm" novalidate>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="loginUsername">Username</label>
+                  <input id="loginUsername" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="80" required placeholder="superadmin">
+                </div>
+                <div class="field">
+                  <label for="loginPassword">Password</label>
+                  <div class="input-wrap">
+                    <input class="password-input" id="loginPassword" name="password" type="password" autocomplete="current-password" maxlength="256" required placeholder="Masukkan password">
+                    <button class="password-toggle" type="button" data-password-toggle="loginPassword" aria-label="Tampilkan password">Lihat</button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="loginTotp">Kode autentikator</label>
+                  <input class="totp-input" id="loginTotp" name="totp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="000000" aria-describedby="totpHelp">
+                  <p class="help-text" id="totpHelp">Buka aplikasi autentikator lalu masukkan kode aktif.</p>
+                </div>
+              </div>
+              <details class="enrollment-box">
+                <summary style="cursor:pointer;font-size:12px;font-weight:800;color:var(--gold-light)">Login pertama? Hubungkan autentikator</summary>
+                <ol class="enrollment-steps" style="margin-top:12px;margin-bottom:0">
+                  <li>Buka file kredensial bootstrap yang diberikan operator platform.</li>
+                  <li>Tambahkan akun di aplikasi TOTP memakai secret manual atau URI <code>otpauth://</code> dalam file tersebut.</li>
+                  <li>Masukkan kode enam digit yang muncul, lalu login. Secret tidak pernah diminta kembali oleh portal ini.</li>
+                </ol>
+              </details>
+              <button class="btn btn-primary btn-block" id="loginSubmit" type="submit" style="margin-top:20px">Masuk aman</button>
+              <div class="form-message" id="loginMessage" role="alert" aria-live="polite"></div>
+            </form>
+          </div>
+
+          <p class="auth-foot">Portal terbatas. Seluruh login dan perubahan administrasi dicatat untuk keamanan.</p>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-view" id="appView" hidden>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">V</span>
+        <span class="brand-copy">
+          <span class="brand-name">VITAQU</span>
+          <span class="brand-role">Super Admin Portal</span>
+        </span>
+      </div>
+      <div class="topbar-actions">
+        <div class="user-chip" aria-label="Akun aktif">
+          <span class="user-avatar" id="userAvatar">SA</span>
+          <span class="user-copy"><strong id="currentUsername">Super Admin</strong><small>Kontrol pusat</small></span>
+        </div>
+        <button class="btn btn-quiet" id="logoutButton" type="button" aria-label="Keluar dari portal">Keluar</button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navigasi utama">
+        <nav class="nav-list">
+          <button class="nav-button active" type="button" data-view="dashboard"><span class="nav-glyph">DB</span>Dashboard</button>
+          <button class="nav-button" type="button" data-view="licenses"><span class="nav-glyph">LIC</span>Lisensi</button>
+          <button class="nav-button" type="button" data-view="audit"><span class="nav-glyph">LOG</span>Audit</button>
+        </nav>
+        <div class="sidebar-note">
+          <strong>VITAQU Platform</strong>
+          <p>Kendali lisensi server-side. Perubahan status berlaku pada akses admin sekolah berikutnya.</p>
+        </div>
+      </aside>
+
+      <main class="main-content" id="mainContent" tabindex="-1">
+        <section class="view" id="dashboardView" data-view-panel="dashboard">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">Ringkasan platform</p>
+              <h1>Dashboard</h1>
+              <p>Pantau kesehatan lisensi seluruh sekolah dalam satu layar.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-secondary" type="button" data-refresh="dashboard">Muat ulang</button>
+              <button class="btn btn-primary" type="button" data-open-create>Buat sekolah &amp; lisensi</button>
+            </div>
+          </div>
+
+          <div class="stats-grid" aria-label="Statistik lisensi">
+            <article class="stat-card gold"><span class="stat-label">Total sekolah</span><strong class="stat-value" id="statSchools">—</strong><span class="stat-meta">terdaftar</span></article>
+            <article class="stat-card green"><span class="stat-label">Lisensi aktif</span><strong class="stat-value" id="statActive">—</strong><span class="stat-meta">dapat digunakan</span></article>
+            <article class="stat-card amber"><span class="stat-label">Segera berakhir</span><strong class="stat-value" id="statExpiring">—</strong><span class="stat-meta">≤ 30 hari</span></article>
+            <article class="stat-card red"><span class="stat-label">Kedaluwarsa</span><strong class="stat-value" id="statExpired">—</strong><span class="stat-meta">perlu tindakan</span></article>
+            <article class="stat-card red"><span class="stat-label">Dicabut</span><strong class="stat-value" id="statRevoked">—</strong><span class="stat-meta">akses diblokir</span></article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="panel">
+              <div class="panel-header">
+                <div><h2>Lisensi perlu perhatian</h2><p>Kedaluwarsa terdekat, expired, atau revoked.</p></div>
+                <button class="btn btn-quiet btn-small" type="button" data-view-link="licenses">Lihat semua</button>
+              </div>
+              <div class="mini-list" id="attentionList"></div>
+            </article>
+
+            <article class="panel health-meter">
+              <div class="panel-header"><div><h2>Kesehatan lisensi</h2><p>Proporsi lisensi aktif.</p></div></div>
+              <div class="health-ring" id="healthRing" style="--health-angle:0deg"><strong class="health-value" id="healthValue">0%</strong></div>
+              <p class="health-copy" id="healthCopy">Memuat kondisi platform…</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="licensesView" data-view-panel="licenses" hidden>
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">Entitlement sekolah</p>
+              <h1>Lisensi</h1>
+              <p>Cari sekolah, periksa masa berlaku, dan kelola akses admin.</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-secondary" type="button" data-refresh="licenses">Muat ulang</button>
+              <button class="btn btn-primary" type="button" data-open-create>Buat lisensi</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="toolbar">
+              <div class="search-box">
+                <label class="sr-only" for="licenseSearch">Cari lisensi</label>
+                <input id="licenseSearch" type="search" autocomplete="off" placeholder="Cari nama atau kode sekolah…">
+              </div>
+              <div>
+                <label class="sr-only" for="licenseStatusFilter">Filter status</label>
+                <select id="licenseStatusFilter">
+                  <option value="all">Semua status</option>
+                  <option value="active">Aktif</option>
+                  <option value="expiring">Segera berakhir</option>
+                  <option value="expired">Kedaluwarsa</option>
+                  <option value="revoked">Dicabut</option>
+                </select>
+              </div>
+              <button class="btn btn-secondary" id="clearFilters" type="button">Reset filter</button>
+            </div>
+            <div class="result-line"><span id="licenseResultCount">0 lisensi</span><span id="licenseUpdatedAt"></span></div>
+            <div class="license-list" id="licenseList"></div>
+            <div id="licenseLoadMore" style="margin-top:14px" hidden><button class="btn btn-secondary btn-block" id="loadMoreLicenses" type="button">Muat berikutnya</button></div>
+          </div>
+        </section>
+
+        <section class="view" id="auditView" data-view-panel="audit" hidden>
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">Jejak perubahan</p>
+              <h1>Audit</h1>
+              <p>Tinjau login dan operasi sensitif seluruh platform.</p>
+            </div>
+            <div class="view-actions"><button class="btn btn-secondary" type="button" data-refresh="audit">Muat ulang</button></div>
+          </div>
+
+          <div class="panel">
+            <div class="toolbar">
+              <div class="search-box">
+                <label class="sr-only" for="auditSearch">Cari audit</label>
+                <input id="auditSearch" type="search" autocomplete="off" placeholder="Cari aksi, aktor, atau sekolah…">
+              </div>
+              <div>
+                <label class="sr-only" for="auditActionFilter">Filter aksi</label>
+                <select id="auditActionFilter"><option value="all">Semua aksi</option></select>
+              </div>
+              <button class="btn btn-secondary" id="clearAuditFilters" type="button">Reset filter</button>
+            </div>
+            <div class="result-line"><span id="auditResultCount">0 aktivitas</span><span id="auditUpdatedAt"></span></div>
+            <div class="audit-list" id="auditList"></div>
+            <div id="auditLoadMore" style="margin-top:14px" hidden><button class="btn btn-secondary btn-block" id="loadMoreAudit" type="button">Muat berikutnya</button></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama seluler">
+      <button class="nav-button active" type="button" data-view="dashboard"><span class="nav-glyph">DB</span>Dashboard</button>
+      <button class="nav-button" type="button" data-view="licenses"><span class="nav-glyph">LIC</span>Lisensi</button>
+      <button class="nav-button" type="button" data-view="audit"><span class="nav-glyph">LOG</span>Audit</button>
+    </nav>
+  </section>
+
+  <dialog class="dialog-wide" id="createDialog" aria-labelledby="createTitle">
+    <form class="dialog-sheet" id="createForm" novalidate>
+      <header class="dialog-header">
+        <div><h2 id="createTitle">Sekolah &amp; lisensi baru</h2><p>Kredensial awal akan ditampilkan sekali setelah berhasil.</p></div>
+        <button class="icon-button" type="button" data-close-dialog="createDialog" aria-label="Tutup">×</button>
+      </header>
+      <div class="dialog-body">
+        <section class="form-section">
+          <h3 class="section-title">Identitas sekolah</h3>
+          <div class="form-grid two">
+            <div class="field"><label for="schoolName">Nama sekolah</label><input id="schoolName" name="school_name" maxlength="160" required placeholder="SMP Negeri 1 Banyubiru"></div>
+            <div class="field"><label for="schoolCode">Kode sekolah</label><input id="schoolCode" name="school_code" maxlength="32" required autocapitalize="characters" spellcheck="false" placeholder="SMPN1BBR" aria-describedby="schoolCodeHelp"><p class="help-text" id="schoolCodeHelp">Huruf, angka, tanda hubung, atau garis bawah.</p></div>
+            <div class="field"><label for="schoolLevel">Jenjang</label><select id="schoolLevel" name="school_level" required><option value="">Pilih jenjang</option><option value="SD">SD / sederajat</option><option value="SMP">SMP / sederajat</option><option value="SMA">SMA / sederajat</option><option value="SMK">SMK</option><option value="OTHER">Lainnya</option></select></div>
+            <div class="field"><label for="principalName">Nama kepala sekolah</label><input id="principalName" name="principal_name" maxlength="160" required placeholder="Nama lengkap dan gelar"></div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3 class="section-title">Masa berlaku lisensi</h3>
+          <fieldset style="border:0;padding:0;margin:0">
+            <legend class="sr-only">Pilih durasi lisensi</legend>
+            <div class="duration-options">
+              <div class="choice"><input id="duration30" name="duration" type="radio" value="30" checked><label for="duration30">30 hari</label></div>
+              <div class="choice"><input id="duration90" name="duration" type="radio" value="90"><label for="duration90">90 hari</label></div>
+              <div class="choice"><input id="duration365" name="duration" type="radio" value="365"><label for="duration365">365 hari</label></div>
+              <div class="choice"><input id="durationCustom" name="duration" type="radio" value="custom"><label for="durationCustom">Custom</label></div>
+            </div>
+          </fieldset>
+          <div class="form-grid two" style="margin-top:14px">
+            <div class="field" id="customDateField" hidden><label for="customExpiresAt">Tanggal berakhir</label><input id="customExpiresAt" name="expires_at" type="date"></div>
+            <div class="field"><label for="maxAdmins">Maksimum akun admin</label><input id="maxAdmins" name="max_admins" type="number" inputmode="numeric" min="1" max="100" value="1" required></div>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3 class="section-title">Admin sekolah pertama</h3>
+          <div class="form-grid two">
+            <div class="field"><label for="initialAdminUsername">Username awal</label><input id="initialAdminUsername" name="initial_admin_username" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80" required placeholder="admin.sekolah"></div>
+          </div>
+          <p class="help-text">Password dibuat server dan wajib diganti saat login pertama.</p>
+        </section>
+
+        <div class="form-message" id="createMessage" role="alert" aria-live="polite"></div>
+      </div>
+      <footer class="dialog-footer">
+        <button class="btn btn-secondary" type="button" data-close-dialog="createDialog">Batal</button>
+        <button class="btn btn-primary" id="createSubmit" type="submit">Buat sekolah &amp; lisensi</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="credentialsDialog" aria-labelledby="credentialsTitle">
+    <div class="dialog-sheet">
+      <header class="dialog-header">
+        <div><h2 id="credentialsTitle">Simpan kredensial sekarang</h2><p id="credentialsSubtitle">Nilai ini tidak dapat ditampilkan kembali.</p></div>
+      </header>
+      <div class="dialog-body">
+        <div class="secret-warning"><strong>Penting:</strong> salin ke pengelola password aman. Jangan kirim license key dan password melalui kanal yang sama.</div>
+        <div class="secret-stack" id="credentialSecrets"></div>
+        <label class="acknowledge"><input id="credentialsAcknowledged" type="checkbox"><span>Saya sudah menyimpan seluruh kredensial di tempat aman.</span></label>
+      </div>
+      <footer class="dialog-footer">
+        <button class="btn btn-primary" id="closeCredentials" type="button" disabled>Tutup dan hapus dari layar</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog class="dialog-wide" id="detailDialog" aria-labelledby="detailTitle">
+    <div class="dialog-sheet">
+      <header class="dialog-header">
+        <div><h2 id="detailTitle">Detail lisensi</h2><p>Identitas, status, dan akun admin sekolah.</p></div>
+        <button class="icon-button" type="button" data-close-dialog="detailDialog" aria-label="Tutup">×</button>
+      </header>
+      <div class="dialog-body" id="detailBody"></div>
+      <footer class="dialog-footer"><button class="btn btn-secondary" type="button" data-close-dialog="detailDialog">Tutup</button></footer>
+    </div>
+  </dialog>
+
+  <dialog id="extendDialog" aria-labelledby="extendTitle">
+    <form class="dialog-sheet" id="extendForm" novalidate>
+      <header class="dialog-header"><div><h2 id="extendTitle">Perpanjang lisensi</h2><p>Tambahkan durasi dari tanggal berakhir saat ini.</p></div><button class="icon-button" type="button" data-close-dialog="extendDialog" aria-label="Tutup">×</button></header>
+      <div class="dialog-body">
+        <div class="field"><label for="extendDays">Tambahan hari</label><select id="extendDays" name="days"><option value="30">30 hari</option><option value="90">90 hari</option><option value="365">365 hari</option><option value="custom">Custom</option></select></div>
+        <div class="field" id="extendCustomField" style="margin-top:14px" hidden><label for="extendCustomDate">Tanggal berakhir baru</label><input id="extendCustomDate" name="expires_at" type="date"></div>
+        <div class="form-message" id="extendMessage" role="alert" aria-live="polite"></div>
+      </div>
+      <footer class="dialog-footer"><button class="btn btn-secondary" type="button" data-close-dialog="extendDialog">Batal</button><button class="btn btn-primary" id="extendSubmit" type="submit">Perpanjang</button></footer>
+    </form>
+  </dialog>
+
+  <dialog id="adminDialog" aria-labelledby="adminDialogTitle">
+    <form class="dialog-sheet" id="adminForm" novalidate>
+      <header class="dialog-header"><div><h2 id="adminDialogTitle">Tambah admin sekolah</h2><p>Password awal akan ditampilkan sekali.</p></div><button class="icon-button" type="button" data-close-dialog="adminDialog" aria-label="Tutup">×</button></header>
+      <div class="dialog-body">
+        <div class="field"><label for="newAdminUsername">Username</label><input id="newAdminUsername" name="username" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80" required placeholder="admin.kedua"></div>
+        <div class="form-message" id="adminMessage" role="alert" aria-live="polite"></div>
+      </div>
+      <footer class="dialog-footer"><button class="btn btn-secondary" type="button" data-close-dialog="adminDialog">Batal</button><button class="btn btn-primary" id="adminSubmit" type="submit">Tambah admin</button></footer>
+    </form>
+  </dialog>
+
+  <dialog id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="dialog-sheet">
+      <header class="dialog-header"><div><h2 id="confirmTitle">Konfirmasi tindakan</h2><p id="confirmSubtitle"></p></div><button class="icon-button" type="button" data-close-dialog="confirmDialog" aria-label="Tutup">×</button></header>
+      <div class="dialog-body"><p class="confirm-copy" id="confirmCopy"></p><div class="field" id="confirmReasonField" style="margin-top:16px" hidden><label for="confirmReason">Alasan</label><textarea id="confirmReason" maxlength="500" placeholder="Catat alasan untuk audit…"></textarea></div><div class="form-message" id="confirmMessage" role="alert" aria-live="polite"></div></div>
+      <footer class="dialog-footer"><button class="btn btn-secondary" type="button" data-close-dialog="confirmDialog">Batal</button><button class="btn btn-danger" id="confirmAction" type="button">Lanjutkan</button></footer>
+    </div>
+  </dialog>
+
+  <div class="toast-region" id="toastRegion" role="status" aria-live="polite" aria-atomic="false"></div>
+  <div class="global-busy" id="globalBusy" hidden aria-live="polite"><div class="busy-card"><span class="spinner" aria-hidden="true"></span><span id="busyLabel">Memproses…</span></div></div>
+</body>
+</html>
