@@ -97,16 +97,16 @@ function isSafePushEndpoint(value: string): boolean {
     const url = new URL(value);
     if (url.protocol !== "https:" || value.length > 2048) return false;
     const host = url.hostname.toLowerCase();
-    if (
-      host === "localhost" ||
-      host === "127.0.0.1" ||
-      host === "::1" ||
-      host.endsWith(".local") ||
-      /^10\./.test(host) ||
-      /^192\.168\./.test(host) ||
-      /^172\.(1[6-9]|2\d|3[01])\./.test(host)
-    ) return false;
-    return true;
+    return (
+      host === "fcm.googleapis.com" ||
+      host === "web.push.apple.com" ||
+      host === "push.services.mozilla.com" ||
+      host.endsWith(".push.services.mozilla.com") ||
+      host === "notify.windows.com" ||
+      host.endsWith(".notify.windows.com") ||
+      host === "push.microsoft.com" ||
+      host.endsWith(".push.microsoft.com")
+    );
   } catch {
     return false;
   }
@@ -314,6 +314,9 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
 
   const { pathname } = new URL(request.url);
+  if (request.method !== "GET" && !request.headers.get("origin")) {
+    return json({ error: "Origin diperlukan" }, 403, cors);
+  }
   try {
     if (request.method === "GET" && pathname === "/v1/health") {
       return json({
