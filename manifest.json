@@ -39,6 +39,13 @@
       "description": "Langsung ke halaman login member",
       "url": "/login.html?source=pwa-shortcut",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Checklist Hari Ini",
+      "short_name": "Checklist",
+      "description": "Buka checklist kebiasaan sehat hari ini",
+      "url": "/app.html?source=pwa-shortcut",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

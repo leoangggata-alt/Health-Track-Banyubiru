@@ -4,7 +4,7 @@
    - Aset statis (CSS/JS lokal, gambar, font): stale-while-revalidate
    - Video besar: cache-first setelah pertama kali termuat, range request dilewatan langsung
 */
-const VERSION = "vitaqu-v12";
+const VERSION = "vitaqu-v13";
 const STATIC_CACHE = `${VERSION}-static`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -48,6 +48,57 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("message", (event) => {
   if (event.data === "SKIP_WAITING") self.skipWaiting();
+});
+
+// ─── WEB PUSH: tampil walau PWA sedang ditutup ───────────────────────────────
+self.addEventListener("push", (event) => {
+  let payload = {
+    title: "VITAQU • Pengingat Sehat",
+    body: "Saatnya mencatat kebiasaan sehatmu hari ini.",
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    tag: "vitaqu-reminder",
+    data: { url: "/app.html?from=notification" },
+  };
+
+  if (event.data) {
+    try {
+      payload = { ...payload, ...event.data.json() };
+    } catch {
+      payload.body = event.data.text() || payload.body;
+    }
+  }
+
+  const { title, ...options } = payload;
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      ...options,
+      icon: options.icon || "/icons/icon-192.png",
+      badge: options.badge || "/icons/icon-192.png",
+      data: { url: "/app.html?from=notification", ...(options.data || {}) },
+      actions: [{ action: "open-checklist", title: "Buka Checklist" }],
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(
+    event.notification.data?.url || "/app.html?from=notification",
+    self.location.origin,
+  ).href;
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (windows) => {
+      for (const client of windows) {
+        if (new URL(client.url).origin === self.location.origin) {
+          await client.navigate(target);
+          return client.focus();
+        }
+      }
+      return clients.openWindow(target);
+    }),
+  );
 });
 
 function isNavigation(request) {

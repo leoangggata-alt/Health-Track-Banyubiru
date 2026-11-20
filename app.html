@@ -223,6 +223,54 @@
       background: rgba(245,197,66,.06); border-left: 6px solid var(--gold); padding: 14px;
       border-radius: 16px; font-weight: 600; text-align: left; color: var(--gold-bright);
     }
+
+    /* ── PENGINGAT SEHAT ───────────────────────────────────── */
+    .reminder-modal-card { width: min(100%, 620px); text-align: left; }
+    .reminder-modal-card > .big, .reminder-modal-card > h3, .reminder-lead { text-align: center; }
+    .reminder-status {
+      display: flex; align-items: center; gap: 12px; padding: 14px 16px; margin: 16px 0;
+      border: 1px solid var(--stroke); border-radius: 18px; background: rgba(255,255,255,.05);
+    }
+    .reminder-status-icon {
+      width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center;
+      border-radius: 14px; background: rgba(245,197,66,.13); border: 1px solid var(--gold-stroke); font-size: 21px;
+    }
+    .reminder-status strong { display: block; font-size: 13px; }
+    .reminder-status span { display: block; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+    .schedule-list { display: grid; gap: 10px; margin: 14px 0; }
+    .schedule-row {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+      border: 1px solid var(--stroke); border-radius: 17px; background: rgba(255,255,255,.045);
+    }
+    .schedule-row .schedule-icon { font-size: 24px; }
+    .schedule-copy { flex: 1; min-width: 0; }
+    .schedule-copy strong { display: block; font-size: 13px; }
+    .schedule-copy small { display: block; color: var(--muted); font-size: 10.5px; line-height: 1.45; }
+    .switch { position: relative; width: 48px; height: 28px; flex: 0 0 48px; }
+    .switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch-track {
+      position: absolute; inset: 0; border-radius: 99px; background: rgba(255,255,255,.15);
+      border: 1px solid var(--stroke); cursor: pointer; transition: .2s ease;
+    }
+    .switch-track::after {
+      content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px;
+      border-radius: 50%; background: #fff; transition: .2s ease; box-shadow: 0 3px 8px rgba(0,0,0,.35);
+    }
+    .switch input:checked + .switch-track {
+      background: linear-gradient(135deg, var(--gold), var(--gold-deep)); border-color: var(--gold-bright);
+    }
+    .switch input:checked + .switch-track::after { transform: translateX(20px); background: #151005; }
+    .reminder-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    .reminder-help {
+      margin-top: 14px; padding: 12px 14px; border-radius: 16px;
+      background: rgba(46,134,222,.09); border: 1px solid rgba(46,134,222,.35);
+      color: #BDDFFF; font-size: 11px; line-height: 1.65;
+    }
+    .btn.reminder-off { background: rgba(231,76,60,.11); border-color: rgba(231,76,60,.42); color: #FFB0A8; }
+    .btn:disabled { opacity: .55; cursor: wait; transform: none; }
+    @media (max-width: 520px) {
+      .reminder-actions { grid-template-columns: 1fr; }
+    }
     @media (max-width: 820px) {
       .grid.two { grid-template-columns: 1fr; }
       .dashboard-header { flex-direction: column; }
@@ -289,6 +337,7 @@
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn light" onclick="checkTodayStatus()">📋 Cek Data Saya</button>
+        <button class="btn light" onclick="openReminderSettings()">🔔 Pengingat Sehat</button>
         <button class="btn warning" onclick="showGuide()">📖 Panduan Member</button>
         <button class="btn danger" onclick="logout()">Keluar</button>
       </div>
@@ -390,10 +439,78 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════ MODAL PENGINGAT SEHAT ═══════════════════════════ -->
+<div id="reminderModal" class="modal">
+  <div class="modal-card reminder-modal-card">
+    <div class="big">🔔</div>
+    <h3>Pengingat Sehat</h3>
+    <p class="reminder-lead">Aktifkan notifikasi agar rutinitas sehat dan checklist harianmu tidak terlupakan.</p>
+
+    <div class="reminder-status">
+      <div class="reminder-status-icon" id="reminderStatusIcon">⏳</div>
+      <div>
+        <strong id="reminderStatusTitle">Memeriksa dukungan perangkat…</strong>
+        <span id="reminderStatusText">Tunggu sebentar.</span>
+      </div>
+    </div>
+
+    <div class="schedule-list">
+      <div class="schedule-row">
+        <div class="schedule-icon">🌅</div>
+        <div class="schedule-copy">
+          <strong>Pagi • 06.15 WIB</strong>
+          <small>Sarapan, air putih, dan semangat memulai hari.</small>
+        </div>
+        <label class="switch" aria-label="Pengingat pagi">
+          <input id="reminderMorning" type="checkbox" checked />
+          <span class="switch-track"></span>
+        </label>
+      </div>
+      <div class="schedule-row">
+        <div class="schedule-icon">☀️</div>
+        <div class="schedule-copy">
+          <strong>Siang • 14.15 WIB</strong>
+          <small>Aktivitas fisik, hidrasi, dan pengisian checklist.</small>
+        </div>
+        <label class="switch" aria-label="Pengingat siang">
+          <input id="reminderAfternoon" type="checkbox" checked />
+          <span class="switch-track"></span>
+        </label>
+      </div>
+      <div class="schedule-row">
+        <div class="schedule-icon">🌙</div>
+        <div class="schedule-copy">
+          <strong>Malam • 20.55 WIB</strong>
+          <small>Refleksi harian, kurangi layar, dan persiapan tidur.</small>
+        </div>
+        <label class="switch" aria-label="Pengingat malam">
+          <input id="reminderEvening" type="checkbox" checked />
+          <span class="switch-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="reminder-actions">
+      <button id="reminderEnableBtn" class="btn primary" onclick="enableReminders()">🔔 Aktifkan Pengingat</button>
+      <button id="reminderSaveBtn" class="btn light hidden" onclick="saveReminderSettings()">💾 Simpan Jadwal</button>
+      <button id="reminderTestBtn" class="btn light hidden" onclick="testReminder()">🧪 Kirim Tes</button>
+      <button id="reminderDisableBtn" class="btn reminder-off hidden" onclick="disableReminders()">Matikan Pengingat</button>
+    </div>
+
+    <div id="reminderMessage"></div>
+    <div class="reminder-help">
+      <strong>Catatan perangkat:</strong> Android/desktop memerlukan izin notifikasi. iPhone/iPad memerlukan iOS 16.4+ dan VITAQU harus ditambahkan ke Layar Utama. Penghemat baterai atau kebijakan sistem dapat menunda waktu penerimaan beberapa menit.
+    </div>
+    <button class="btn light full" style="margin-top:12px;" onclick="closeModal('reminderModal')">Tutup</button>
+  </div>
+</div>
+
 <!-- ═══════════════════════════ JAVASCRIPT (MEMBER APP) ═══════════════════════════ -->
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 const PROGRAM_START = "2026-11-18"; // Tanggal mulai program — di-hardcode agar counter hari tidak reset
+const NOTIFICATION_API = "https://vitaqu-notify.abel-lab-security-2026.workers.dev";
+const NOTIFICATION_SETTINGS_KEY = "vitaqu_notification_settings";
 
 const HABITS = [
   { id: "air",      icon: "💧", label: "Minum 8 gelas air putih",        pts: 12 },
@@ -731,6 +848,242 @@ function showGuide() {
   openModal("guideModal");
 }
 
+// ─── PENGINGAT SEHAT (WEB PUSH) ───────────────────────────────────────────────
+function getReminderSettings() {
+  try {
+    return {
+      morning: true,
+      afternoon: true,
+      evening: true,
+      ...JSON.parse(localStorage.getItem(NOTIFICATION_SETTINGS_KEY) || "{}"),
+    };
+  } catch {
+    return { morning: true, afternoon: true, evening: true };
+  }
+}
+
+function getReminderSchedules() {
+  return {
+    morning: document.getElementById("reminderMorning").checked,
+    afternoon: document.getElementById("reminderAfternoon").checked,
+    evening: document.getElementById("reminderEvening").checked,
+  };
+}
+
+function setReminderSchedules(settings) {
+  document.getElementById("reminderMorning").checked = settings.morning !== false;
+  document.getElementById("reminderAfternoon").checked = settings.afternoon !== false;
+  document.getElementById("reminderEvening").checked = settings.evening !== false;
+}
+
+function urlBase64ToUint8Array(value) {
+  const padding = "=".repeat((4 - value.length % 4) % 4);
+  const base64 = (value + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(char => char.charCodeAt(0)));
+}
+
+async function apiJson(path, options = {}) {
+  const response = await fetch(NOTIFICATION_API + path, {
+    ...options,
+    headers: { "content-type": "application/json", ...(options.headers || {}) },
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || `Server merespons ${response.status}`);
+  return data;
+}
+
+function pushSupported() {
+  return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+}
+
+function isIosDevice() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function isStandalonePwa() {
+  return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+}
+
+function setReminderUi(active, permission = window.Notification?.permission || "default") {
+  const statusIcon = document.getElementById("reminderStatusIcon");
+  const statusTitle = document.getElementById("reminderStatusTitle");
+  const statusText = document.getElementById("reminderStatusText");
+  const enable = document.getElementById("reminderEnableBtn");
+  const save = document.getElementById("reminderSaveBtn");
+  const test = document.getElementById("reminderTestBtn");
+  const disable = document.getElementById("reminderDisableBtn");
+
+  if (!pushSupported()) {
+    statusIcon.textContent = "⚠️";
+    statusTitle.textContent = "Perangkat belum mendukung Web Push";
+    statusText.textContent = isIosDevice() && !isStandalonePwa()
+      ? "Tambahkan VITAQU ke Layar Utama lewat Safari, lalu buka aplikasinya dari ikon tersebut."
+      : "Gunakan Chrome, Edge, Firefox, atau Safari terbaru dan pastikan PWA terpasang.";
+    enable.classList.add("hidden");
+    save.classList.add("hidden");
+    test.classList.add("hidden");
+    disable.classList.add("hidden");
+    return;
+  }
+
+  if (permission === "denied") {
+    statusIcon.textContent = "🚫";
+    statusTitle.textContent = "Izin notifikasi diblokir";
+    statusText.textContent = "Buka pengaturan aplikasi/browser, izinkan notifikasi VITAQU, lalu muat ulang halaman.";
+    enable.classList.add("hidden");
+    save.classList.add("hidden");
+    test.classList.add("hidden");
+    disable.classList.add("hidden");
+    return;
+  }
+
+  statusIcon.textContent = active ? "✅" : "🔕";
+  statusTitle.textContent = active ? "Pengingat aktif" : "Pengingat belum aktif";
+  statusText.textContent = active
+    ? "VITAQU siap mengirim pengingat sesuai jadwal yang kamu pilih."
+    : "Aktifkan sekali untuk menerima notifikasi sistem meski PWA ditutup.";
+  enable.classList.toggle("hidden", active);
+  save.classList.toggle("hidden", !active);
+  test.classList.toggle("hidden", !active);
+  disable.classList.toggle("hidden", !active);
+}
+
+async function getPushState() {
+  if (!pushSupported()) return { registration: null, subscription: null };
+  const registration = await navigator.serviceWorker.ready;
+  const subscription = await registration.pushManager.getSubscription();
+  return { registration, subscription };
+}
+
+async function openReminderSettings() {
+  setReminderSchedules(getReminderSettings());
+  document.getElementById("reminderMessage").innerHTML = "";
+  openModal("reminderModal");
+  try {
+    const { subscription } = await getPushState();
+    setReminderUi(Boolean(subscription));
+  } catch (error) {
+    setReminderUi(false);
+    showMsg("reminderMessage", `⚠️ ${error.message}`, "error");
+  }
+}
+
+function reminderRole() {
+  return session?.cls === "GURU" ? "teacher" : "student";
+}
+
+async function syncSubscription(subscription, schedules) {
+  const data = await apiJson("/v1/subscriptions", {
+    method: "POST",
+    body: JSON.stringify({ subscription: subscription.toJSON(), role: reminderRole(), schedules }),
+  });
+  localStorage.setItem(NOTIFICATION_SETTINGS_KEY, JSON.stringify({ ...schedules, id: data.id }));
+  return data;
+}
+
+async function enableReminders() {
+  const button = document.getElementById("reminderEnableBtn");
+  button.disabled = true;
+  document.getElementById("reminderMessage").innerHTML = "";
+  try {
+    if (!pushSupported()) throw new Error("Perangkat ini belum mendukung notifikasi push.");
+    if (isIosDevice() && !isStandalonePwa()) {
+      throw new Error("Di iPhone/iPad, tambahkan VITAQU ke Layar Utama lalu buka dari ikon aplikasi.");
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") throw new Error("Izin notifikasi belum diberikan.");
+
+    const { registration } = await getPushState();
+    const { publicKey } = await apiJson("/v1/public-key");
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+    }
+
+    const schedules = getReminderSchedules();
+    if (!Object.values(schedules).some(Boolean)) throw new Error("Pilih minimal satu jadwal pengingat.");
+    await syncSubscription(subscription, schedules);
+    setReminderUi(true, permission);
+    showMsg("reminderMessage", "✅ Pengingat sehat aktif. Gunakan tombol tes untuk memastikan notifikasi muncul.", "success");
+  } catch (error) {
+    setReminderUi(false, window.Notification?.permission || "default");
+    showMsg("reminderMessage", `⚠️ ${error.message}`, "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function saveReminderSettings() {
+  const button = document.getElementById("reminderSaveBtn");
+  button.disabled = true;
+  try {
+    const schedules = getReminderSchedules();
+    if (!Object.values(schedules).some(Boolean)) throw new Error("Pilih minimal satu jadwal, atau matikan pengingat.");
+    const { subscription } = await getPushState();
+    if (!subscription) throw new Error("Subscription tidak ditemukan. Aktifkan pengingat kembali.");
+    await syncSubscription(subscription, schedules);
+    showMsg("reminderMessage", "✅ Jadwal pengingat berhasil disimpan.", "success");
+  } catch (error) {
+    showMsg("reminderMessage", `⚠️ ${error.message}`, "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function testReminder() {
+  const button = document.getElementById("reminderTestBtn");
+  button.disabled = true;
+  try {
+    const settings = getReminderSettings();
+    const { subscription } = await getPushState();
+    if (!subscription) throw new Error("Aktifkan pengingat terlebih dahulu.");
+    const synced = await syncSubscription(subscription, getReminderSchedules());
+    await apiJson("/v1/test", { method: "POST", body: JSON.stringify({ id: synced.id || settings.id }) });
+    showMsg("reminderMessage", "✅ Notifikasi tes dikirim. Cek panel notifikasi perangkatmu.", "success");
+  } catch (error) {
+    showMsg("reminderMessage", `⚠️ ${error.message}`, "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function disableReminders() {
+  const button = document.getElementById("reminderDisableBtn");
+  button.disabled = true;
+  try {
+    const settings = getReminderSettings();
+    const { subscription } = await getPushState();
+    if (settings.id) {
+      await apiJson("/v1/subscriptions", { method: "DELETE", body: JSON.stringify({ id: settings.id }) });
+    }
+    if (subscription) await subscription.unsubscribe();
+    localStorage.removeItem(NOTIFICATION_SETTINGS_KEY);
+    setReminderUi(false);
+    showMsg("reminderMessage", "Pengingat sehat sudah dimatikan pada perangkat ini.", "success");
+  } catch (error) {
+    showMsg("reminderMessage", `⚠️ ${error.message}`, "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function refreshReminderSubscription() {
+  try {
+    const settings = getReminderSettings();
+    if (!settings.id || !window.Notification || Notification.permission !== "granted") return;
+    const { subscription } = await getPushState();
+    if (subscription) await syncSubscription(subscription, settings);
+  } catch (error) {
+    console.warn("Gagal menyinkronkan subscription notifikasi", error);
+  }
+}
+
 // ─── LOGOUT ───────────────────────────────────────────────────────────────────
 function logout() {
   localStorage.removeItem("sehattrack_session");
@@ -763,7 +1116,15 @@ setInterval(() => { if (bgVid.paused) bgVid.play().catch(() => {}); }, 2000);
 
 // PWA: service worker + safe-area saat mode standalone (Android/iOS)
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  window.addEventListener("load", async () => {
+    try {
+      await navigator.serviceWorker.register("sw.js");
+      await navigator.serviceWorker.ready;
+      await refreshReminderSubscription();
+    } catch (error) {
+      console.warn("Service worker gagal siap", error);
+    }
+  });
 }
 if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone) {
   document.body.style.paddingTop = "env(safe-area-inset-top)";

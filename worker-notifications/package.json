@@ -1,0 +1,17 @@
+{
+  "name": "vitaqu-notifications",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test:scheduled": "curl http://localhost:8787/cdn-cgi/local/scheduled?cron=15+23+*+*+*"
+  },
+  "dependencies": {
+    "@block65/webcrypto-web-push": "^2.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vitaqu-notify",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-20",
+  "workers_dev": true,
+  "vars": {
+    "VAPID_SUBJECT": "mailto:leoangggata@gmail.com",
+    "VAPID_SERVER_PUBLIC_KEY": "BIKeoPcC6N8YBvjZBkA56Te-Rc4QubUgtVGzrl9mJzEV0pdOgOVMlyxNXPKpgT4-019sg82br_FbNSmmoN0OTaY",
+    "ALLOWED_ORIGINS": "https://health-track-banyubiru.pages.dev,http://localhost:8931,http://127.0.0.1:8931"
+  },
+  "triggers": {
+    "crons": [
+      "15 23 * * *",
+      "15 7 * * *",
+      "55 13 * * *"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vitaqu-notifications",
+      "database_id": "031a3f22-bb25-4a77-b4ae-146495e90426",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
