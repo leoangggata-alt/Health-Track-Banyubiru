@@ -4,6 +4,7 @@
 import { Env } from "./auth.ts";
 import { handleSuperRoute } from "./routes/super.ts";
 import { handleAdminRoute } from "./routes/admin.ts";
+import { handleMemberRoute } from "./routes/member.ts";
 
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
@@ -62,6 +63,8 @@ export default {
         response = await handleSuperRoute(request, url, env.DB, clientIp);
       } else if (url.pathname.startsWith("/api/admin/") || url.pathname === "/api/admin") {
         response = await handleAdminRoute(request, url, env.DB, clientIp);
+      } else if (url.pathname.startsWith("/api/member/") || url.pathname === "/api/member") {
+        response = await handleMemberRoute(request, url, env.DB, clientIp);
       } else {
         response = new Response(
           JSON.stringify({ ok: false, error: { message: "Rute API tidak ditemukan.", code: "NOT_FOUND" } }),

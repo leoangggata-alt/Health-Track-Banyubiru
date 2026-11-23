@@ -597,16 +597,16 @@
 
     <!-- HERO BERSIH — VIDEO + HEADLINE TANPA HALANGAN -->
     <div class="hero">
-      <div class="hero-badge"><span class="dot"></span> Program Resmi • SMP Negeri 1 Banyubiru</div>
+      <div class="hero-badge" id="heroBadge"><span class="dot"></span> Program Resmi • SMP Negeri 1 Banyubiru</div>
       <h1>Ubah Kebiasaan,<br />Jadi <span class="grad">Versi Terbaik</span> Diri Mu</h1>
       <p class="lead">30 hari, 9 kebiasaan sehat, 1 aplikasi mewah. Masuk sebagai member untuk mulai checklist hari ini — atau jelajahi lewat menu di atas.</p>
       <div class="hero-cta">
-        <a class="btn-hero primary" href="login.html">🚀 Masuk Member</a>
+        <a class="btn-hero primary" id="masukMemberBtn" href="login.html">🚀 Masuk Member</a>
         <a class="btn-hero wa" href="https://wa.me/6285973791620?text=Halo%20Admin%20VITAQU%20%F0%9F%91%8B%2C%20saya%20ingin%20bertanya%20tentang%20Program%2030%20Hari%20Hidup%20Sehat%20SMPN%201%20Banyubiru." target="_blank" rel="noopener">💬 WhatsApp Admin</a>
       </div>
     </div>
 
-    <div class="foot-strip">
+    <div class="foot-strip" id="footStrip">
       Provide apps by <strong>Fendi Akhmad, S.Pd.</strong> — © 2026 SMP NEGERI 1 BANYUBIRU
     </div>
   </div>
@@ -873,6 +873,29 @@
       btnTop.classList.remove("show");
       statusEl.textContent = "✅ VITAQU terinstall! Cek layar utama HP mu.";
     });
+
+    // ═══ DYNAMIC SCHOOL PROFILE ═════════════════════════════════
+    (function initSchoolProfile() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const schoolParam = urlParams.get("sekolah") || urlParams.get("lisensi") || urlParams.get("code") || localStorage.getItem("vitaqu_school_code");
+      if (schoolParam) {
+        fetch("/api/member/school?code=" + encodeURIComponent(schoolParam))
+          .then(r => r.json())
+          .then(data => {
+            if (data.ok && data.school) {
+              localStorage.setItem("vitaqu_school_code", data.school.code);
+              localStorage.setItem("vitaqu_school_name", data.school.name);
+              const b = document.getElementById("heroBadge");
+              if (b) b.innerHTML = '<span class="dot"></span> Program Resmi • ' + data.school.name;
+              const f = document.getElementById("footStrip");
+              if (f) f.innerHTML = 'Provide apps by <strong>Fendi Akhmad, S.Pd.</strong> — © 2026 ' + data.school.name.toUpperCase();
+              const m = document.getElementById("masukMemberBtn");
+              if (m) m.href = "login.html?sekolah=" + encodeURIComponent(data.school.code);
+            }
+          })
+          .catch(() => {});
+      }
+    })();
 
     // ═══ SERVICE WORKER ══════════════════════════════════════════
     if ("serviceWorker" in navigator) {

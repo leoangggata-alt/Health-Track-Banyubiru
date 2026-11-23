@@ -298,10 +298,14 @@
   <div class="card">
     <div class="lock-icon">🔐</div>
     <h1>Masuk Member</h1>
-    <p class="subtitle">Area khusus member Program 30 Hari Hidup Sehat — SMP Negeri 1 Banyubiru</p>
+    <p class="subtitle" id="loginSubtitle">Area khusus member Program 30 Hari Hidup Sehat</p>
 
-    <label for="studentId">Nama User</label>
-    <input id="studentId" placeholder="Masukkan nama lengkap kamu" autocomplete="off" />
+    <label for="schoolCode">Kode Lisensi / Kode Sekolah</label>
+    <input id="schoolCode" placeholder="Contoh: SMPN1BBR atau Kunci Lisensi" autocomplete="off" autocapitalize="characters" style="text-transform:uppercase;" />
+    <div id="schoolInfoBadge" style="margin-top:6px;font-size:12px;font-weight:600;display:none;"></div>
+
+    <label for="studentId" style="margin-top:14px;">Nama Siswa</label>
+    <input id="studentId" placeholder="Masukkan nama lengkap kamu" autocomplete="name" />
 
     <label for="classCode">Kelas</label>
     <select id="classCode">
@@ -343,7 +347,10 @@
   </div>
 
   <script>
-    // ─── DATA (localStorage — kompatibel dengan app.html & panel admin) ──
+    // ─── DYNAMIC SCHOOL & MEMBER LOGIN FLOW ──────────────────
+    let currentSchool = null;
+    let schoolDebounce = null;
+
     function getData() {
       return JSON.parse(localStorage.getItem("sehattrack_data") || "{}");
     }
@@ -358,43 +365,158 @@
       document.getElementById("msg").innerHTML = "";
     }
 
-    // ─── LOGIN FLOW ──────────────────────────────────────────
-    function memberLogin() {
+    async function checkSchoolCode(code, silent = false) {
+      const badge = document.getElementById("schoolInfoBadge");
+      const subtitle = document.getElementById("loginSubtitle");
+      const clean = (code || "").trim();
+
+      if (!clean) {
+        currentSchool = null;
+        badge.style.display = "none";
+        subtitle.textContent = "Area khusus member Program 30 Hari Hidup Sehat";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/member/school?code=" + encodeURIComponent(clean));
+        const data = await res.json();
+        if (data.ok && data.school) {
+          currentSchool = data.school;
+          localStorage.setItem("vitaqu_school_code", data.school.code);
+          localStorage.setItem("vitaqu_school_name", data.school.name);
+          badge.style.display = "block";
+          badge.style.color = "#2ECC71";
+          badge.textContent = `✅ ${data.school.name} (Lisensi Aktif)`;
+          subtitle.textContent = `Program Hidup Sehat — ${data.school.name}`;
+
+          // Update pilihan kelas dari database sekolah
+          const classSelect = document.getElementById("classCode");
+          const previousVal = classSelect.value;
+          classSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+          if (Array.isArray(data.classes) && data.classes.length > 0) {
+            data.classes.forEach(c => {
+              const opt = document.createElement("option");
+              opt.value = c.name;
+              opt.textContent = c.name;
+              if (c.name === previousVal) opt.selected = true;
+              classSelect.appendChild(opt);
+            });
+            const optGuru = document.createElement("option");
+            optGuru.value = "GURU";
+            optGuru.textContent = "GURU / PENDIDIK";
+            classSelect.appendChild(optGuru);
+          }
+        } else {
+          currentSchool = null;
+          badge.style.display = "block";
+          badge.style.color = "#E74C3C";
+          badge.textContent = `❌ ${data?.error?.message || "Sekolah tidak ditemukan / lisensi tidak aktif."}`;
+        }
+      } catch (err) {
+        if (!silent) {
+          badge.style.display = "block";
+          badge.style.color = "#F39C12";
+          badge.textContent = "⚠️ Tidak dapat memverifikasi sekolah secara online.";
+        }
+      }
+    }
+
+    document.getElementById("schoolCode").addEventListener("input", e => {
+      clearTimeout(schoolDebounce);
+      schoolDebounce = setTimeout(() => {
+        checkSchoolCode(e.target.value.trim());
+      }, 400);
+    });
+
+    async function memberLogin() {
       clearMsg();
-      const id = document.getElementById("studentId").value.trim().toUpperCase();
+      const schoolCode = document.getElementById("schoolCode").value.trim().toUpperCase();
+      const id = document.getElementById("studentId").value.trim();
       const cls = document.getElementById("classCode").value.trim().toUpperCase();
       const consent = document.getElementById("consentCheck").checked;
 
-      if (!id) return showMsg("⚠️ Nama User tidak boleh kosong.", "error");
-      if (id.length < 3) return showMsg("⚠️ Nama User minimal 3 karakter.", "error");
+      if (!schoolCode) return showMsg("⚠️ Masukkan Kode Lisensi atau Kode Sekolah.", "error");
+      if (!id) return showMsg("⚠️ Nama Siswa tidak boleh kosong.", "error");
+      if (id.length < 3) return showMsg("⚠️ Nama Siswa minimal 3 karakter.", "error");
       if (!cls) return showMsg("⚠️ Pilih kelas terlebih dahulu.", "error");
       if (!consent) return showMsg("⚠️ Centang persetujuan data terlebih dahulu.", "error");
 
       const btn = document.getElementById("loginBtn");
       btn.disabled = true;
-      btn.textContent = "Memproses…";
+      btn.textContent = "Menghubungkan ke server…";
 
-      // Registrasi otomatis / validasi kelas (logika asli SehatTrack)
-      setTimeout(() => {
-        const data = getData();
-        if (!data[id]) {
-          data[id] = { classCode: cls, submissions: {}, target: "" };
-          saveData(data);
-        } else if (data[id].classCode !== cls) {
+      try {
+        const res = await fetch("/api/member/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            schoolCode,
+            studentName: id,
+            classCode: cls,
+          }),
+        });
+
+        const result = await res.json();
+        if (!res.ok || !result.ok) {
           btn.disabled = false;
           btn.textContent = "🚀 Login & Mulai Hari Ini";
-          return showMsg("❌ Nama User ini sudah terdaftar dengan kelas berbeda. Cek kelas yang kamu pilih.", "error");
+          return showMsg(`❌ ${result?.error?.message || "Login gagal."}`, "error");
         }
 
-        // Session untuk gate app.html
-        localStorage.setItem("sehattrack_session", JSON.stringify({
-          id, cls, role: "member", ts: Date.now()
-        }));
+        const student = result.session?.student || {};
+        const sessionPayload = {
+          id: student.studentCode || id.toUpperCase(),
+          name: student.name || id,
+          cls: student.classCode || cls,
+          studentUuid: student.id,
+          schoolId: student.schoolId,
+          schoolCode: student.schoolCode || schoolCode,
+          schoolName: student.schoolName || (currentSchool?.name || "Sekolah"),
+          role: "member",
+          ts: Date.now(),
+        };
+
+        localStorage.setItem("sehattrack_session", JSON.stringify(sessionPayload));
+        localStorage.setItem("vitaqu_school_code", sessionPayload.schoolCode);
+        localStorage.setItem("vitaqu_school_name", sessionPayload.schoolName);
+
+        // Siapkan penyimpanan data lokal untuk user ini
+        const localData = getData();
+        if (!localData[sessionPayload.id]) {
+          localData[sessionPayload.id] = { classCode: cls, submissions: {}, target: "" };
+          saveData(localData);
+        }
 
         document.getElementById("overlay").classList.add("show");
-        setTimeout(() => { window.location.replace("app.html"); }, 650);
-      }, 350);
+        setTimeout(() => { window.location.replace("app.html"); }, 600);
+      } catch (err) {
+        // Fallback jika offline
+        console.warn("Offline login:", err);
+        const sessionPayload = {
+          id: id.toUpperCase(),
+          name: id,
+          cls,
+          schoolCode,
+          schoolName: currentSchool?.name || "Sekolah",
+          role: "member",
+          ts: Date.now(),
+        };
+        localStorage.setItem("sehattrack_session", JSON.stringify(sessionPayload));
+        document.getElementById("overlay").classList.add("show");
+        setTimeout(() => { window.location.replace("app.html"); }, 600);
+      }
     }
+
+    // Inisialisasi otomatis jika ada parameter URL atau memori sebelumnya
+    (function initLogin() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialSchool = urlParams.get("sekolah") || urlParams.get("lisensi") || urlParams.get("code") || localStorage.getItem("vitaqu_school_code");
+      if (initialSchool) {
+        const inp = document.getElementById("schoolCode");
+        inp.value = initialSchool;
+        checkSchoolCode(initialSchool, true);
+      }
+    })();
 
     // Enter key untuk submit
     ["studentId", "classCode"].forEach(idk => {

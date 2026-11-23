@@ -320,7 +320,7 @@
       <img src="logo.png" alt="VITAQU" class="school-logo" />
       <div>
         <h1>VITAQU — Program 30 Hari Hidup Sehat</h1>
-        <p>• SMP NEGERI 1 BANYUBIRU •</p>
+        <p id="appSchoolLabel">• SMP NEGERI 1 BANYUBIRU •</p>
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
@@ -547,6 +547,54 @@ if (!session || !session.id) {
   window.location.replace("login.html");
 }
 
+// Update label sekolah sesuai session aktif
+if (session && session.schoolName) {
+  const lbl = document.getElementById("appSchoolLabel");
+  if (lbl) lbl.textContent = "• " + session.schoolName.toUpperCase() + " •";
+}
+
+// Sync checklist to server
+async function syncSubmissionToServer(date, habits, score, mood, journal, target) {
+  if (!session || !session.schoolId || !session.studentUuid) return;
+  try {
+    await fetch("/api/member/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        schoolId: session.schoolId,
+        studentId: session.studentUuid,
+        date,
+        habits,
+        score,
+        mood,
+        journal,
+        target,
+      }),
+    });
+  } catch (e) {
+    console.warn("Sync to server deferred (offline)", e);
+  }
+}
+
+// Sinkronisasi data dari server saat halaman pertama dibuka
+(function syncServerSubmissions() {
+  if (session && session.schoolId && session.studentUuid) {
+    fetch(`/api/member/submissions?schoolId=${encodeURIComponent(session.schoolId)}&studentId=${encodeURIComponent(session.studentUuid)}`)
+      .then(r => r.json())
+      .then(res => {
+        if (res.ok && res.submissions && Object.keys(res.submissions).length > 0) {
+          const d = getData();
+          if (!d[currentUser]) d[currentUser] = { classCode: session.cls, submissions: {}, target: "" };
+          Object.assign(d[currentUser].submissions, res.submissions);
+          saveData(d);
+          if (typeof renderStudentChart === "function") renderStudentChart();
+          if (typeof renderStreak === "function") renderStreak();
+        }
+      })
+      .catch(() => {});
+  }
+})();
+
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let currentUser = session?.id || null;
 let studentChartObj = null;
@@ -732,6 +780,7 @@ function submitDailyData() {
   const data = getData();
   data[currentUser].submissions[today] = { habits, habitNotes, mood, journal, score, target, ts: Date.now() };
   saveData(data);
+  syncSubmissionToServer(today, habits, score, mood, journal, target);
 
   document.getElementById("submitBtn").classList.add("hidden");
   document.getElementById("editBtn").classList.remove("hidden");
@@ -756,6 +805,7 @@ function updateDailyData() {
   const data = getData();
   data[currentUser].submissions[today] = { habits, habitNotes, mood, journal, score, target, ts: Date.now() };
   saveData(data);
+  syncSubmissionToServer(today, habits, score, mood, journal, target);
 
   document.getElementById("submitBtn").textContent = "✅ Kirim Checklist Hari Ini";
   document.getElementById("submitBtn").onclick = submitDailyData;
