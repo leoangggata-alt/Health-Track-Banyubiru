@@ -507,6 +507,116 @@ export async function handleAdminRoute(
     }
   }
 
+  // 8b. RESTART 30-DAY PROGRAM CYCLE (PER SCHOOL LICENSE)
+  if (path === "/api/admin/programs/restart" && method === "POST") {
+    const body: any = await request.json().catch(() => ({}));
+    const rawStartDate = (body.startDate || todayStr).trim();
+    const name = (body.name || "Program 30 Hari Hidup Sehat").trim();
+    const academicYear = (body.academicYear || "2026/2027").trim();
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(rawStartDate)) {
+      return error("Format tanggal mulai tidak valid (wajib YYYY-MM-DD).", 400);
+    }
+
+    // End date = startDate + 29 days (30 days total)
+    const startDateObj = new Date(rawStartDate + "T00:00:00Z");
+    const endDateObj = new Date(startDateObj.getTime() + 29 * 24 * 3600 * 1000);
+    const rawEndDate = endDateObj.toISOString().slice(0, 10);
+
+    const nowIso = new Date().toISOString();
+    const newProgramId = crypto.randomUUID();
+
+    // Archive previous active programs for this school
+    await db
+      .prepare("UPDATE programs SET status = 'archived', updated_at = ? WHERE school_id = ? AND status = 'active'")
+      .bind(nowIso, schoolId)
+      .run();
+
+    // Insert newly restarted active program
+    await db
+      .prepare(
+        `INSERT INTO programs (id, school_id, name, academic_year, start_date, end_date, status, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?)`
+      )
+      .bind(newProgramId, schoolId, name, academicYear, rawStartDate, rawEndDate, nowIso, nowIso)
+      .run();
+
+    await logAudit(
+      db,
+      "admin",
+      sessionData.user.id,
+      sessionData.user.username,
+      "program.restart",
+      schoolId,
+      sessionData.school?.name,
+      JSON.stringify({ programId: newProgramId, name, startDate: rawStartDate, endDate: rawEndDate }),
+      clientIp
+    );
+
+    const todayObj = new Date(todayStr + "T00:00:00Z");
+    const diffDays = Math.floor((todayObj.getTime() - startDateObj.getTime()) / (24 * 3600 * 1000)) + 1;
+    const currentDay = Math.max(1, Math.min(diffDays, 30));
+
+    return json({
+      ok: true,
+      message: `Program 30 Hari berhasil di-restart mulai tanggal ${rawStartDate} (Hari ke-${currentDay}/30).`,
+      program: {
+        id: newProgramId,
+        name,
+        academicYear,
+        startDate: rawStartDate,
+        endDate: rawEndDate,
+        status: "active",
+        day: currentDay,
+        durationDays: 30,
+      },
+    });
+  }
+
+  // 8c. GET ACTIVE PROGRAM (PER SCHOOL LICENSE)
+  if (path === "/api/admin/programs/active" && method === "GET") {
+    const activeProgram: any = await db
+      .prepare("SELECT * FROM programs WHERE school_id = ? AND status = 'active' ORDER BY start_date DESC LIMIT 1")
+      .bind(schoolId)
+      .first();
+
+    if (!activeProgram) {
+      return json({
+        ok: true,
+        program: {
+          id: "default",
+          name: "Program 30 Hari Hidup Sehat",
+          startDate: "2026-11-18",
+          endDate: "2026-12-17",
+          academicYear: "2026/2027",
+          status: "active",
+          day: Math.max(1, Math.min(Math.floor((new Date(todayStr + "T00:00:00Z").getTime() - new Date("2026-11-18T00:00:00Z").getTime()) / 86400000) + 1, 30)),
+          durationDays: 30,
+        },
+      });
+    }
+
+    const startObj = new Date(activeProgram.start_date + "T00:00:00Z");
+    const todayObj = new Date(todayStr + "T00:00:00Z");
+    const diff = Math.floor((todayObj.getTime() - startObj.getTime()) / 86400000) + 1;
+    const currentDay = Math.max(1, Math.min(diff, 30));
+
+    return json({
+      ok: true,
+      program: {
+        id: activeProgram.id,
+        name: activeProgram.name,
+        startDate: activeProgram.start_date,
+        endDate: activeProgram.end_date,
+        academicYear: activeProgram.academic_year,
+        status: activeProgram.status,
+        day: currentDay,
+        durationDays: 30,
+        daysLeft: Math.max(0, 30 - currentDay),
+      },
+    });
+  }
+
   const programItemMatch = path.match(/^\/api\/admin\/programs\/([^/]+)$/);
   if (programItemMatch && method === "PATCH") {
     const id = programItemMatch[1];
@@ -578,6 +688,43 @@ export async function handleAdminRoute(
       dailyScores.push({ date: d, avgScore: d === filterDate ? avgScore : 0, submittedCount: d === filterDate ? submittedCount : 0 });
     }
 
+    // Active program for this school
+    const activeProgram: any = await db
+      .prepare("SELECT * FROM programs WHERE school_id = ? AND status = 'active' ORDER BY start_date DESC LIMIT 1")
+      .bind(schoolId)
+      .first();
+
+    let programData: any = null;
+    if (activeProgram) {
+      const startObj = new Date(activeProgram.start_date + "T00:00:00Z");
+      const filterDateObj = new Date(filterDate + "T00:00:00Z");
+      const diff = Math.floor((filterDateObj.getTime() - startObj.getTime()) / (24 * 3600 * 1000)) + 1;
+      const currentDay = Math.max(1, Math.min(diff, 30));
+      programData = {
+        id: activeProgram.id,
+        name: activeProgram.name,
+        startDate: activeProgram.start_date,
+        endDate: activeProgram.end_date,
+        academicYear: activeProgram.academic_year,
+        status: activeProgram.status,
+        day: currentDay,
+        durationDays: 30,
+        daysLeft: Math.max(0, 30 - currentDay),
+      };
+    } else {
+      programData = {
+        id: "default",
+        name: "Program 30 Hari Hidup Sehat",
+        startDate: "2026-11-18",
+        endDate: "2026-12-17",
+        academicYear: "2026/2027",
+        status: "active",
+        day: Math.max(1, Math.min(Math.floor((new Date(filterDate + "T00:00:00Z").getTime() - new Date("2026-11-18T00:00:00Z").getTime()) / 86400000) + 1, 30)),
+        durationDays: 30,
+        daysLeft: 24,
+      };
+    }
+
     return json({
       ok: true,
       totalStudents,
@@ -585,7 +732,10 @@ export async function handleAdminRoute(
       notSubmittedCount,
       submitPercentage,
       avgScore,
-      programStatus: "Aktif",
+      programStatus: activeProgram ? "Aktif" : "Perlu Aktivasi",
+      program: programData,
+      programDay: programData.day,
+      programDuration: 30,
       submissions: subRows || [],
       topStudents,
       dailyScores,

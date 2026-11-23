@@ -464,6 +464,7 @@
         }
 
         const student = result.session?.student || {};
+        const program = result.session?.program || null;
         const sessionPayload = {
           id: student.studentCode || id.toUpperCase(),
           name: student.name || id,
@@ -472,9 +473,14 @@
           schoolId: student.schoolId,
           schoolCode: student.schoolCode || schoolCode,
           schoolName: student.schoolName || (currentSchool?.name || "Sekolah"),
+          program,
           role: "member",
           ts: Date.now(),
         };
+
+        if (program?.startDate) {
+          localStorage.setItem("vitaqu_program_start", program.startDate);
+        }
 
         localStorage.setItem("sehattrack_session", JSON.stringify(sessionPayload));
         localStorage.setItem("vitaqu_school_code", sessionPayload.schoolCode);

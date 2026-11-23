@@ -195,8 +195,9 @@
     <div class="dashboard-header">
       <div><h2>Dashboard Admin</h2><p class="small" id="adminMeta">Monitoring program sekolah.</p></div>
       <div class="actions">
-        <button class="btn warning" type="button" onclick="showGuide()">📖 Panduan</button>
+        <button class="btn warning" type="button" onclick="openRestartProgramModal()">🔄 Restart Program</button>
         <button class="btn purple" type="button" onclick="showReportPage()">📄 Laporan NPET</button>
+        <button class="btn light" type="button" onclick="showGuide()">📖 Panduan</button>
         <button class="btn danger" type="button" onclick="logout()">Keluar</button>
       </div>
     </div>
@@ -211,6 +212,34 @@
     <div id="portalMessage" role="status" aria-live="polite"></div>
 
     <div id="dashboardView" class="admin-view">
+      <!-- ═══ RESTART PROGRAM PANEL (PER LISENSI SEKOLAH) ═══ -->
+      <div class="card restart-panel-card" style="margin-bottom:16px; border:1px solid #F7D7A4; background:linear-gradient(135deg, #FFFDF8, #FFF7EB); box-shadow:0 8px 24px rgba(243,156,18,.10);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:22px;">🔄</span>
+              <h3 class="section-title" style="margin:0; color:#A45F00;">Panel Siklus Program 30 Hari</h3>
+              <span id="activeProgramBadge" class="badge" style="background:#EAF8EF; border-color:#2ECC71; color:#1E8449; font-weight:800; font-size:11px;">Aktif</span>
+            </div>
+            <p class="small" id="activeProgramInfo" style="margin:6px 0 0; color:#555;">
+              Memuat data siklus program sekolah…
+            </p>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div style="text-align:right; min-width:120px;">
+              <div style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Progress Hari</div>
+              <div id="activeProgramDayDisplay" style="font-size:22px; font-weight:900; color:#2C3E50; letter-spacing:0.5px;">Hari ke- -/30</div>
+            </div>
+            <button class="btn warning" type="button" onclick="openRestartProgramModal()" style="font-weight:700; padding:10px 18px; border-radius:12px; box-shadow:0 4px 14px rgba(243,156,18,.25); white-space:nowrap;">
+              🔄 Mulai Ulang / Restart Program
+            </button>
+          </div>
+        </div>
+        <div style="margin-top:14px; background:#EAEAEA; border-radius:999px; height:10px; overflow:hidden;">
+          <div id="activeProgramProgressBar" style="width:0%; height:100%; background:linear-gradient(90deg, #F39C12, #2ECC71); border-radius:999px; transition:width 0.4s ease;"></div>
+        </div>
+      </div>
+
       <div class="card">
         <h3 class="section-title">Filter Dashboard</h3>
         <div class="grid four">
@@ -299,8 +328,18 @@
     </div>
 
     <div id="programsView" class="admin-view hidden">
+      <div class="card" style="margin-bottom:16px; border:1px solid #F7D7A4; background:#FFFDF8;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 class="section-title" style="margin:0; color:#A45F00;">Siklus Program Aktif (Per Lisensi Sekolah)</h3>
+            <p class="small" id="programsViewActiveInfo" style="margin:4px 0 0; color:#666;">Setiap lisensi sekolah mengontrol siklus program 30 hari secara mandiri.</p>
+          </div>
+          <button class="btn warning" type="button" onclick="openRestartProgramModal()">🔄 Restart Siklus 30 Hari</button>
+        </div>
+      </div>
+
       <div class="card">
-        <h3 class="section-title">Buat Program</h3>
+        <h3 class="section-title">Buat Program Baru</h3>
         <form onsubmit="createProgram(event)">
           <div class="grid four">
             <div><label for="newProgramName">Nama Program</label><input id="newProgramName" required maxlength="160" value="Program 30 Hari Hidup Sehat" /></div>
@@ -353,6 +392,36 @@
 
 <div id="archiveModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="archiveTitle">
   <div class="modal-card"><div class="big">⚠️</div><h3 id="archiveTitle">Arsipkan Pengisian?</h3><p>Operasi ini mengarsipkan pengisian tenant. Ketik kode sekolah <strong id="archiveExpectedCode"></strong> untuk melanjutkan.</p><label for="archiveSchoolCode">Konfirmasi Kode Sekolah</label><input id="archiveSchoolCode" autocomplete="off" /><label for="archiveBeforeDate">Arsipkan Pengisian Sebelum Tanggal (Opsional)</label><input id="archiveBeforeDate" type="date" /><label for="archiveReason">Alasan</label><input id="archiveReason" maxlength="300" value="Arsip melalui portal admin" /><label style="display:flex;gap:10px;align-items:flex-start;font-weight:500;"><input id="archiveAcknowledge" type="checkbox" style="width:auto;margin-top:3px;" /> Saya memahami pengisian terpilih tidak lagi tampil pada dashboard aktif.</label><div id="archiveMessage"></div><div class="grid two" style="margin-top:14px;"><button class="btn light" type="button" onclick="closeModal('archiveModal')">Batal</button><button id="archiveBtn" class="btn danger" type="button" onclick="confirmArchive()">Arsipkan Pengisian</button></div></div>
+</div>
+
+<div id="restartProgramModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="restartProgramTitle">
+  <div class="modal-card">
+    <div class="big">🔄</div>
+    <h3 id="restartProgramTitle">Mulai Ulang / Restart Program 30 Hari</h3>
+    <p style="text-align:left; font-size:13px; color:#555; line-height:1.6;">
+      Aksi ini akan me-restart hitungan siklus program untuk sekolah ini per lisensi aktif. Seluruh aplikasi siswa di sekolah ini akan otomatis sinkron dan dimulai kembali dari <strong>Hari ke-1/30</strong> terhitung sejak tanggal mulai yang Anda tentukan.
+    </p>
+    
+    <label for="restartStartDate" style="text-align:left; display:block; margin-top:14px; font-weight:700;">Tanggal Mulai Baru (Hari ke-1):</label>
+    <input id="restartStartDate" type="date" required style="width:100%; padding:10px; border-radius:10px; border:1px solid #CCC;" />
+    
+    <label for="restartProgramName" style="text-align:left; display:block; margin-top:12px; font-weight:700;">Nama Program / Siklus:</label>
+    <input id="restartProgramName" maxlength="160" value="Program 30 Hari Hidup Sehat" style="width:100%; padding:10px; border-radius:10px; border:1px solid #CCC;" />
+
+    <label for="restartAcademicYear" style="text-align:left; display:block; margin-top:12px; font-weight:700;">Tahun Ajaran:</label>
+    <input id="restartAcademicYear" maxlength="30" value="2026/2027" style="width:100%; padding:10px; border-radius:10px; border:1px solid #CCC;" />
+
+    <div class="notice" style="margin-top:14px; text-align:left; background:#FFF8E7; border-color:#F39C12; color:#875A00;">
+      📌 <strong>Catatan:</strong> Siklus program sebelumnya akan diarsipkan di server. Riwayat pengisian checklist siswa terdahulu tetap tersimpan aman di database sekolah.
+    </div>
+
+    <div id="restartProgramMessage" style="margin-top:10px;"></div>
+
+    <div class="grid two" style="margin-top:16px;">
+      <button class="btn light" type="button" onclick="closeModal('restartProgramModal')">Batal</button>
+      <button id="restartProgramSubmitBtn" class="btn warning" type="button" onclick="confirmRestartProgram()">🚀 Konfirmasi Restart Program</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -628,8 +697,39 @@ function renderDashboard(data) {
   setText("statPercentage", `${Math.round(number(percentage))}%`); setText("statAvgScore", Math.round(number(average)));
   setText("statProgramStatus", summary.status || (percentage >= 80 ? "Terlaksana Baik" : percentage >= 50 ? "Perlu Dorongan" : "Perlu Perhatian"));
   const program = data.program || state.programs.find(item => item.id === document.getElementById("filterProgram").value) || state.programs.find(item => item.status === "active");
-  const day = data.programDay ?? program?.day;
+  state.activeProgram = program;
+  const day = data.programDay ?? program?.day ?? 1;
   const duration = data.programDuration ?? program?.durationDays ?? 30;
+
+  // Update Restart Panel in Dashboard
+  const activeProgInfo = document.getElementById("activeProgramInfo");
+  const activeProgDayDisplay = document.getElementById("activeProgramDayDisplay");
+  const activeProgBar = document.getElementById("activeProgramProgressBar");
+  const activeProgBadge = document.getElementById("activeProgramBadge");
+  const programsViewInfo = document.getElementById("programsViewActiveInfo");
+
+  if (activeProgInfo) {
+    if (program && program.startDate) {
+      activeProgInfo.innerHTML = `<strong>${text(program.name || "Program 30 Hari")}</strong> • Periode: ${formatDate(program.startDate)} s/d ${formatDate(program.endDate)}`;
+      if (activeProgDayDisplay) activeProgDayDisplay.textContent = `Hari ke- ${day}/${duration}`;
+      if (activeProgBar) {
+        const pct = Math.min(100, Math.round((day / duration) * 100));
+        activeProgBar.style.width = `${pct}%`;
+      }
+      if (activeProgBadge) {
+        activeProgBadge.textContent = program.status === "active" ? "Aktif" : (program.status || "Aktif");
+      }
+      if (programsViewInfo) {
+        programsViewInfo.textContent = `Program aktif saat ini: ${text(program.name)} (${formatDate(program.startDate)} – ${formatDate(program.endDate)}) — Hari ke-${day}/${duration}`;
+      }
+    } else {
+      activeProgInfo.textContent = "Belum ada siklus program yang aktif. Klik tombol restart untuk memulai siklus 30 hari.";
+      if (activeProgDayDisplay) activeProgDayDisplay.textContent = "Hari ke- 1/30";
+      if (activeProgBar) activeProgBar.style.width = "0%";
+      if (activeProgBadge) activeProgBadge.textContent = "Siap Dimulai";
+    }
+  }
+
   const counter = document.getElementById("dayCounter");
   if (day !== undefined && day !== null) { counter.textContent = `Hari ke-${day}/${duration}`; counter.classList.remove("hidden"); } else counter.classList.add("hidden");
   renderCharts(data.trends || []); renderLeaderboard(data.leaderboard || []); renderAnalysis(data.habitStats || []); renderSubmissionTable(data.students || []);
@@ -770,6 +870,41 @@ async function reloadPrograms() { const result = await api("/programs"); state.p
 async function updateProgramStatus(item, status) {
   if (!window.confirm(`${status === "active" ? "Aktifkan" : "Arsipkan"} program ${text(item.name)}?`)) return;
   try { await api(`/programs/${encodeURIComponent(item.id)}`, { method: "PATCH", body: { status } }); await reloadPrograms(); showMessage("portalMessage", "Status program diperbarui.", "success"); } catch (error) { showMessage("portalMessage", error.message, "error"); }
+}
+
+function openRestartProgramModal() {
+  document.getElementById("restartStartDate").value = todayStr();
+  document.getElementById("restartProgramName").value = state.activeProgram?.name || "Program 30 Hari Hidup Sehat";
+  document.getElementById("restartAcademicYear").value = state.activeProgram?.academicYear || "2026/2027";
+  showMessage("restartProgramMessage", "");
+  openModal("restartProgramModal");
+}
+
+async function confirmRestartProgram() {
+  const startDate = document.getElementById("restartStartDate").value;
+  if (!startDate) return showMessage("restartProgramMessage", "Pilih tanggal mulai terlebih dahulu.", "error");
+
+  const name = document.getElementById("restartProgramName").value.trim() || "Program 30 Hari Hidup Sehat";
+  const academicYear = document.getElementById("restartAcademicYear").value.trim() || "2026/2027";
+
+  const btn = document.getElementById("restartProgramSubmitBtn");
+  setBusy(btn, true, "Memproses restart…");
+
+  try {
+    const res = await api("/programs/restart", {
+      method: "POST",
+      body: { startDate, name, academicYear }
+    });
+
+    closeModal("restartProgramModal");
+    showMessage("portalMessage", res.message || "Program 30 Hari berhasil di-restart!", "success");
+    await reloadPrograms();
+    await loadTeacherDashboard();
+  } catch (err) {
+    showMessage("restartProgramMessage", err.message || "Gagal me-restart program.", "error");
+  } finally {
+    setBusy(btn, false);
+  }
 }
 
 function openArchiveModal() {

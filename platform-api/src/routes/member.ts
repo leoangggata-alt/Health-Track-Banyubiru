@@ -123,7 +123,7 @@ export async function handleMemberRoute(
 
     // Active program
     const activeProgram: any = await db
-      .prepare("SELECT id, name, start_date, end_date FROM programs WHERE school_id = ? AND status = 'active' LIMIT 1")
+      .prepare("SELECT id, name, start_date, end_date FROM programs WHERE school_id = ? AND status = 'active' ORDER BY start_date DESC LIMIT 1")
       .bind(school.id)
       .first();
 
@@ -147,7 +147,56 @@ export async function handleMemberRoute(
         name: activeProgram.name,
         startDate: activeProgram.start_date,
         endDate: activeProgram.end_date,
-      } : null,
+      } : {
+        id: "default",
+        name: "Program 30 Hari Hidup Sehat",
+        startDate: "2026-11-18",
+        endDate: "2026-12-17",
+      },
+    });
+  }
+
+  // 1b. GET ACTIVE PROGRAM FOR SCHOOL
+  if (path === "/api/member/program" && method === "GET") {
+    const schoolId = (url.searchParams.get("schoolId") || "").trim();
+    const code = (url.searchParams.get("code") || "").trim();
+
+    let targetSchoolId = schoolId;
+    if (!targetSchoolId && code) {
+      const s: any = await db.prepare("SELECT id FROM schools WHERE UPPER(code) = UPPER(?)").bind(code).first();
+      if (s) targetSchoolId = s.id;
+    }
+
+    if (!targetSchoolId) {
+      return json({
+        ok: true,
+        program: {
+          id: "default",
+          name: "Program 30 Hari Hidup Sehat",
+          startDate: "2026-11-18",
+          endDate: "2026-12-17",
+        },
+      });
+    }
+
+    const activeProgram: any = await db
+      .prepare("SELECT id, name, start_date, end_date FROM programs WHERE school_id = ? AND status = 'active' ORDER BY start_date DESC LIMIT 1")
+      .bind(targetSchoolId)
+      .first();
+
+    return json({
+      ok: true,
+      program: activeProgram ? {
+        id: activeProgram.id,
+        name: activeProgram.name,
+        startDate: activeProgram.start_date,
+        endDate: activeProgram.end_date,
+      } : {
+        id: "default",
+        name: "Program 30 Hari Hidup Sehat",
+        startDate: "2026-11-18",
+        endDate: "2026-12-17",
+      },
     });
   }
 
@@ -222,6 +271,12 @@ export async function handleMemberRoute(
       }
     }
 
+    // Find active program for this school
+    const activeProgram: any = await db
+      .prepare("SELECT id, name, start_date, end_date FROM programs WHERE school_id = ? AND status = 'active' ORDER BY start_date DESC LIMIT 1")
+      .bind(school.id)
+      .first();
+
     // Create opaque member session
     const { token, csrfToken } = await createSession(db, "member" as any, student.id, school.id);
 
@@ -239,6 +294,17 @@ export async function handleMemberRoute(
             schoolId: school.id,
             schoolCode: school.code,
             schoolName: school.name,
+          },
+          program: activeProgram ? {
+            id: activeProgram.id,
+            name: activeProgram.name,
+            startDate: activeProgram.start_date,
+            endDate: activeProgram.end_date,
+          } : {
+            id: "default",
+            name: "Program 30 Hari Hidup Sehat",
+            startDate: "2026-11-18",
+            endDate: "2026-12-17",
           },
         },
       },
