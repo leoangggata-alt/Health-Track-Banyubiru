@@ -29,8 +29,9 @@ async function runTests() {
   let adminCsrf = '';
 
   const superUsername = 'superadmin';
-  const superPassword = 'CxutXJLJ8d%RP*@S';
-  const superTotpSecret = 'SKUJVDYB7G5CTHFIEPOTP4633HVZRKVS';
+  const superPassword = process.env.SUPER_PASSWORD;
+  const superTotpSecret = process.env.SUPER_TOTP_SECRET;
+  if (!superPassword || !superTotpSecret) throw new Error('Set env SUPER_PASSWORD dan SUPER_TOTP_SECRET (lihat superadmin-credentials.txt, di luar repo).');
 
   // 1. Super Admin Login
   console.log('1. Menguji Super Admin Login dengan TOTP valid...');
@@ -76,14 +77,15 @@ async function runTests() {
       Cookie: superCookie,
       'x-csrf-token': superCsrf,
     },
+    // Payload persis seperti yang dikirim superadmin/app.js (getCreatePayload)
     body: JSON.stringify({
-      school_name: 'SMP Negeri 1 Uji Coba',
-      school_code: schoolCode,
-      school_level: 'SMP',
-      principal_name: 'Drs. H. Penguji, M.Pd.',
-      duration: '90',
-      max_admins: 2,
-      initial_admin_username: 'admin.uji',
+      schoolName: 'SMP Negeri 1 Uji Coba',
+      schoolCode,
+      level: 'SMP',
+      principalName: 'Drs. H. Penguji, M.Pd.',
+      durationDays: 90,
+      maxAdmins: 2,
+      adminUsername: 'admin.uji',
     }),
   });
 
@@ -91,7 +93,8 @@ async function runTests() {
   if (!createRes.ok || !createData.ok) {
     throw new Error(`Pembuatan lisensi gagal: ${JSON.stringify(createData)}`);
   }
-  const { licenseKey, username: adminUsername, initialPassword: adminPassword } = createData.credentials;
+  const { licenseKey, username: adminUsername, temporaryPassword: adminPassword } = createData.credentials;
+  if (!licenseKey || !adminPassword) throw new Error('Kredensial tidak lengkap untuk UI: ' + JSON.stringify(Object.keys(createData.credentials)));
   const licenseId = createData.license.id;
   console.log('   ✅ Lisensi sekolah berhasil dibuat!');
   console.log(`      Kode Sekolah : ${schoolCode}`);

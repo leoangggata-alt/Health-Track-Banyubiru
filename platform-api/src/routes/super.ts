@@ -200,7 +200,9 @@ export async function handleSuperRoute(
   // 5. LIST LICENSES & STATS
   if (path === "/api/super/licenses" && method === "GET") {
     const q = (url.searchParams.get("q") || "").trim().toLowerCase();
-    const statusFilter = (url.searchParams.get("status") || "all").trim().toLowerCase();
+    let statusFilter = (url.searchParams.get("status") || "all").trim().toLowerCase();
+    // UI mengirim status=active&expiringWithinDays=30 untuk filter "Segera berakhir"
+    if (url.searchParams.get("expiringWithinDays")) statusFilter = "expiring";
     const limit = Math.min(100, Math.max(1, parseInt(url.searchParams.get("limit") || "30", 10)));
     const offset = Math.max(0, parseInt(url.searchParams.get("offset") || "0", 10));
 
@@ -336,14 +338,26 @@ export async function handleSuperRoute(
   // 6. CREATE LICENSE & SCHOOL
   if (path === "/api/super/licenses" && method === "POST") {
     const body: any = await request.json().catch(() => ({}));
-    const schoolName = (body.school_name || "").trim();
-    const schoolCode = (body.school_code || "").trim().toUpperCase();
-    const schoolLevel = (body.school_level || "SMP").trim().toUpperCase();
-    const principalName = (body.principal_name || "").trim();
-    const duration = String(body.duration || "365");
-    const customExpiresAt = (body.expires_at || "").trim();
-    const maxAdmins = Math.max(1, parseInt(body.max_admins || "1", 10));
-    const initialAdminUsername = (body.initial_admin_username || "admin").trim().toLowerCase();
+    // Terima nama field camelCase (dikirim UI) maupun snake_case
+    const pick = (...keys: string[]) => {
+      for (const k of keys) if (body[k] !== undefined && body[k] !== null && body[k] !== "") return body[k];
+      return undefined;
+    };
+    const schoolName = String(pick("schoolName", "school_name") || "").trim();
+    const schoolCode = String(pick("schoolCode", "school_code") || "").trim().toUpperCase();
+    const schoolLevel = String(pick("level", "schoolLevel", "school_level") || "SMP").trim().toUpperCase();
+    const principalName = String(pick("principalName", "principal_name") || "").trim();
+    const customExpiresAt = String(pick("expiresAt", "expires_at") || "").trim();
+    const duration = customExpiresAt ? "custom" : String(pick("durationDays", "duration") || "365");
+    const maxAdmins = Math.min(100, Math.max(1, parseInt(String(pick("maxAdmins", "max_admins") || "1"), 10) || 1));
+    const initialAdminUsername = String(pick("adminUsername", "initialAdminUsername", "initial_admin_username") || "").trim().toLowerCase();
+
+    if (!/^[A-Z0-9_-]{2,32}$/.test(schoolCode)) {
+      return error("Kode sekolah harus 2–32 karakter: huruf, angka, tanda hubung, atau garis bawah.");
+    }
+    if (customExpiresAt && (!/^\d{4}-\d{2}-\d{2}$/.test(customExpiresAt) || customExpiresAt <= todayStr)) {
+      return error("Tanggal berakhir custom harus setelah hari ini.");
+    }
 
     if (!schoolName || !schoolCode) {
       return error("Nama sekolah dan kode sekolah wajib diisi.");
@@ -451,6 +465,7 @@ export async function handleSuperRoute(
         licenseKey: rawLicenseKey,
         username: initialAdminUsername,
         initialPassword: rawAdminPassword,
+        temporaryPassword: rawAdminPassword,
         schoolCode,
         schoolName,
       },
@@ -549,7 +564,7 @@ export async function handleSuperRoute(
     if (!license) return error("Lisensi tidak ditemukan.", 404, "NOT_FOUND");
 
     const body: any = await request.json().catch(() => ({}));
-    let newExpiresAt = (body.expires_at || "").trim();
+    let newExpiresAt = String(body.expiresAt || body.expires_at || "").trim();
 
     if (!newExpiresAt) {
       const days = parseInt(body.days || "30", 10);
@@ -638,7 +653,7 @@ export async function handleSuperRoute(
     if (!license) return error("Lisensi tidak ditemukan.", 404, "NOT_FOUND");
 
     const body: any = await request.json().catch(() => ({}));
-    let newExpiresAt = (body.expires_at || "").trim();
+    let newExpiresAt = String(body.expiresAt || body.expires_at || "").trim();
     if (!newExpiresAt && license.expires_at < todayStr) {
       const expDate = new Date(Date.now() + 30 * 24 * 3600 * 1000);
       newExpiresAt = expDate.toISOString().slice(0, 10);
@@ -740,6 +755,7 @@ export async function handleSuperRoute(
       credentials: {
         username,
         initialPassword: rawPassword,
+        temporaryPassword: rawPassword,
       },
       admin: {
         id: adminId,
@@ -787,6 +803,7 @@ export async function handleSuperRoute(
       credentials: {
         username: admin.username,
         initialPassword: rawPassword,
+        temporaryPassword: rawPassword,
       },
     });
   }
@@ -861,6 +878,7 @@ export async function handleSuperRoute(
       actorType: row.actor_type,
       actorId: row.actor_id,
       actor: row.actor_name,
+      actorUsername: row.actor_name,
       action: row.action,
       schoolId: row.school_id,
       schoolName: row.school_name,
